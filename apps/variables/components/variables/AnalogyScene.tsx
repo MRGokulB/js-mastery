@@ -88,14 +88,14 @@ export default function AnalogyScene() {
           </div>
 
           <div ref={beat2Ref} className="absolute inset-0 flex flex-col items-center justify-center gap-12">
-            <div className="flex items-center gap-8">
-              <div className="w-48 h-48 bg-[#2a241e] border border-[#5c4d3c] rounded-xl flex flex-col items-center justify-center rotate-[-4deg] relative shadow-lg">
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+              <div className="w-32 h-32 md:w-48 md:h-48 bg-[#2a241e] border border-[#5c4d3c] rounded-xl flex flex-col items-center justify-center rotate-[-4deg] relative shadow-lg">
                 <div className="absolute top-2 left-2 px-2 py-1 bg-red-500/20 text-red-400 text-xs font-bold uppercase rounded border border-red-500/30 transform -rotate-12">Legacy</div>
                 <div className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[#a6927a] font-mono text-sm mb-4">var</div>
                 <span className="text-xl font-mono text-[#8c7b66]">oldValue</span>
               </div>
               
-              <div className="w-48 h-48 bg-white/5 backdrop-blur-md border border-blue-500/30 rounded-xl flex flex-col items-center justify-center relative shadow-lg shadow-blue-500/10">
+              <div className="w-32 h-32 md:w-48 md:h-48 bg-white/5 backdrop-blur-md border border-blue-500/30 rounded-xl flex flex-col items-center justify-center relative shadow-lg shadow-blue-500/10">
                 <div className="px-3 py-1 bg-blue-500/20 border border-blue-500/40 rounded-full text-blue-400 font-mono text-sm mb-4">let</div>
                 <motion.div 
                   animate={{ y: [0, -5, 0] }}
@@ -106,7 +106,7 @@ export default function AnalogyScene() {
                 </motion.div>
               </div>
 
-              <div className="w-48 h-48 bg-white/5 backdrop-blur-md border border-amber-500/40 rounded-xl flex flex-col items-center justify-center relative shadow-lg shadow-amber-500/10">
+              <div className="w-32 h-32 md:w-48 md:h-48 bg-white/5 backdrop-blur-md border border-amber-500/40 rounded-xl flex flex-col items-center justify-center relative shadow-lg shadow-amber-500/10">
                 <Lock className="absolute -top-3 -right-3 w-8 h-8 text-amber-500 bg-[#050505] rounded-full p-1 border border-amber-500/40" />
                 <div className="px-3 py-1 bg-amber-500/20 border border-amber-500/40 rounded-full text-amber-400 font-mono text-sm mb-4">const</div>
                 <span className="text-xl font-mono text-white">fixedValue</span>
@@ -121,7 +121,7 @@ export default function AnalogyScene() {
           </div>
 
           <div ref={beat3Ref} className="absolute inset-0 flex flex-col items-center justify-center gap-6">
-            <div className="grid grid-cols-4 gap-4 w-full max-w-4xl">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl">
               <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center gap-3">
                 <Dice1 className="w-8 h-8 text-blue-400" />
                 <div className="text-xs text-white/50 font-mono">Number</div>
@@ -167,7 +167,7 @@ export default function AnalogyScene() {
                 transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
                 className="absolute top-0 bottom-0 w-1 bg-amber-400/80 shadow-[0_0_20px_4px_rgba(251,191,36,0.6)] z-10"
               />
-              <div className="grid grid-cols-5 gap-4 relative z-0">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 md:gap-4 relative z-0">
                 <div className="flex flex-col items-center gap-4">
                   <div className="h-12 flex items-center"><span className="font-mono text-xl">42</span></div>
                   <div className="w-full h-px bg-white/10" />
