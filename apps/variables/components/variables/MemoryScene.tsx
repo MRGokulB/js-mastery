@@ -284,7 +284,8 @@ export default function MemoryScene() {
                   </motion.g>
 
                   {/* Heap Object block */}
-                  <motion.g transform="translate(540, 210)" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}>
+                  <g transform="translate(540, 210)">
+                    <motion.g initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}>
                     <rect x="0" y="0" width="160" height="90" rx="8" fill="#1a1a1a" stroke="#3b82f6" strokeWidth="2" />
                     <text x="80" y="20" fill="#3b82f6" fontSize="12" textAnchor="middle" fontFamily="monospace">ADDR: 0x800</text>
                     <rect x="10" y="35" width="140" height="40" rx="4" fill="#000" stroke="#333" />
@@ -293,6 +294,7 @@ export default function MemoryScene() {
                       {currentBeat === 3 ? '999' : '1'}
                     </text>
                   </motion.g>
+                  </g>
 
                   {/* Connecting Line 1 */}
                   <motion.path
