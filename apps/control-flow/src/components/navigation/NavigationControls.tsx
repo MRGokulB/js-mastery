@@ -49,7 +49,7 @@ export function NavigationControls({ topicName }: { topicName: string }) {
             </svg>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-white tracking-tight">JS Mastery</span>
+            <span className="font-semibold text-white tracking-tight">JS Universe</span>
             <span className="text-white/20">/</span>
             <span className="text-white/70">{topicName}</span>
           </div>

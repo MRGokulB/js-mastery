@@ -33,7 +33,7 @@ export function OnboardingTour() {
 
   const steps = [
     {
-      title: "Welcome to JS Mastery",
+      title: "Welcome to JS Universe",
       description: "This isn't a normal text-based tutorial. This is a hardware-level, interactive 3D visualizer for the JavaScript language.",
       icon: <Sparkles className="w-8 h-8 text-blue-400" />
     },

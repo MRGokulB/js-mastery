@@ -14,11 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Functions, Scope, & Closures | JavaScript Mastery",
+  title: "Functions, Scope, & Closures | JavaScript Universe",
   description: "Visually master JavaScript Functions. Explore the Execution Context, Call Stack, Lexical Scope, and Closures through cinematic GSAP animations.",
   keywords: ["JavaScript Functions", "JS Closures", "Execution Context", "Call Stack", "Lexical Scope", "Learn JS"],
   openGraph: {
-    title: "Functions, Scope, & Closures | JavaScript Mastery",
+    title: "Functions, Scope, & Closures | JavaScript Universe",
     description: "Visually master JavaScript Functions. Explore the Execution Context, Call Stack, Lexical Scope, and Closures.",
     type: "website",
   }
@@ -33,7 +33,7 @@ const jsonLd = {
       "description": "Visual guide to the JS Execution Context, memory creation phases, and how closures trap scope.",
       "provider": {
         "@type": "EducationalOrganization",
-        "name": "JS Mastery"
+        "name": "JS Universe"
       }
     },
     {

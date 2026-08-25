@@ -16,11 +16,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Arrays & Iteration Pipelines | JavaScript Mastery",
+  title: "Arrays & Iteration Pipelines | JavaScript Universe",
   description: "Visualize how JavaScript Arrays map to contiguous memory. Master array mutations, Big-O complexities (O(n) vs O(1)), and functional programming pipelines (Map, Filter, Reduce).",
-  keywords: ["JavaScript Arrays", "JS Map Filter Reduce", "Array Mutation", "Big O Notation Arrays", "Functional Programming JS", "JS Mastery"],
+  keywords: ["JavaScript Arrays", "JS Map Filter Reduce", "Array Mutation", "Big O Notation Arrays", "Functional Programming JS", "JS Universe"],
   openGraph: {
-    title: "Arrays & Iteration Pipelines | JavaScript Mastery",
+    title: "Arrays & Iteration Pipelines | JavaScript Universe",
     description: "Visualize how JavaScript Arrays map to contiguous memory. Master array mutations and functional pipelines.",
     type: "website",
   }
@@ -35,7 +35,7 @@ const jsonLd = {
       "description": "Visual guide to contiguous memory allocation, O(1) index access, and functional array pipelines in JavaScript.",
       "provider": {
         "@type": "EducationalOrganization",
-        "name": "JS Mastery"
+        "name": "JS Universe"
       }
     },
     {

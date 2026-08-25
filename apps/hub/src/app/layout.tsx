@@ -13,11 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JavaScript Universe | Advanced JS Mastery Hub",
+  title: "JavaScript Universe | Advanced JS Universe Hub",
   description: "Master JavaScript from the ground up. Interactive, Awwwards-winning visualizers for Variables, Control Flow, Functions, Arrays, Objects, and the DOM. Learn how JS actually works under the hood.",
-  keywords: ["JavaScript tutorial", "Learn JS", "Interactive JavaScript", "JS Mastery", "Frontend Development", "Web Development", "Execution Context", "JS Engine"],
+  keywords: ["JavaScript tutorial", "Learn JS", "Interactive JavaScript", "JS Universe", "Frontend Development", "Web Development", "Execution Context", "JS Engine"],
   openGraph: {
-    title: "JavaScript Universe | Advanced JS Mastery Hub",
+    title: "JavaScript Universe | Advanced JS Universe Hub",
     description: "Deep dive into JS mechanics with cinematic visualizers. From memory pointers to the Event Loop.",
     type: "website",
     locale: "en_US",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "JavaScript Universe | Advanced JS Mastery",
+    title: "JavaScript Universe | Advanced JS Universe",
     description: "Interactive, visual JavaScript roadmap.",
   },
   robots: "index, follow",

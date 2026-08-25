@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Variables & Data Types | JS Mastery",
-    template: "%s | JS Mastery",
+    default: "Variables & Data Types | JS Universe",
+    template: "%s | JS Universe",
   },
   description: "Master JavaScript variables, data types, and type coercion through cinematic interactive visualizations. Learn let, const, var, primitives, and references.",
   keywords: ["JavaScript", "Variables", "Data Types", "let", "const", "var", "Type Coercion", "Primitives", "References", "Interactive Learning"],
@@ -33,7 +33,7 @@ const jsonLd = {
       "description": "An interactive, visual course covering JavaScript variables, data types, memory allocation, and type coercion.",
       "provider": {
         "@type": "EducationalOrganization",
-        "name": "JS Mastery"
+        "name": "JS Universe"
       }
     },
     {

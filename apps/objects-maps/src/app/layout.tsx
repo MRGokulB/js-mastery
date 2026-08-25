@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Objects & Maps | JS Mastery",
+  title: "Objects & Maps | JS Universe",
   description: "JavaScript Objects, Maps, and References visualizer",
 };
 
