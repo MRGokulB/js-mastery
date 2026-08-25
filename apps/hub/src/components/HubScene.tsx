@@ -30,7 +30,13 @@ const TOPICS = [
     status: "completed",
     href: "https://arrays-iteration.vercel.app/"
   },
-  { id: 5, title: "Objects & Maps", description: "Key-value stores, references, and deep copies.", status: "active", href: "#" },
+  {
+    id: 5,
+    title: "Objects & Maps",
+    description: "Key-value stores, references, and deep copies.",
+    status: "completed",
+    href: "https://objects-maps.vercel.app/" // Assuming this will be the static alias the user assigns, or I'll just leave it and the user will assign it!
+  },
   { id: 6, title: "The DOM & Events", description: "Connecting JS to the visual webpage.", status: "locked", href: "#" },
   { id: 7, title: "Asynchronous JS", description: "Event loop, Promises, Async/Await.", status: "locked", href: "#" },
   { id: 8, title: "ES6+ Modern JS", description: "Destructuring, spread, modules.", status: "locked", href: "#" },
