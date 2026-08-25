@@ -67,7 +67,7 @@ export function MemoryScene() {
           </h2>
         </div>
 
-        <div className="w-full lg:w-1/2 flex justify-center items-center">
+        <div className="w-full lg:w-1/2 flex justify-center items-center pl-12 lg:pl-0">
           <div className="relative bg-[#050505] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl font-mono text-sm">
             
             {/* Instruction Pointer */}
