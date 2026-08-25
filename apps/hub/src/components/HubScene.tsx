@@ -22,13 +22,13 @@ const TOPICS = [
     href: "https://control-flow-ruby.vercel.app",
     icon: Map
   },
-  { id: 3, title: "Functions & Scope", description: "Reusable logic, closures, and execution context.", status: "active", href: "https://functions-scope-4rxrb9vcz-gokul-boddawars-projects.vercel.app" },
+  { id: 3, title: "Functions & Scope", description: "Reusable logic, closures, and execution context.", status: "completed", href: "https://functions-scope.vercel.app/" },
   {
     id: 4,
     title: "Arrays & Iteration",
     description: "Contiguous memory, O(n) vs O(1) mutations, and functional pipelines.",
     status: "completed",
-    href: "https://arrays-iteration-n5wk1nlhi-gokul-boddawars-projects.vercel.app"
+    href: "https://arrays-iteration.vercel.app/"
   },
   { id: 5, title: "Objects & Maps", description: "Key-value stores, references, and deep copies.", status: "active", href: "#" },
   { id: 6, title: "The DOM & Events", description: "Connecting JS to the visual webpage.", status: "locked", href: "#" },

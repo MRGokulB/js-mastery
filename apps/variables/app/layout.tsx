@@ -68,7 +68,7 @@ export default function RootLayout({
       </head>
       <body className="bg-[#050505] text-white overflow-x-hidden min-h-screen selection:bg-amber-500/30">
         <Link 
-          href="https://hub-d2lf1dgx8-gokul-boddawars-projects.vercel.app" 
+          href="https://hub-bay-six-16.vercel.app/" 
           className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-black/50 hover:bg-white/10 border border-white/10 rounded-full text-white/70 hover:text-white transition-all backdrop-blur-md text-sm font-mono shadow-xl"
         >
           <ArrowLeft className="w-4 h-4" />
