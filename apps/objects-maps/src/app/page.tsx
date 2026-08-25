@@ -1,6 +1,7 @@
 import { HeroScene } from "@/components/objects-maps/HeroScene";
 import { ReferenceScene } from "@/components/objects-maps/ReferenceScene";
 import { ObjectScene } from "@/components/objects-maps/ObjectScene";
+import { AdvancedObjectScene } from "@/components/objects-maps/AdvancedObjectScene";
 import { MapScene } from "@/components/objects-maps/MapScene";
 import { CopyScene } from "@/components/objects-maps/CopyScene";
 
@@ -10,6 +11,7 @@ export default function Home() {
       <HeroScene />
       <ReferenceScene />
       <ObjectScene />
+      <AdvancedObjectScene />
       <MapScene />
       <CopyScene />
     </main>

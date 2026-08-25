@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Filter, Scissors, ArrowDownToDot } from "lucide-react";
+import { Scissors } from "lucide-react";
 
 export function IterationScene() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-    let ctx = gsap.context(() => {
+    const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
@@ -22,36 +22,45 @@ export function IterationScene() {
         }
       });
 
-      // Beat 1: Intro
       tl.to(".text-beat-1", { opacity: 0, y: -20, duration: 1 })
         .to(".text-beat-2", { opacity: 1, y: 0, duration: 1 }, "<")
         .to(".belt-container", { opacity: 1, duration: 1 }, "<")
 
-      // Beat 2: Map
       tl.to(".text-beat-2", { opacity: 0, y: -20, duration: 1 })
         .to(".text-beat-3", { opacity: 1, y: 0, duration: 1 }, "<")
         .to(".box-raw", { x: 100, duration: 1 })
-        .to(".box-raw", { scale: 1.5, rotate: 45, backgroundColor: "#0891b2", duration: 0.5 }) // transform
+        .to(".box-raw", { scale: 1.5, rotate: 45, backgroundColor: "#0891b2", duration: 0.5 })
         .to(".box-raw", { x: 200, duration: 1 })
 
-      // Beat 3: Filter
       tl.to(".text-beat-3", { opacity: 0, y: -20, duration: 1 })
         .to(".text-beat-4", { opacity: 1, y: 0, duration: 1 }, "<")
-        .set(".box-raw", { x: 0, scale: 1, rotate: 0, backgroundColor: "#334155" }) // reset
+        .set(".box-raw", { x: 0, scale: 1, rotate: 0, backgroundColor: "#334155" })
         .to(".box-raw", { x: 100, duration: 1 })
-        // box 2 gets rejected
         .to(".box-raw:nth-child(2)", { y: 200, opacity: 0, rotate: 90, duration: 0.5 })
-        // others pass
         .to(".box-raw:not(:nth-child(2))", { x: 200, duration: 1 })
 
-      // Beat 4: Reduce
       tl.to(".text-beat-4", { opacity: 0, y: -20, duration: 1 })
         .to(".text-beat-5", { opacity: 1, y: 0, duration: 1 }, "<")
-        .set(".box-raw", { x: 0, y: 0, opacity: 1, scale: 1, rotate: 0, backgroundColor: "#334155" }) // reset
-        .to(".box-raw", { x: 100, duration: 1 })
-        .to(".box-raw", { x: 100, y: 0, scale: 0.5, duration: 0.5, ease: "power2.in" }) // crash together
-        .to(".box-raw", { opacity: 0, duration: 0.1 })
-        .to(".accumulator", { opacity: 1, scale: 1.5, duration: 0.5 }, "<")
+        .set(".box-raw", { x: 0, y: 0, opacity: 1, scale: 1, rotate: 0, backgroundColor: "#334155" })
+        .to(".accumulator", { opacity: 1, duration: 0.5 })
+        
+        .to(".box-raw:nth-child(1)", { x: 120, duration: 0.5 })
+        .to(".box-raw:nth-child(1)", { scale: 0.5, opacity: 0, duration: 0.2 })
+        .to(".acc-val-0", { opacity: 0, duration: 0.2 }, "<")
+        .to(".acc-val-1", { opacity: 1, duration: 0.2 }, "<")
+        .to(".accumulator", { scale: 1.1, duration: 0.1, yoyo: true, repeat: 1 })
+        
+        .to(".box-raw:nth-child(2)", { x: 120, duration: 0.5 })
+        .to(".box-raw:nth-child(2)", { scale: 0.5, opacity: 0, duration: 0.2 })
+        .to(".acc-val-1", { opacity: 0, duration: 0.2 }, "<")
+        .to(".acc-val-3", { opacity: 1, duration: 0.2 }, "<")
+        .to(".accumulator", { scale: 1.2, duration: 0.1, yoyo: true, repeat: 1 })
+        
+        .to(".box-raw:nth-child(3)", { x: 120, duration: 0.5 })
+        .to(".box-raw:nth-child(3)", { scale: 0.5, opacity: 0, duration: 0.2 })
+        .to(".acc-val-3", { opacity: 0, duration: 0.2 }, "<")
+        .to(".acc-val-6", { opacity: 1, duration: 0.2 }, "<")
+        .to(".accumulator", { scale: 1.3, duration: 0.1, yoyo: true, repeat: 1 })
 
     }, containerRef);
     return () => ctx.revert();
@@ -62,7 +71,6 @@ export function IterationScene() {
       
       <div className="relative z-10 max-w-6xl mx-auto w-full flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
         
-        {/* Left Side: Explanations */}
         <div className="w-full lg:w-1/2 flex flex-col justify-center gap-8 min-w-0">
           
           <div className="grid grid-cols-1 w-full">
@@ -85,28 +93,27 @@ export function IterationScene() {
 
         </div>
 
-        {/* Right Side: The Conveyor Belt */}
         <div className="w-full lg:w-1/2 flex items-center justify-center min-w-0 h-[400px]">
           
           <div className="belt-container opacity-0 relative w-full max-w-2xl h-64 border-b-4 border-white/20 border-dashed flex items-center">
             
-            {/* The Processing Machine (Center) */}
             <div className="absolute left-[100px] top-1/2 -translate-y-1/2 -mt-4 w-32 h-48 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-md z-20 flex flex-col items-center justify-center pointer-events-none">
                <div className="w-16 h-1 bg-cyan-500/50 absolute -top-4 rounded-full animate-pulse" />
                <Scissors className="text-white/20 w-8 h-8 mb-2" />
                <span className="text-xs font-mono text-white/40 uppercase tracking-widest text-center">Callback<br/>Fn</span>
             </div>
 
-            {/* Items */}
             <div className="absolute left-0 top-1/2 -translate-y-1/2 flex gap-4 z-10">
               <div className="box-raw w-12 h-12 bg-slate-700 rounded-lg shadow-lg flex items-center justify-center text-white font-bold font-mono">1</div>
               <div className="box-raw w-12 h-12 bg-slate-700 rounded-lg shadow-lg flex items-center justify-center text-white font-bold font-mono">2</div>
               <div className="box-raw w-12 h-12 bg-slate-700 rounded-lg shadow-lg flex items-center justify-center text-white font-bold font-mono">3</div>
             </div>
 
-            {/* Accumulator for Reduce */}
             <div className="accumulator opacity-0 absolute left-[100px] top-1/2 -translate-y-1/2 w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold font-mono shadow-[0_0_30px_rgba(249,115,22,0.4)] z-30">
-              6
+              <span className="acc-val-0 absolute inset-0 flex items-center justify-center">0</span>
+              <span className="acc-val-1 absolute inset-0 flex items-center justify-center opacity-0">1</span>
+              <span className="acc-val-3 absolute inset-0 flex items-center justify-center opacity-0">3</span>
+              <span className="acc-val-6 absolute inset-0 flex items-center justify-center opacity-0">6</span>
             </div>
 
           </div>

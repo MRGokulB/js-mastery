@@ -10,7 +10,7 @@ export function ObjectScene() {
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-    let ctx = gsap.context(() => {
+    const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,

@@ -9,7 +9,7 @@ export function HeroScene() {
   const containerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    let ctx = gsap.context(() => {
+    const ctx = gsap.context(() => {
       gsap.to(".bg-item", {
         y: "random(-20, 20)",
         x: "random(-20, 20)",
