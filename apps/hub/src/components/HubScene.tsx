@@ -23,8 +23,14 @@ const TOPICS = [
     icon: Map
   },
   { id: 3, title: "Functions & Scope", description: "Reusable logic, closures, and execution context.", status: "active", href: "https://functions-scope-4rxrb9vcz-gokul-boddawars-projects.vercel.app" },
-  { id: 4, title: "Arrays & Iteration", description: "List manipulation, map, filter, reduce.", status: "locked", href: "#" },
-  { id: 5, title: "Objects & Maps", description: "Key-value stores, references, and deep copies.", status: "locked", href: "#" },
+  {
+    id: 4,
+    title: "Arrays & Iteration",
+    description: "Contiguous memory, O(n) vs O(1) mutations, and functional pipelines.",
+    status: "completed",
+    href: "https://arrays-iteration-n5wk1nlhi-gokul-boddawars-projects.vercel.app"
+  },
+  { id: 5, title: "Objects & Maps", description: "Key-value stores, references, and deep copies.", status: "active", href: "#" },
   { id: 6, title: "The DOM & Events", description: "Connecting JS to the visual webpage.", status: "locked", href: "#" },
   { id: 7, title: "Asynchronous JS", description: "Event loop, Promises, Async/Await.", status: "locked", href: "#" },
   { id: 8, title: "ES6+ Modern JS", description: "Destructuring, spread, modules.", status: "locked", href: "#" },
