@@ -58,22 +58,22 @@ export function MemoryScene() {
       <div className="relative z-10 max-w-5xl mx-auto w-full flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
         
         {/* Left Side: Explanations & Code */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-center gap-8 lg:gap-12">
+        <div className="w-full lg:w-1/2 flex flex-col justify-center gap-8 lg:gap-12 min-w-0">
           
-          <div className="grid [grid-template-areas:'stack']">
-            <h2 className="text-beat-1 [grid-area:stack] text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight">
+          <div className="grid grid-cols-1 w-full">
+            <h2 className="text-beat-1 col-start-1 row-start-1 w-full text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight break-words">
               How does JS remember where to return after a function finishes?
             </h2>
-            <h2 className="text-beat-2 [grid-area:stack] text-2xl md:text-3xl lg:text-4xl font-bold text-white opacity-0 translate-y-5 leading-tight">
+            <h2 className="text-beat-2 col-start-1 row-start-1 w-full text-2xl md:text-3xl lg:text-4xl font-bold text-white opacity-0 translate-y-5 leading-tight break-words">
               It uses the <span className="text-orange-400">Call Stack</span>. Before any code runs, a Global Execution Context is pushed.
             </h2>
-            <h2 className="text-beat-3 [grid-area:stack] text-2xl md:text-3xl lg:text-4xl font-bold text-white opacity-0 translate-y-5 leading-tight">
+            <h2 className="text-beat-3 col-start-1 row-start-1 w-full text-2xl md:text-3xl lg:text-4xl font-bold text-white opacity-0 translate-y-5 leading-tight break-words">
               When you call <code className="text-pink-400 font-mono bg-pink-900/30 px-2 py-1 rounded">first()</code>, it creates a new memory frame and pushes it ON TOP of the stack.
             </h2>
-            <h2 className="text-beat-4 [grid-area:stack] text-2xl md:text-3xl lg:text-4xl font-bold text-white opacity-0 translate-y-5 leading-tight">
+            <h2 className="text-beat-4 col-start-1 row-start-1 w-full text-2xl md:text-3xl lg:text-4xl font-bold text-white opacity-0 translate-y-5 leading-tight break-words">
               If <code className="text-pink-400 font-mono bg-pink-900/30 px-2 py-1 rounded">first()</code> calls <code className="text-blue-400 font-mono bg-blue-900/30 px-2 py-1 rounded">second()</code>, another frame goes on top!
             </h2>
-            <h2 className="text-beat-5 [grid-area:stack] text-2xl md:text-3xl lg:text-4xl font-bold text-white opacity-0 translate-y-5 leading-tight">
+            <h2 className="text-beat-5 col-start-1 row-start-1 w-full text-2xl md:text-3xl lg:text-4xl font-bold text-white opacity-0 translate-y-5 leading-tight break-words">
               When they finish, they pop off in reverse order (LIFO: Last In, First Out) until we return to Global.
             </h2>
           </div>
