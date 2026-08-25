@@ -50,19 +50,21 @@ export function AnalogyScene() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,115,22,0.03),transparent_50%)]" />
 
       <div className="relative z-10 max-w-6xl mx-auto w-full flex flex-col lg:flex-row items-center gap-12">
-        <div className="w-full lg:w-1/2 relative h-48 lg:h-96 flex flex-col justify-center">
-          <h2 className="text-beat-1 absolute text-2xl md:text-4xl font-bold text-white">
-            Imagine your JavaScript file is a giant room. This is the <span className="text-orange-400">Global Scope</span>.
-          </h2>
-          <h2 className="text-beat-2 absolute text-2xl md:text-4xl font-bold text-white opacity-0 translate-y-5">
-            Creating a function builds a smaller room inside it. 
-          </h2>
-          <h2 className="text-beat-3 absolute text-2xl md:text-4xl font-bold text-white opacity-0 translate-y-5">
-            The walls of the function are <span className="text-blue-400">One-Way Glass</span>. Code inside the function can perfectly see out into the global scope...
-          </h2>
-          <h2 className="text-beat-4 absolute text-2xl md:text-4xl font-bold text-white opacity-0 translate-y-5">
-            But the global scope CANNOT see inside the function! Variables inside are strictly private.
-          </h2>
+        <div className="w-full lg:w-1/2 flex flex-col justify-center">
+          <div className="grid [grid-template-areas:'stack']">
+            <h2 className="text-beat-1 [grid-area:stack] text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight">
+              Imagine your JavaScript file is a giant room. This is the <span className="text-orange-400">Global Scope</span>.
+            </h2>
+            <h2 className="text-beat-2 [grid-area:stack] text-2xl md:text-3xl lg:text-4xl font-bold text-white opacity-0 translate-y-5 leading-tight">
+              Creating a function builds a smaller room inside it. 
+            </h2>
+            <h2 className="text-beat-3 [grid-area:stack] text-2xl md:text-3xl lg:text-4xl font-bold text-white opacity-0 translate-y-5 leading-tight">
+              The walls of the function are <span className="text-blue-400">One-Way Glass</span>. Code inside the function can perfectly see out into the global scope...
+            </h2>
+            <h2 className="text-beat-4 [grid-area:stack] text-2xl md:text-3xl lg:text-4xl font-bold text-white opacity-0 translate-y-5 leading-tight">
+              But the global scope CANNOT see inside the function! Variables inside are strictly private.
+            </h2>
+          </div>
         </div>
 
         <div className="w-full lg:w-1/2 flex items-center justify-center">
