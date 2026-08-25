@@ -18,11 +18,11 @@ const TOPICS = [
     id: 2,
     title: "Control Flow & Logic",
     description: "If/Else, Switch, Ternary, and the Truthy/Falsy nature of JS.",
-    status: "active",
+    status: "completed",
     href: "https://control-flow-nm254hwqy-gokul-boddawars-projects.vercel.app",
     icon: Map
   },
-  { id: 3, title: "Functions & Scope", description: "Reusable logic, closures, and execution context.", status: "locked", href: "#" },
+  { id: 3, title: "Functions & Scope", description: "Reusable logic, closures, and execution context.", status: "active", href: "https://functions-scope-4rxrb9vcz-gokul-boddawars-projects.vercel.app" },
   { id: 4, title: "Arrays & Iteration", description: "List manipulation, map, filter, reduce.", status: "locked", href: "#" },
   { id: 5, title: "Objects & Maps", description: "Key-value stores, references, and deep copies.", status: "locked", href: "#" },
   { id: 6, title: "The DOM & Events", description: "Connecting JS to the visual webpage.", status: "locked", href: "#" },
