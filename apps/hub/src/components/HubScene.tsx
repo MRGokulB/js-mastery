@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Lock, Unlock, Play, Code2, Map } from "lucide-react";
 import gsap from "gsap";
+import { OnboardingTour } from "./OnboardingTour";
 
 const TOPICS = [
   {
@@ -70,18 +71,34 @@ export function HubScene() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full min-h-screen pt-32 pb-24 px-6 overflow-hidden">
-      <div className="absolute inset-0 bg-[#050505] -z-20" />
+    <div ref={containerRef} className="min-h-screen bg-[#050505] text-white relative overflow-hidden py-20 px-6">
+      <OnboardingTour />
       
       {/* Background glowing orbs */}
       <div className="absolute top-[20%] left-[20%] w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
       <div className="absolute bottom-[20%] right-[20%] w-96 h-96 bg-purple-500/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto flex flex-col items-center">
-        <h1 ref={titleRef} className="text-5xl md:text-7xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50 mb-6 text-center">
+      <div className="max-w-7xl mx-auto flex flex-col items-center relative z-10">
+        
+        {/* Abstract Standard Logo */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8, rotate: -30 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+          className="mb-8 relative w-24 h-24 flex items-center justify-center"
+        >
+          <div className="absolute inset-0 bg-blue-500/20 rounded-xl blur-xl" />
+          <svg viewBox="0 0 100 100" className="w-full h-full text-blue-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+            <path d="M50 5 L93 25 L93 75 L50 95 L7 75 L7 25 Z" fill="none" stroke="currentColor" strokeWidth="4" />
+            <path d="M50 5 L50 95 M7 25 L93 75 M7 75 L93 25" stroke="currentColor" strokeWidth="1" strokeOpacity="0.3" />
+            <text x="50" y="58" fontFamily="monospace" fontSize="24" fill="currentColor" fontWeight="bold" textAnchor="middle">JS</text>
+          </svg>
+        </motion.div>
+
+        <h1 ref={titleRef} className="text-5xl md:text-7xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-white to-purple-300 mb-6 text-center">
           JavaScript Universe
         </h1>
-        <p className="text-white/60 text-lg md:text-xl max-w-2xl text-center mb-20">
+        <p className="text-white/60 text-lg md:text-xl max-w-2xl text-center mb-20 font-light">
           A deeply interactive, hardware-level exploration of the JavaScript language. Progress through the modules below to achieve true mastery.
         </p>
 

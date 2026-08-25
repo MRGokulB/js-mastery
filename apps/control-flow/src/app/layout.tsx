@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { NavigationControls } from "@/components/navigation/NavigationControls";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +14,42 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Control Flow | JS Mastery",
-  description: "JavaScript Control Flow visualizer",
+  title: "Control Flow & Logic | JavaScript Mastery",
+  description: "Master JavaScript Control Flow. Visual explanations for If/Else, Switch, Ternary Operators, and the Truthy/Falsy nature of JS with interactive WebGL/GSAP animations.",
+  keywords: ["JavaScript Control Flow", "Truthy Falsy", "JS Switch Statement", "Ternary Operator", "Learn JavaScript", "Interactive JS"],
+  openGraph: {
+    title: "Control Flow & Logic | JavaScript Mastery",
+    description: "Learn how JavaScript makes decisions. Interactive visualizers for if/else, switch, and truthy/falsy values.",
+    type: "website",
+  }
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Course",
+      "name": "JavaScript Control Flow & Logic",
+      "description": "Visual guide to JavaScript decision making, truthy/falsy evaluation, and branching logic.",
+      "provider": {
+        "@type": "EducationalOrganization",
+        "name": "JS Mastery"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What are truthy and falsy values in JavaScript?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In JavaScript, a falsy value is a value that is considered false when encountered in a Boolean context. There are only 6 falsy values: false, 0, '', null, undefined, and NaN. Everything else is truthy."
+          }
+        }
+      ]
+    }
+  ]
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -26,13 +59,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Link 
-          href="https://hub-bay-six-16.vercel.app/" 
-          className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-black/50 hover:bg-white/10 border border-white/10 rounded-full text-white/70 hover:text-white transition-all backdrop-blur-md text-sm font-mono shadow-xl"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Hub</span>
-        </Link>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <NavigationControls topicName="Control Flow & Logic" />
         {children}
       </body>
     </html>

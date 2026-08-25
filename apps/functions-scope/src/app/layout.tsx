@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { NavigationControls } from "@/components/navigation/NavigationControls";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +14,50 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Functions & Scope | JS Mastery",
-  description: "JavaScript Functions and Scope visualizer",
+  title: "Functions, Scope, & Closures | JavaScript Mastery",
+  description: "Visually master JavaScript Functions. Explore the Execution Context, Call Stack, Lexical Scope, and Closures through cinematic GSAP animations.",
+  keywords: ["JavaScript Functions", "JS Closures", "Execution Context", "Call Stack", "Lexical Scope", "Learn JS"],
+  openGraph: {
+    title: "Functions, Scope, & Closures | JavaScript Mastery",
+    description: "Visually master JavaScript Functions. Explore the Execution Context, Call Stack, Lexical Scope, and Closures.",
+    type: "website",
+  }
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Course",
+      "name": "JavaScript Functions, Scope & Closures",
+      "description": "Visual guide to the JS Execution Context, memory creation phases, and how closures trap scope.",
+      "provider": {
+        "@type": "EducationalOrganization",
+        "name": "JS Mastery"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is a closure in JavaScript?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A closure is a function that remembers the variables in its outer lexical environment, even after that outer function has finished executing."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the Call Stack?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The Call Stack is a LIFO (Last In, First Out) data structure used by the JavaScript engine to keep track of function execution."
+          }
+        }
+      ]
+    }
+  ]
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -26,13 +67,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Link 
-          href="https://hub-bay-six-16.vercel.app/" 
-          className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-black/50 hover:bg-white/10 border border-white/10 rounded-full text-white/70 hover:text-white transition-all backdrop-blur-md text-sm font-mono shadow-xl"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Hub</span>
-        </Link>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <NavigationControls topicName="Functions & Scope" />
         {children}
       </body>
     </html>
