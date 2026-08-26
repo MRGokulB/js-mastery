@@ -22,10 +22,17 @@ export default function Home() {
       { opacity: 0 },
       { opacity: 1, duration: 1, ease: "power3.out" }
     );
+    
+    // Refresh ScrollTrigger to recalculate pin-spacers after initial render
+    const timeout = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 500);
+
+    return () => clearTimeout(timeout);
   }, []);
 
   return (
-    <div ref={containerRef} className="flex flex-col items-center justify-start w-full relative">
+    <div ref={containerRef} className="w-full relative bg-[#050505]">
       <HeroScene />
       <ScopeScene />
       <MemoryScene />

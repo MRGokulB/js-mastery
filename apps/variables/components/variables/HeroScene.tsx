@@ -10,22 +10,14 @@ export function HeroScene() {
   
   useEffect(() => {
     let ctx = gsap.context(() => {
-      // Pin the hero section while animating elements in
-      ScrollTrigger.create({
-        trigger: containerRef.current,
-        start: "top top",
-        end: "+=1500",
-        pin: true,
-        scrub: 1,
-        anticipatePin: 1
-      });
-
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
           end: "+=1500",
-          scrub: 1
+          scrub: 1,
+          pin: true,
+          anticipatePin: 1
         }
       });
 
