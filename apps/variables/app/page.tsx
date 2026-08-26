@@ -32,7 +32,7 @@ export default function Home() {
       <CoercionScene />
       
       {/* End spacer */}
-      <div className="h-screen w-full flex items-center justify-center flex-col text-center">
+      <div className="h-screen w-full flex items-center justify-center flex-col text-center bg-[#050505]">
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
           You've Mastered Variables
         </h2>

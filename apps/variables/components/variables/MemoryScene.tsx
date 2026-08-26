@@ -48,7 +48,7 @@ export function MemoryScene() {
   }, []);
 
   return (
-    <div ref={containerRef} className="h-screen w-full flex items-center justify-center relative bg-transparent px-6 perspective-[1000px]">
+    <div ref={containerRef} className="h-screen w-full flex items-center justify-center relative bg-[#050505] px-6 perspective-[1000px]">
       
       <div className="absolute top-20 left-1/2 -translate-x-1/2 text-center">
         <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Stack vs Heap</h2>

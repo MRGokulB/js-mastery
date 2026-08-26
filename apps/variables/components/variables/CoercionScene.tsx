@@ -43,7 +43,7 @@ export function CoercionScene() {
   }, []);
 
   return (
-    <div ref={containerRef} className="h-screen w-full flex items-center justify-center relative bg-transparent px-6">
+    <div ref={containerRef} className="h-screen w-full flex items-center justify-center relative bg-[#050505] px-6">
       
       <div className="coercion-content w-full max-w-4xl bg-black/40 border border-white/10 rounded-3xl p-8 md:p-12 backdrop-blur-xl relative overflow-hidden">
         

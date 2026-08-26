@@ -50,7 +50,7 @@ export function ScopeScene() {
   }, []);
 
   return (
-    <div ref={containerRef} className="h-screen w-full flex items-center justify-center relative bg-transparent px-6 perspective-[1000px]">
+    <div ref={containerRef} className="h-screen w-full flex items-center justify-center relative bg-[#050505] px-6 perspective-[1000px]">
       
       <div className="scope-title absolute inset-0 flex flex-col items-center justify-center opacity-0 -translate-y-10 pointer-events-none">
         <BoxSelect className="w-16 h-16 text-amber-500 mb-6" />

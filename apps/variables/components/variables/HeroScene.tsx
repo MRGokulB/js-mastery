@@ -47,7 +47,7 @@ export function HeroScene() {
   }, []);
 
   return (
-    <div ref={containerRef} className="h-screen w-full flex items-center justify-center relative bg-transparent px-6 perspective-[1000px]">
+    <div ref={containerRef} className="h-screen w-full flex items-center justify-center relative bg-[#050505] px-6 perspective-[1000px]">
       
       {/* INITIAL TITLE */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center main-title pointer-events-none">
