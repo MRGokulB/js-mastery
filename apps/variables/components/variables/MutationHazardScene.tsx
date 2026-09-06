@@ -69,7 +69,7 @@ export function MutationHazardScene() {
 
           <div className="code-step-1 opacity-0">
             <span className="text-white/40">// 1. Create an object in the Heap</span><br/>
-            <span className="text-purple-400">let</span> <span className="text-blue-400">user1</span> = { name: <span className="text-green-400">"Alex"</span> };
+            <span className="text-purple-400">let</span> <span className="text-blue-400">user1</span> = &#123; name: <span className="text-green-400">"Alex"</span> &#125;;
           </div>
           
           <div className="code-step-2 opacity-0 mt-6">

@@ -70,7 +70,7 @@ export function GarbageCollectionScene() {
 
           <div className="gc-code-1 opacity-0">
             <span className="text-white/40">// 1. Allocate memory in Heap</span><br/>
-            <span className="text-purple-400">let</span> <span className="text-blue-400">data</span> = { heavy: <span className="text-green-400">"payload"</span> };
+            <span className="text-purple-400">let</span> <span className="text-blue-400">data</span> = &#123; heavy: <span className="text-green-400">"payload"</span> &#125;;
           </div>
           
           <div className="gc-code-2 opacity-0 mt-6">
