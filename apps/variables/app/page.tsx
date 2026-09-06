@@ -5,7 +5,10 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { HeroScene } from "@/components/variables/HeroScene";
 import { ScopeScene } from "@/components/variables/ScopeScene";
+import { TdzScene } from "@/components/variables/TdzScene";
 import { MemoryScene } from "@/components/variables/MemoryScene";
+import { MutationHazardScene } from "@/components/variables/MutationHazardScene";
+import { GarbageCollectionScene } from "@/components/variables/GarbageCollectionScene";
 import { CoercionScene } from "@/components/variables/CoercionScene";
 
 if (typeof window !== "undefined") {
@@ -35,7 +38,10 @@ export default function Home() {
     <div ref={containerRef} className="w-full relative bg-[#050505]">
       <HeroScene />
       <ScopeScene />
+      <TdzScene />
       <MemoryScene />
+      <MutationHazardScene />
+      <GarbageCollectionScene />
       <CoercionScene />
       
       {/* End spacer */}
