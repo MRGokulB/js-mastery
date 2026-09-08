@@ -69,21 +69,21 @@ export function ScopeScene() {
               
               <div className="flex gap-8 items-end z-10 w-full justify-center mt-8">
                 
-                <div className="flex flex-col items-center gap-4">
+                <div className="flex flex-col items-center gap-4 relative">
+                  <div className="var-badge relative z-10 px-6 py-3 rounded-xl bg-white/10 text-white font-mono font-bold transition-colors shadow-lg">
+                    var leak = true;
+                  </div>
                   <div className="var-desc opacity-0 text-red-400 text-xs font-mono text-center max-w-[120px]">
                     Ignores blocks! Escapes to the nearest function.
-                  </div>
-                  <div className="var-badge px-6 py-3 rounded-xl bg-white/10 text-white font-mono font-bold transition-colors shadow-lg">
-                    var leak = true;
                   </div>
                 </div>
 
                 <div className="flex flex-col items-center gap-4">
-                  <div className="let-desc opacity-0 text-amber-400 text-xs font-mono text-center max-w-[120px]">
-                    Trapped securely inside the block.
-                  </div>
                   <div className="let-badge px-6 py-3 rounded-xl bg-white/10 text-white font-mono font-bold transition-colors shadow-lg">
                     let secure = true;
+                  </div>
+                  <div className="let-desc opacity-0 text-amber-400 text-xs font-mono text-center max-w-[120px]">
+                    Trapped securely inside the block.
                   </div>
                 </div>
 

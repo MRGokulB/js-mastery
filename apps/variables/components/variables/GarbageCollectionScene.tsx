@@ -99,7 +99,7 @@ export function GarbageCollectionScene() {
           </div>
 
           {/* Heap */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-48 relative">
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-48">
             <div className="text-center text-white/40 font-mono text-xs uppercase tracking-widest mb-4">Heap</div>
             
             {/* Engine GC Radar */}
@@ -119,28 +119,23 @@ export function GarbageCollectionScene() {
             </div>
             
             <Trash2 className="trash-icon absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 text-emerald-500 opacity-0 scale-50 z-0" />
-          </div>
 
-          {/* SVG Connecting Arrows */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" style={{ overflow: "visible" }}>
-            <defs>
-              <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                <polygon points="0 0, 10 3.5, 0 7" fill="#10b981" opacity="0.6"/>
-              </marker>
-            </defs>
-            
-            <path 
-              className="gc-arrow"
-              d="M 192 200 L 310 200" 
-              fill="none" 
-              stroke="#10b981" 
-              strokeWidth="2"
-              strokeDasharray="10 5"
-              strokeOpacity="0.6"
-              markerEnd="url(#arrowhead-green)"
-              style={{ strokeDasharray: 300, strokeDashoffset: 300 }}
-            />
-          </svg>
+            {/* SVG Connecting Arrows */}
+            <svg className="absolute top-1/2 -left-[140%] w-[140%] h-4 overflow-visible z-0 pointer-events-none -translate-y-1/2">
+              <defs>
+                <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#10b981" opacity="0.6"/>
+                </marker>
+              </defs>
+              <line 
+                className="gc-arrow"
+                x1="0" y1="2" x2="100%" y2="2" 
+                stroke="#10b981" strokeWidth="2" strokeDasharray="10 5" strokeOpacity="0.6"
+                markerEnd="url(#arrowhead-green)"
+                style={{ strokeDasharray: 300, strokeDashoffset: 300 }}
+              />
+            </svg>
+          </div>
         </div>
       </div>
 
