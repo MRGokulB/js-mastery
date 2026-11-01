@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Lock, Unlock, Play, Code2, Map } from "lucide-react";
+import { Lock, Unlock, Play, Code2, Map, Sparkles } from "lucide-react";
 import gsap from "gsap";
 import { OnboardingTour } from "./OnboardingTour";
 
@@ -80,7 +80,13 @@ export function HubScene() {
 
       <div className="max-w-7xl mx-auto flex flex-col items-center relative z-10">
         
-        {/* Abstract Standard Logo */}
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent("open-jsm-tour"))}
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-md mb-8 cursor-pointer"
+        >
+          <Sparkles className="w-4 h-4 text-blue-400" />
+          <span className="text-xs font-mono font-medium text-white/70 uppercase tracking-widest">Interactive Tour &middot; JS Mastery</span>
+        </button>
         <motion.div 
           initial={{ opacity: 0, scale: 0.8, rotate: -30 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}

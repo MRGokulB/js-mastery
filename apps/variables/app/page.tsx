@@ -10,6 +10,7 @@ import { MemoryScene } from "@/components/variables/MemoryScene";
 import { MutationHazardScene } from "@/components/variables/MutationHazardScene";
 import { GarbageCollectionScene } from "@/components/variables/GarbageCollectionScene";
 import { CoercionScene } from "@/components/variables/CoercionScene";
+import { NextSection } from "@/components/layout/NextSection";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -54,6 +55,12 @@ export default function Home() {
         </p>
         <div className="w-16 h-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full" />
       </div>
+
+      <NextSection
+        href="https://control-flow-ruby.vercel.app"
+        title="Module 02: Control Flow & Logic"
+        description="Master branching logic, short-circuit evaluation, truthy/falsy nuances, and the AST execution pipeline."
+      />
     </div>
   );
 }

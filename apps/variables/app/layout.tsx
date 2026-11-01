@@ -76,7 +76,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="bg-[#050505] text-white overflow-x-hidden min-h-screen selection:bg-amber-500/30">
+      <body suppressHydrationWarning className="bg-[#050505] text-white overflow-x-hidden min-h-screen selection:bg-amber-500/30">
         <NavigationControls topicName="Variables & Data Types" />
         <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-amber-500/10 blur-[120px] pointer-events-none z-0" />
         <div className="fixed top-[20%] right-[-10%] w-[40%] h-[60%] rounded-full bg-orange-500/10 blur-[150px] pointer-events-none z-0" />
