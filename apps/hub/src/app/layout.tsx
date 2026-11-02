@@ -13,11 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JavaScript Universe | Advanced JS Universe Hub",
-  description: "Master JavaScript from the ground up. Interactive, Awwwards-winning visualizers for Variables, Control Flow, Functions, Arrays, Objects, and the DOM. Learn how JS actually works under the hood.",
-  keywords: ["JavaScript tutorial", "Learn JS", "Interactive JavaScript", "JS Universe", "Frontend Development", "Web Development", "Execution Context", "JS Engine"],
+  title: "JavaScript Universe | Visual V8 Internals & Interactive Architecture",
+  description: "Master JavaScript through hardware-level visualizers. Stack vs Heap, V8 Execution Context, Closures, Event Loop microtasks, and DOM rendering pipelines.",
+  keywords: ["JavaScript tutorial", "Learn JS", "Interactive JavaScript", "JS Universe", "Frontend Development", "Web Development", "Execution Context", "JS Engine", "Event Loop"],
   openGraph: {
-    title: "JavaScript Universe | Advanced JS Universe Hub",
+    title: "JavaScript Universe | Visual V8 Internals & Interactive Architecture",
     description: "Deep dive into JS mechanics with cinematic visualizers. From memory pointers to the Event Loop.",
     type: "website",
     locale: "en_US",
@@ -25,8 +25,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "JavaScript Universe | Advanced JS Universe",
-    description: "Interactive, visual JavaScript roadmap.",
+    title: "JavaScript Universe | Visual V8 Internals",
+    description: "Interactive, cinematic JavaScript roadmap.",
   },
   robots: "index, follow",
 };
@@ -37,7 +37,7 @@ const jsonLd = {
   "name": "JavaScript Universe",
   "url": "https://hub-bay-six-16.vercel.app/",
   "logo": "https://hub-bay-six-16.vercel.app/logo.png",
-  "description": "An interactive, visual roadmap to mastering JavaScript programming. Features deep technical visualizers explaining memory allocation, arrays, control flow, and objects.",
+  "description": "An interactive, visual roadmap to mastering JavaScript programming down to memory allocation, AST execution, event loop queues, and prototype chains.",
   "sameAs": [
     "https://github.com/MRGokulB"
   ],
@@ -61,16 +61,20 @@ const faqJsonLd = {
     },
     {
       "@type": "Question",
-      "name": "How do JavaScript arrays work in memory?",
+      "name": "How does the JavaScript Event Loop work under the hood?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "In JavaScript, arrays are theoretically contiguous memory blocks. Accessing an index is O(1) time complexity, while unshifting elements is O(n) because all subsequent elements must be re-indexed."
+        "text": "The JavaScript engine executes synchronous operations on the Call Stack. Asynchronous tasks spawn Web APIs; upon resolution, Promise reactions populate the Microtask queue while timers enter the Macrotask queue. Microtasks drain completely before the next task executes."
       }
     }
   ]
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html
       lang="en"
@@ -81,7 +85,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       </head>
-      <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#050505] text-white selection:bg-blue-500/30">{children}</body>
+      <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#050505] text-white selection:bg-amber-400/30 selection:text-amber-200">
+        {children}
+      </body>
     </html>
   );
 }
