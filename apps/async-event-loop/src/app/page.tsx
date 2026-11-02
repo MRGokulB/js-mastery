@@ -29,9 +29,9 @@ export default function Home() {
       </div>
 
       <NextSection
-        href="https://hub-bay-six-16.vercel.app/"
-        title="JavaScript Universe Hub"
-        description="Return to the central roadmap to continue your journey across all core JavaScript modules."
+        href="https://dom-apis.vercel.app"
+        title="Module 07: The DOM & Browser APIs"
+        description="Master the Critical Rendering Path, Layout Reflow, GPU Compositing, and 3-Phase Event Propagation."
       />
     </main>
   );
