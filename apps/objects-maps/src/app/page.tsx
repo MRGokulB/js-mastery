@@ -16,9 +16,9 @@ export default function Home() {
       <MapScene />
       <CopyScene />
       <NextSection
-        href="https://hub-bay-six-16.vercel.app/"
-        title="JavaScript Universe Hub"
-        description="Return to the central roadmap to continue your mastery across all core JavaScript concepts."
+        href="https://async-event-loop.vercel.app"
+        title="Module 06: Async JS & The Event Loop"
+        description="Master single-threaded concurrency, Call Stack, Web APIs, Microtasks, and Macrotask queues."
       />
     </main>
   );
