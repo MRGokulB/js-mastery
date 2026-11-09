@@ -85,7 +85,7 @@ export default function RootLayout({
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       </head>
-      <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#050505] text-white selection:bg-white/20 selection:text-white">
+      <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#fafafb] text-[#18181b] selection:bg-slate-200 selection:text-black">
         {children}
       </body>
     </html>
