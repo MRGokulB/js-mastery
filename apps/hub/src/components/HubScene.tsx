@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   Code2,
@@ -12,349 +12,433 @@ import {
   LayoutGrid,
   Activity,
   Globe,
-  Binary
+  Binary,
+  Cpu,
+  Terminal,
+  Compass
 } from "lucide-react";
-import gsap from "gsap";
 import { OnboardingTour } from "./OnboardingTour";
 
+type Category = "all" | "runtime" | "logic" | "async";
+
+interface ModuleSpec {
+  id: string;
+  moduleNumber: string;
+  title: string;
+  category: "runtime" | "logic" | "async";
+  tagline: string;
+  description: string;
+  url: string;
+  icon: typeof Binary;
+  specs: string[];
+  v8Subsystem: string;
+  runtimeMechanic: string;
+  isFeatured?: boolean;
+  schematicType: "memory" | "ast" | "scope" | "array" | "shapes" | "eventloop" | "dom";
+}
+
+const MODULES: ModuleSpec[] = [
+  {
+    id: "variables",
+    moduleNumber: "MOD_01",
+    title: "Variables, Stack & Heap",
+    category: "runtime",
+    tagline: "Stack frames, V8 heap allocation, Smi representation, and reference pointers",
+    description: "Inspect stack versus heap allocation, primitive immutability, 31-bit Smis (Small Integers), and reference pointer mutation within the V8 engine.",
+    url: "https://variables-pi.vercel.app/",
+    icon: Binary,
+    specs: ["Stack vs Heap", "31-bit Smi Pointer Tagging", "Reference Mutability"],
+    v8Subsystem: "V8 Memory Allocator & Garbage Collector",
+    runtimeMechanic: "Contiguous Execution Frame Stack / Dynamic Heap Object",
+    isFeatured: true,
+    schematicType: "memory"
+  },
+  {
+    id: "control-flow",
+    moduleNumber: "MOD_02",
+    title: "Control Flow & AST Branching",
+    category: "logic",
+    tagline: "AST branch jumping, truthy/falsy bitmasks, and short-circuit evaluation",
+    description: "Observe AST branch node resolution, boolean coercion bitmasks, switch jump tables, and bytecode short-circuit short paths.",
+    url: "https://control-flow-ruby.vercel.app",
+    icon: GitBranch,
+    specs: ["AST Branch Jump", "Bytecode Dispatch", "Short-Circuit Evaluation"],
+    v8Subsystem: "Ignition Interpreter Bytecode Dispatcher",
+    runtimeMechanic: "Conditional Branch Jump Offset Registers",
+    schematicType: "ast"
+  },
+  {
+    id: "functions-scope",
+    moduleNumber: "MOD_03",
+    title: "Functions, Scope & Closures",
+    category: "logic",
+    tagline: "Lexical environments, execution context stack, closure retention, and this binding",
+    description: "Visualize execution context creation, outer lexical scope chaining, persistent heap closure retention, and call-site `this` resolution.",
+    url: "https://functions-scope.vercel.app/",
+    icon: Layers,
+    specs: ["Lexical Environments", "Closure Heap Capture", "Call-Site This Binding"],
+    v8Subsystem: "Context Resolver & Activation Records",
+    runtimeMechanic: "Context Stack Linked Lexical Environment",
+    schematicType: "scope"
+  },
+  {
+    id: "arrays-iteration",
+    moduleNumber: "MOD_04",
+    title: "Arrays & Iteration Mechanics",
+    category: "runtime",
+    tagline: "Fast Smi Elements, holey arrays, amortized resizing, and functional pipelines",
+    description: "Understand fast elements versus dictionary mode, holey array de-optimizations, amortized array capacity doubling, and iterator protocol pipelines.",
+    url: "https://arrays-iteration.vercel.app/",
+    icon: Database,
+    specs: ["Fast Smi Elements", "Holey Array Avoidance", "Iterator Protocol"],
+    v8Subsystem: "V8 Elements Transition Table",
+    runtimeMechanic: "Contiguous Array Buffer (Indexed Smi Array)",
+    schematicType: "array"
+  },
+  {
+    id: "objects-maps",
+    moduleNumber: "MOD_05",
+    title: "Objects & V8 Hidden Classes",
+    category: "runtime",
+    tagline: "Hidden Classes (Shapes), inline caching, prototype delegation, and GC mark-sweep",
+    description: "Demystify V8 hidden class (Shape) transitions, polymorphic inline cache hits, prototype lookup chains, and generational garbage collection.",
+    url: "https://objects-maps.vercel.app/",
+    icon: LayoutGrid,
+    specs: ["V8 Hidden Classes (Shapes)", "Monomorphic Inline Caching", "Prototype Delegation"],
+    v8Subsystem: "TurboFan JIT Type Feedback Vector",
+    runtimeMechanic: "Transition Tree & Property Offset Table",
+    schematicType: "shapes"
+  },
+  {
+    id: "async-event-loop",
+    moduleNumber: "MOD_06",
+    title: "Async & The Event Loop",
+    category: "async",
+    tagline: "Call stack execution, Web API delegation, microtask drains, and macrotask timers",
+    description: "Step through call stack execution, asynchronous Web API handover, microtask drain ticks, and macrotask starvation boundaries.",
+    url: "https://async-event-loop.vercel.app",
+    icon: Activity,
+    specs: ["Microtask Drain Priority", "Event Loop Phase Ticks", "Timer Macrotask Queue"],
+    v8Subsystem: "Libuv / Browser Event Loop Coordinator",
+    runtimeMechanic: "Dual Queue (Microtask / Macrotask) Ring Scheduler",
+    schematicType: "eventloop"
+  },
+  {
+    id: "dom-apis",
+    moduleNumber: "MOD_07",
+    title: "DOM & Browser Rendering Pipeline",
+    category: "async",
+    tagline: "Critical rendering path, reflow & layout thrashing, GPU layers, and 3-phase events",
+    description: "Trace HTML/CSS parsing, render tree layout geometry, paint invalidation, GPU layer compositing, and capturing/bubbling event dispatch.",
+    url: "https://dom-apis.vercel.app",
+    icon: Globe,
+    specs: ["Critical Rendering Path", "GPU Layer Compositing", "3-Phase Event Propagation"],
+    v8Subsystem: "Blink Layout & Rendering Engine",
+    runtimeMechanic: "Render Tree & Paint Layer Tree Compositor",
+    schematicType: "dom"
+  }
+];
+
 export function HubScene() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
+  const [activeCategory, setActiveCategory] = useState<Category>("all");
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(titleRef.current, {
-        y: 30,
-        opacity: 0,
-        duration: 1,
-        ease: "power3.out"
-      });
-
-      gsap.from(".hub-bento-card", {
-        y: 40,
-        opacity: 0,
-        stagger: 0.07,
-        duration: 0.8,
-        ease: "power2.out",
-        delay: 0.25
-      });
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
+  const filteredModules = MODULES.filter(
+    (mod) => activeCategory === "all" || mod.category === activeCategory
+  );
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-[#050505] text-white overflow-hidden relative selection:bg-white/20 selection:text-white">
+    <div className="min-h-screen bg-[#07080b] text-[#f2f4f8] selection:bg-amber-500/20 selection:text-white font-sans antialiased relative">
       <OnboardingTour />
 
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
+      {/* Engineering Precision Background Grid */}
+      <div
+        className="fixed inset-0 pointer-events-none opacity-[0.035]"
+        style={{
+          backgroundImage: `linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)`,
+          backgroundSize: "48px 48px"
+        }}
+      />
+      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(245,158,11,0.06),transparent_80%)]" />
 
-      <div className="absolute top-[-10%] left-[-10%] w-[45%] h-[45%] rounded-full bg-white/[0.03] blur-[140px] pointer-events-none mix-blend-screen" />
-      <div className="absolute top-[20%] right-[-10%] w-[40%] h-[50%] rounded-full bg-indigo-900/[0.07] blur-[160px] pointer-events-none mix-blend-screen" />
-      <div className="absolute bottom-[-10%] left-[25%] w-[40%] h-[40%] rounded-full bg-white/[0.02] blur-[180px] pointer-events-none mix-blend-screen" />
+      {/* Header Bar */}
+      <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#07080b]/85 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400 font-mono text-xs font-bold">
+              JS
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-semibold tracking-wider text-white">JAVASCRIPT UNIVERSE</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.05] text-zinc-400 border border-white/[0.06]">
+                  v2.2
+                </span>
+              </div>
+              <p className="text-[10px] font-mono text-zinc-500 hidden sm:block">V8 Runtime Internals &amp; Memory Architecture</p>
+            </div>
+          </div>
 
-      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 flex flex-col items-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center w-full max-w-4xl mx-auto mb-20 md:mb-28 mt-12 md:mt-20"
-        >
-          <motion.button
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.96 }}
-            onClick={() => window.dispatchEvent(new CustomEvent("open-jsm-tour"))}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.03] hover:bg-white/[0.07] hover:border-white/20 transition-all backdrop-blur-md mb-8 cursor-pointer shadow-[0_2px_12px_rgba(0,0,0,0.5)]"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-zinc-300" />
-            <span className="text-[11px] font-mono font-medium text-zinc-300 uppercase tracking-widest">
-              Interactive Tour &middot; JS Universe
-            </span>
-          </motion.button>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
-            className="mx-auto mb-8 relative w-20 h-20 flex items-center justify-center"
-          >
-            <div className="absolute inset-0 bg-white/[0.04] rounded-2xl blur-lg" />
-            <svg
-              viewBox="0 0 100 100"
-              className="w-full h-full text-zinc-300 drop-shadow-[0_0_15px_rgba(255,255,255,0.15)]"
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("open-jsm-tour"))}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/[0.1] bg-white/[0.03] hover:bg-white/[0.08] hover:border-white/20 transition-all text-xs font-mono text-zinc-300"
             >
-              <path
-                d="M50 8 L88 28 L88 72 L50 92 L12 72 L12 28 Z"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              />
-              <path
-                d="M50 8 L50 50 M88 28 L50 50 M88 72 L50 50 M50 92 L50 50 M12 72 L50 50 M12 28 L50 50"
-                stroke="currentColor"
-                strokeWidth="1"
-                strokeOpacity="0.25"
-              />
-              <rect x="36" y="36" width="28" height="28" rx="6" fill="#18181b" stroke="#3f3f46" strokeWidth="1" />
-              <text
-                x="50"
-                y="55"
-                fontFamily="monospace"
-                fontSize="15"
-                fill="#f4f4f5"
-                fontWeight="700"
-                textAnchor="middle"
-              >
-                JS
-              </text>
-            </svg>
-          </motion.div>
+              <Sparkles size={13} className="text-amber-400" />
+              <span>Engine Tour</span>
+            </button>
 
-          <h1 ref={titleRef} className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-8 leading-[1.05]">
-            JavaScript <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-400">
-              Universe.
+            <a
+              href="https://github.com/MRGokulB/js-mastery"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/[0.1] bg-white/[0.03] hover:bg-white/[0.08] hover:border-white/20 transition-all text-xs font-mono text-zinc-300"
+              aria-label="GitHub Repository"
+            >
+              <Code2 size={13} />
+              <span className="hidden sm:inline">Source</span>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-24 md:pt-24 md:pb-32">
+        {/* Hero Section */}
+        <section className="max-w-4xl mx-auto text-center mb-16 md:mb-24">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-500/25 bg-amber-500/[0.06] text-amber-300 text-xs font-mono mb-8">
+            <Cpu size={13} />
+            <span>V8 ENGINE INTERNALS &middot; RUNTIME SCHEDULER</span>
+          </div>
+
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.08]">
+            Understand JavaScript <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-400">
+              Down to V8 Bytecode &amp; Memory.
             </span>
           </h1>
 
-          <p className="text-base md:text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed font-light">
-            Stop memorizing syntax. Understand JavaScript down to the V8 memory heap, execution contexts, closures, call stack, and the event loop through cinematic interactive visualizers.
+          <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed font-normal mb-10">
+            Beyond language syntax. Model JavaScript at the metal: execution context stacks, pointer mutations, Hidden Class (Shape) transitions, microtask queue drains, and the browser rendering pipeline.
           </p>
-        </motion.div>
 
-        <div className="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
-          <motion.a
-            href="https://variables-pi.vercel.app/"
-            whileHover={{ y: -4 }}
-            whileTap={{ scale: 0.99 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="hub-bento-card group block md:col-span-2 lg:col-span-2 md:row-span-2 outline-none"
-          >
-            <div className="relative h-full min-h-[400px] flex flex-col justify-between p-8 md:p-10 rounded-3xl border border-white/[0.1] bg-[#09090b]/90 backdrop-blur-2xl overflow-hidden transition-all duration-300 hover:border-white/25 hover:shadow-[0_8px_32px_rgba(0,0,0,0.6)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)]">
-              <div className="relative z-10 flex justify-between items-start mb-12">
-                <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-white group-hover:scale-105 transition-transform duration-300">
-                  <Binary strokeWidth={1.5} size={28} />
-                </div>
-                <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[11px] font-mono font-medium uppercase tracking-wider">Live Now</span>
-                </div>
-              </div>
-
-              <div className="relative z-10 mt-auto">
-                <div className="text-[11px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
-                  Module 01 &middot; Foundations
-                </div>
-                <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-white group-hover:text-zinc-100 transition-colors">
-                  Variables &amp; Data Types
-                </h2>
-                <p className="text-zinc-400 text-sm md:text-base leading-relaxed mb-8 max-w-md font-light">
-                  Stack vs Heap allocation, primitive immutability, reference pointer mutations, and dynamic type coercion inside the V8 engine.
-                </p>
-                <div className="inline-flex items-center gap-2.5 text-xs font-semibold text-black bg-white px-5 py-2.5 rounded-full hover:bg-zinc-200 transition-colors">
-                  Explore Architecture <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-200" />
-                </div>
-              </div>
-
-              <div className="absolute -right-10 -bottom-10 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity duration-300 pointer-events-none rotate-[-6deg]">
-                <Code2 size={240} strokeWidth={0.5} className="text-white" />
-              </div>
+          {/* Telemetry Strip */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto p-2 rounded-2xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-sm text-left">
+            <div className="p-3 border-r border-white/[0.06] last:border-r-0">
+              <span className="block font-mono text-[10px] text-zinc-500 uppercase tracking-wider">Engine Core</span>
+              <span className="font-mono text-sm font-semibold text-zinc-200">V8 v12+ Architecture</span>
             </div>
-          </motion.a>
-
-          <motion.a
-            href="https://control-flow-ruby.vercel.app"
-            whileHover={{ y: -4 }}
-            whileTap={{ scale: 0.99 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="hub-bento-card block outline-none"
-          >
-            <div className="group relative p-6 md:p-7 flex flex-col justify-between rounded-3xl border border-white/[0.08] bg-[#09090b]/80 backdrop-blur-2xl overflow-hidden hover:bg-[#101014] hover:border-white/20 transition-all duration-300 h-full shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
-              <div className="relative z-10 flex justify-between items-start mb-8">
-                <div className="p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-300 group-hover:text-white group-hover:scale-105 transition-all duration-300">
-                  <GitBranch strokeWidth={1.5} size={20} />
-                </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[10px] font-mono uppercase tracking-widest font-medium">Live</span>
-                </div>
-              </div>
-
-              <div className="relative z-10">
-                <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">
-                  Module 02
-                </div>
-                <h2 className="text-xl font-bold mb-2 text-white group-hover:text-zinc-100 transition-colors">
-                  Control Flow &amp; Logic
-                </h2>
-                <p className="text-xs text-zinc-400 leading-relaxed group-hover:text-zinc-300 transition-colors font-light">
-                  AST branch jumping, truthy/falsy bitmasks, switch jump tables, and short-circuit evaluation.
-                </p>
-              </div>
+            <div className="p-3 border-r border-white/[0.06] last:border-r-0">
+              <span className="block font-mono text-[10px] text-zinc-500 uppercase tracking-wider">JIT Pipeline</span>
+              <span className="font-mono text-sm font-semibold text-amber-300">Ignition &amp; TurboFan</span>
             </div>
-          </motion.a>
-
-          <motion.a
-            href="https://functions-scope.vercel.app/"
-            whileHover={{ y: -4 }}
-            whileTap={{ scale: 0.99 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="hub-bento-card block outline-none"
-          >
-            <div className="group relative p-6 md:p-7 flex flex-col justify-between rounded-3xl border border-white/[0.08] bg-[#09090b]/80 backdrop-blur-2xl overflow-hidden hover:bg-[#101014] hover:border-white/20 transition-all duration-300 h-full shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
-              <div className="relative z-10 flex justify-between items-start mb-8">
-                <div className="p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-300 group-hover:text-white group-hover:scale-105 transition-all duration-300">
-                  <Layers strokeWidth={1.5} size={20} />
-                </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[10px] font-mono uppercase tracking-widest font-medium">Live</span>
-                </div>
-              </div>
-
-              <div className="relative z-10">
-                <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">
-                  Module 03
-                </div>
-                <h2 className="text-xl font-bold mb-2 text-white group-hover:text-zinc-100 transition-colors">
-                  Functions &amp; Scope
-                </h2>
-                <p className="text-xs text-zinc-400 leading-relaxed group-hover:text-zinc-300 transition-colors font-light">
-                  Lexical environments, execution context stack, closure retention, and the `this` binding mechanic.
-                </p>
-              </div>
+            <div className="p-3 border-r border-white/[0.06] last:border-r-0">
+              <span className="block font-mono text-[10px] text-zinc-500 uppercase tracking-wider">Queue Model</span>
+              <span className="font-mono text-sm font-semibold text-emerald-400">Microtask Strict Drain</span>
             </div>
-          </motion.a>
-
-          <motion.a
-            href="https://arrays-iteration.vercel.app/"
-            whileHover={{ y: -4 }}
-            whileTap={{ scale: 0.99 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="hub-bento-card block outline-none md:col-span-2 lg:col-span-1"
-          >
-            <div className="group relative p-6 md:p-7 flex flex-col justify-between rounded-3xl border border-white/[0.08] bg-[#09090b]/80 backdrop-blur-2xl overflow-hidden hover:bg-[#101014] hover:border-white/20 transition-all duration-300 h-full shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
-              <div className="relative z-10 flex justify-between items-start mb-8">
-                <div className="p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-300 group-hover:text-white group-hover:scale-105 transition-all duration-300">
-                  <Database strokeWidth={1.5} size={20} />
-                </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[10px] font-mono uppercase tracking-widest font-medium">Live</span>
-                </div>
-              </div>
-
-              <div className="relative z-10">
-                <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">
-                  Module 04
-                </div>
-                <h2 className="text-xl font-bold mb-2 text-white group-hover:text-zinc-100 transition-colors">
-                  Arrays &amp; Iteration
-                </h2>
-                <p className="text-xs text-zinc-400 leading-relaxed group-hover:text-zinc-300 transition-colors font-light">
-                  Contiguous memory offsets, amortized growth, in-place mutations, and functional pipeline mechanics.
-                </p>
-              </div>
+            <div className="p-3">
+              <span className="block font-mono text-[10px] text-zinc-500 uppercase tracking-wider">Monorepo Modules</span>
+              <span className="font-mono text-sm font-semibold text-zinc-200">7 Standalone Apps</span>
             </div>
-          </motion.a>
+          </div>
+        </section>
 
-          <motion.a
-            href="https://objects-maps.vercel.app/"
-            whileHover={{ y: -4 }}
-            whileTap={{ scale: 0.99 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="hub-bento-card block outline-none md:col-span-2 lg:col-span-1"
-          >
-            <div className="group relative p-6 md:p-7 flex flex-col justify-between rounded-3xl border border-white/[0.08] bg-[#09090b]/80 backdrop-blur-2xl overflow-hidden hover:bg-[#101014] hover:border-white/20 transition-all duration-300 h-full shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
-              <div className="relative z-10 flex justify-between items-start mb-8">
-                <div className="p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-300 group-hover:text-white group-hover:scale-105 transition-all duration-300">
-                  <LayoutGrid strokeWidth={1.5} size={20} />
-                </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[10px] font-mono uppercase tracking-widest font-medium">Live</span>
-                </div>
-              </div>
+        {/* Filter Controls */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8 border-b border-white/[0.08] pb-5">
+          <div className="flex items-center gap-2">
+            <Activity size={16} className="text-amber-400" />
+            <h2 className="text-sm font-mono font-semibold tracking-wider text-white uppercase">Engine Modules</h2>
+            <span className="font-mono text-xs text-zinc-500">({filteredModules.length} Active)</span>
+          </div>
 
-              <div className="relative z-10">
-                <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">
-                  Module 05
-                </div>
-                <h2 className="text-xl font-bold mb-2 text-white group-hover:text-zinc-100 transition-colors">
-                  Objects &amp; Maps
-                </h2>
-                <p className="text-xs text-zinc-400 leading-relaxed group-hover:text-zinc-300 transition-colors font-light">
-                  Hash maps, prototype chains, V8 Hidden Classes (Shapes), property descriptors, and garbage collection.
-                </p>
-              </div>
-            </div>
-          </motion.a>
-
-          <motion.a
-            href="https://async-event-loop.vercel.app"
-            whileHover={{ y: -4 }}
-            whileTap={{ scale: 0.99 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="hub-bento-card block outline-none md:col-span-2 lg:col-span-2"
-          >
-            <div className="group relative p-6 md:p-7 flex flex-col justify-between rounded-3xl border border-white/[0.08] bg-[#09090b]/80 backdrop-blur-2xl overflow-hidden hover:bg-[#101014] hover:border-white/20 transition-all duration-300 h-full shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
-              <div className="relative z-10 flex justify-between items-start mb-8">
-                <div className="p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-300 group-hover:text-white group-hover:scale-105 transition-all duration-300">
-                  <Activity strokeWidth={1.5} size={20} />
-                </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[10px] font-mono uppercase tracking-widest font-medium">Live</span>
-                </div>
-              </div>
-
-              <div className="relative z-10">
-                <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">
-                  Module 06
-                </div>
-                <h2 className="text-xl font-bold mb-2 text-white group-hover:text-zinc-100 transition-colors">
-                  Async JS &amp; The Event Loop
-                </h2>
-                <p className="text-xs text-zinc-400 leading-relaxed group-hover:text-zinc-300 transition-colors font-light max-w-sm">
-                  Call stack execution, Web API delegation, Microtask queue (Promises), Task queue (timers), and event loop tick cycle.
-                </p>
-              </div>
-            </div>
-          </motion.a>
-
-          <motion.a
-            href="https://dom-apis.vercel.app"
-            whileHover={{ y: -4 }}
-            whileTap={{ scale: 0.99 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="hub-bento-card block outline-none md:col-span-2 lg:col-span-2"
-          >
-            <div className="group relative p-6 md:p-7 flex flex-col justify-between rounded-3xl border border-white/[0.08] bg-[#09090b]/80 backdrop-blur-2xl overflow-hidden hover:bg-[#101014] hover:border-white/20 transition-all duration-300 h-full shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
-              <div className="relative z-10 flex justify-between items-start mb-8">
-                <div className="p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-300 group-hover:text-white group-hover:scale-105 transition-all duration-300">
-                  <Globe strokeWidth={1.5} size={20} />
-                </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[10px] font-mono uppercase tracking-widest font-medium">Live</span>
-                </div>
-              </div>
-
-              <div className="relative z-10">
-                <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">
-                  Module 07
-                </div>
-                <h2 className="text-xl font-bold mb-2 text-white group-hover:text-zinc-100 transition-colors">
-                  The DOM &amp; Browser APIs
-                </h2>
-                <p className="text-xs text-zinc-400 leading-relaxed group-hover:text-zinc-300 transition-colors font-light max-w-sm">
-                  Critical rendering path, reflow &amp; layout thrashing, GPU compositing, 3-phase event propagation, and virtual DOM diffing.
-                </p>
-              </div>
-            </div>
-          </motion.a>
+          <div className="flex items-center gap-1.5 p-1 rounded-xl border border-white/[0.08] bg-white/[0.02]">
+            {(
+              [
+                { id: "all", label: "All Modules" },
+                { id: "runtime", label: "Runtime & Memory" },
+                { id: "logic", label: "Control & Scope" },
+                { id: "async", label: "Async & DOM" }
+              ] as const
+            ).map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveCategory(tab.id)}
+                className={`px-3 py-1 rounded-lg text-xs font-mono transition-all ${
+                  activeCategory === tab.id
+                    ? "bg-white text-black font-semibold shadow-sm"
+                    : "text-zinc-400 hover:text-white hover:bg-white/[0.04]"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {/* Bento Grid */}
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <AnimatePresence>
+            {filteredModules.map((item) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className={`group relative rounded-2xl border border-white/[0.08] bg-[#0c0d12] hover:bg-[#111218] hover:border-white/[0.18] transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.35)] ${
+                    item.isFeatured ? "md:col-span-2 lg:col-span-2" : ""
+                  }`}
+                >
+                  <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between">
+                    <div>
+                      {/* Card Header */}
+                      <div className="flex items-start justify-between gap-4 mb-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-amber-300 group-hover:scale-105 group-hover:border-amber-500/30 transition-all">
+                            <Icon size={20} strokeWidth={1.7} />
+                          </div>
+                          <div>
+                            <span className="font-mono text-[10px] text-zinc-500 tracking-wider block">{item.moduleNumber}</span>
+                            <span className="font-mono text-xs text-zinc-300 capitalize">{item.category} System</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-[10px] font-mono">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span>ONLINE</span>
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Title & Tagline */}
+                      <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 tracking-tight group-hover:text-amber-200 transition-colors">
+                        {item.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed mb-6">
+                        {item.description}
+                      </p>
+
+                      {/* Architectural Schematic Preview */}
+                      <div className="mb-6 p-3.5 rounded-xl border border-white/[0.06] bg-[#08090d] font-mono text-[11px] text-zinc-400">
+                        {item.schematicType === "memory" && (
+                          <div>
+                            <div className="flex items-center justify-between text-[10px] text-zinc-500 mb-2 border-b border-white/[0.05] pb-1">
+                              <span>V8 STACK FRAME (L1)</span>
+                              <span className="text-amber-400">HEAP POINTER 0x1A04</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 text-center text-[10px]">
+                              <div className="p-2 rounded border border-white/[0.08] bg-white/[0.02]">
+                                <div className="text-zinc-500 mb-1">Stack (Primitive)</div>
+                                <div className="text-zinc-200 font-bold">let count = 42 (Smi)</div>
+                              </div>
+                              <div className="p-2 rounded border border-amber-500/30 bg-amber-500/10 text-amber-200 font-bold">
+                                <div className="text-zinc-400 mb-1">Heap Reference</div>
+                                <div>userPtr → HeapObject</div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {item.schematicType === "ast" && (
+                          <div className="flex items-center justify-between text-[10px]">
+                            <span className="text-zinc-500">AST_BRANCH_NODE</span>
+                            <span className="text-zinc-300">Test: (val &amp; 0x01) ? Jump_L1 : Fallthrough</span>
+                          </div>
+                        )}
+
+                        {item.schematicType === "scope" && (
+                          <div className="space-y-1 text-[10px]">
+                            <div className="flex justify-between text-zinc-500">
+                              <span>Lexical Environment Record</span>
+                              <span className="text-amber-300">Closure Retained</span>
+                            </div>
+                            <div className="p-1 rounded border border-white/[0.06] bg-white/[0.02] text-zinc-300 text-center">
+                              [[Scopes]]: [Closure(makeCounter), Global]
+                            </div>
+                          </div>
+                        )}
+
+                        {item.schematicType === "array" && (
+                          <div className="flex items-center justify-between text-[10px]">
+                            <span className="text-zinc-500">PACKED_SMI_ELEMENTS</span>
+                            <span className="text-emerald-400">Contiguous No-Hole Array</span>
+                          </div>
+                        )}
+
+                        {item.schematicType === "shapes" && (
+                          <div className="flex items-center justify-between text-[10px]">
+                            <span className="text-zinc-500">V8 Shape Map Transition</span>
+                            <span className="text-amber-300">Map_0 → Add('x') → Map_1</span>
+                          </div>
+                        )}
+
+                        {item.schematicType === "eventloop" && (
+                          <div className="grid grid-cols-3 gap-1 text-center text-[9px]">
+                            <div className="p-1 rounded border border-white/[0.06] bg-white/[0.02] text-zinc-400">Call Stack</div>
+                            <div className="p-1 rounded border border-amber-500/30 bg-amber-500/10 text-amber-300">Microtasks (P0)</div>
+                            <div className="p-1 rounded border border-white/[0.06] bg-white/[0.02] text-zinc-500">Timers (P1)</div>
+                          </div>
+                        )}
+
+                        {item.schematicType === "dom" && (
+                          <div className="flex items-center justify-between text-[10px]">
+                            <span className="text-zinc-500">Render Pipeline</span>
+                            <span className="text-zinc-300">DOM → CSSOM → RenderTree → GPU</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Technical Specs Tags */}
+                      <div className="flex flex-wrap gap-1.5 mb-6">
+                        {item.specs.map((spec, sIdx) => (
+                          <span
+                            key={sIdx}
+                            className="px-2 py-0.5 rounded-md text-[10px] font-mono border border-white/[0.06] bg-white/[0.02] text-zinc-400"
+                          >
+                            {spec}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Card Footer */}
+                    <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between gap-4">
+                      <div>
+                        <div className="text-[10px] font-mono text-zinc-500">{item.v8Subsystem}</div>
+                        <div className="text-[10px] font-mono text-zinc-400 truncate max-w-[200px] sm:max-w-xs">{item.runtimeMechanic}</div>
+                      </div>
+
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-colors shrink-0 shadow-sm"
+                      >
+                        <span>Launch</span>
+                        <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+                      </a>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </motion.div>
       </main>
+
+      {/* Engineering Footer */}
+      <footer className="border-t border-white/[0.08] bg-[#050608] py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-zinc-500">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            <span>JAVASCRIPT UNIVERSE &middot; V8 HARDWARE RUNTIME</span>
+          </div>
+          <div>Engineered for Deep System Understanding</div>
+        </div>
+      </footer>
     </div>
   );
 }
