@@ -1,27 +1,35 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   Sparkles,
   ArrowUpRight,
-  Terminal,
+  Code2,
+  Boxes,
+  Workflow,
   Cpu,
   Layers,
-  Activity,
-  Workflow,
-  CheckCircle2,
-  Code2
+  Timer,
+  Layout
 } from "lucide-react";
-import TactileV8EngineStack, { V8_MODULE_SYSTEMS, V8ModuleMeta } from "./TactileV8EngineStack";
+import V8RuntimeEngineChamber, { V8_MODULE_SYSTEMS, V8ModuleMeta } from "./V8RuntimeEngineChamber";
 import { OnboardingTour } from "./OnboardingTour";
+
+const SYSTEM_ICONS = {
+  variables: Boxes,
+  "control-flow": Workflow,
+  "functions-scope": Cpu,
+  "arrays-iteration": Layers,
+  "objects-maps": Sparkles,
+  "async-event-loop": Timer,
+  "dom-apis": Layout
+};
 
 export function HubScene() {
   const [selectedId, setSelectedId] = useState<string>("variables");
-
-  const activeModule = useMemo<V8ModuleMeta>(() => {
-    return V8_MODULE_SYSTEMS.find((m) => m.id === selectedId) || V8_MODULE_SYSTEMS[0];
-  }, [selectedId]);
+  const activeModule = V8_MODULE_SYSTEMS.find((m) => m.id === selectedId) || V8_MODULE_SYSTEMS[0];
+  const ActiveIcon = SYSTEM_ICONS[activeModule.id as keyof typeof SYSTEM_ICONS] || Boxes;
 
   return (
     <div className="min-h-screen bg-[#fafafb] text-[#18181b] font-cabinet selection:bg-slate-200 selection:text-black relative overflow-x-hidden">
@@ -69,7 +77,7 @@ export function HubScene() {
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-10 pb-28 relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <span className="inline-block text-[11px] font-mono tracking-widest text-[#71717a] uppercase mb-3">
-            V8 RUNTIME CORE &middot; 2026
+            V8 RUNTIME ENGINE &middot; 2026
           </span>
 
           <h1
@@ -83,40 +91,45 @@ export function HubScene() {
           </h1>
 
           <p className="text-sm sm:text-base text-[#52525b] max-w-lg mx-auto mt-4 font-normal leading-relaxed">
-            Orbit the tactile V8 processor core. Examine stack frames, hidden class transitions, and microtask queues across 7 dedicated visualizers.
+            Examine stack frames, Ignition bytecode dispatch, closure retention, V8 hidden classes, and the event loop cycle.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-24">
-          <div className="lg:col-span-3 order-2 lg:order-1 flex flex-col gap-2">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-24">
+          {/* Left Column: V8 Systems Navigator */}
+          <div className="lg:col-span-4 flex flex-col gap-3">
             <span className="text-[11px] font-mono tracking-wider text-[#71717a] uppercase block mb-1">
-              CHOOSE A SYSTEM
+              SELECT ENGINE SUBSYSTEM
             </span>
 
             {V8_MODULE_SYSTEMS.map((mod) => {
               const isSelected = selectedId === mod.id;
+              const IconComp = SYSTEM_ICONS[mod.id as keyof typeof SYSTEM_ICONS] || Boxes;
 
               return (
                 <button
                   key={mod.id}
                   onClick={() => setSelectedId(mod.id)}
-                  className={`w-full text-left p-3 rounded-2xl transition-all cursor-pointer flex items-center justify-between border ${
+                  className={`w-full text-left p-3.5 rounded-2xl transition-all cursor-pointer flex items-center justify-between border ${
                     isSelected
                       ? "bg-white border-black/[0.12] shadow-sm text-black"
                       : "bg-transparent border-transparent hover:bg-black/[0.03] text-[#71717a]"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: mod.accent }}
-                    />
+                    <div
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                        isSelected ? "bg-black text-white" : "bg-black/[0.05] text-[#52525b]"
+                      }`}
+                    >
+                      <IconComp size={16} />
+                    </div>
                     <div>
                       <span className="text-xs font-semibold block leading-tight text-[#18181b]">
                         {mod.name}
                       </span>
                       <span className="text-[10px] text-[#71717a] font-mono">
-                        {mod.category}
+                        {mod.category} &middot; {mod.subsystem}
                       </span>
                     </div>
                   </div>
@@ -127,64 +140,36 @@ export function HubScene() {
                 </button>
               );
             })}
-          </div>
 
-          <div className="lg:col-span-6 order-1 lg:order-2 flex flex-col items-center">
-            <TactileV8EngineStack
-              activeId={selectedId}
-              onSelectModule={(id) => setSelectedId(id)}
-            />
-          </div>
-
-          <div className="lg:col-span-3 order-3">
-            <div className="rounded-[24px] bg-white border border-black/[0.08] p-6 shadow-[0_12px_32px_rgba(0,0,0,0.04)]">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-black/[0.05] text-[#18181b]">
-                  MODULE {activeModule.index}
-                </span>
-                <span className="text-xs text-[#71717a] font-mono">
-                  {activeModule.category}
-                </span>
-              </div>
-
-              <h2 className="font-clash font-bold text-xl text-[#0f172a] mb-2 leading-tight">
+            {/* Selected Domain Card */}
+            <div className="p-5 rounded-2xl bg-white border border-black/[0.08] shadow-xs mt-2">
+              <span className="text-[10px] font-mono text-[#71717a] uppercase block mb-1">
+                ACTIVE V8 SUBSYSTEM
+              </span>
+              <h3 className="font-clash font-bold text-base text-[#0f172a] mb-1">
                 {activeModule.name}
-              </h2>
-
-              <p className="text-xs sm:text-sm text-[#52525b] leading-relaxed mb-6">
+              </h3>
+              <p className="text-xs text-[#52525b] leading-relaxed mb-4">
                 {activeModule.tagline}
               </p>
-
-              <div className="space-y-3 pt-4 border-t border-black/[0.06] mb-6">
-                <div>
-                  <span className="text-[10px] font-mono uppercase text-[#71717a] block mb-0.5">
-                    INTERNAL COMPONENT
-                  </span>
-                  <span className="text-xs font-mono font-medium text-[#18181b]">
-                    {activeModule.subsystem}
-                  </span>
-                </div>
-
-                <div>
-                  <span className="text-[10px] font-mono uppercase text-[#71717a] block mb-0.5">
-                    RUNTIME MECHANIC
-                  </span>
-                  <span className="text-xs font-mono font-medium text-[#18181b]">
-                    {activeModule.mechanic}
-                  </span>
-                </div>
-              </div>
-
               <a
                 href={activeModule.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-clash font-semibold bg-[#18181b] !text-white hover:bg-black transition-all cursor-pointer shadow-sm"
+                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-clash font-semibold bg-[#18181b] !text-white hover:bg-black transition-all cursor-pointer shadow-xs"
               >
-                <span className="!text-white">Launch {activeModule.name}</span>
+                <span className="!text-white">Launch Visualizer</span>
                 <ArrowUpRight size={14} className="!text-white" />
               </a>
             </div>
+          </div>
+
+          {/* Right Column: V8 Runtime Engine Chamber */}
+          <div className="lg:col-span-8 flex flex-col items-center w-full">
+            <V8RuntimeEngineChamber
+              activeId={selectedId}
+              onSelectModule={(id) => setSelectedId(id)}
+            />
           </div>
         </div>
 
