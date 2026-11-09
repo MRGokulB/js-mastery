@@ -13,7 +13,7 @@ import {
   CheckCircle2,
   Code2
 } from "lucide-react";
-import V8EngineCore3D, { V8_MODULE_SYSTEMS, V8ModuleMeta } from "./V8EngineCore3D";
+import TactileV8EngineStack, { V8_MODULE_SYSTEMS, V8ModuleMeta } from "./TactileV8EngineStack";
 import { OnboardingTour } from "./OnboardingTour";
 
 export function HubScene() {
@@ -130,13 +130,10 @@ export function HubScene() {
           </div>
 
           <div className="lg:col-span-6 order-1 lg:order-2 flex flex-col items-center">
-            <V8EngineCore3D
+            <TactileV8EngineStack
               activeId={selectedId}
               onSelectModule={(id) => setSelectedId(id)}
             />
-            <span className="text-[11px] text-[#71717a] font-mono mt-2 tracking-wide">
-              ::: Drag to find your angle &middot; Click module to focus
-            </span>
           </div>
 
           <div className="lg:col-span-3 order-3">
