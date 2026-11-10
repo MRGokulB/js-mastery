@@ -15,7 +15,7 @@ import {
   Timer,
   Boxes
 } from "lucide-react";
-import V8OrbitalCore3D, { V8_SUBSYSTEMS, V8SubsystemMeta } from "./V8OrbitalCore3D";
+import V8KineticEngine3D, { V8_SUBSYSTEMS, V8SubsystemMeta } from "./V8KineticEngine3D";
 import { OnboardingTour } from "./OnboardingTour";
 
 const SYSTEM_ICONS = {
@@ -99,116 +99,78 @@ export function HubScene() {
           </p>
         </div>
 
-        {/* 3-Part Spatial Hero Gateway */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-24">
-          {/* Left Column: Subsystem Selector */}
-          <div className="lg:col-span-3 order-2 lg:order-1 flex flex-col gap-2">
-            <span className="text-[11px] font-mono tracking-wider text-[#71717a] uppercase block mb-1">
-              SELECT RUNTIME SUBSYSTEM
-            </span>
+        {/* Spatial 3D V8 Kinetic Engine Gateway */}
+        <div className="mb-20">
+          <V8KineticEngine3D
+            activeId={selectedId}
+            onSelectSubsystem={(id) => setSelectedId(id)}
+          />
+        </div>
 
-            {V8_SUBSYSTEMS.map((mod) => {
-              const isSelected = selectedId === mod.id;
-              const IconComp = SYSTEM_ICONS[mod.id as keyof typeof SYSTEM_ICONS] || Boxes;
+        {/* Selected Subsystem Telemetry Dossier */}
+        <div className="max-w-4xl mx-auto mb-24">
+          <div className="rounded-[28px] bg-white border border-black/[0.08] p-6 sm:p-8 shadow-[0_16px_40px_rgba(0,0,0,0.04)]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-black/[0.06]">
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 rounded-full text-xs font-mono uppercase tracking-wider bg-black/[0.05] text-[#18181b] font-semibold">
+                  SUBSYSTEM {activeSubsystem.index} · ACTIVE
+                </span>
+                <span className="text-xs font-mono text-[#71717a]">
+                  {activeSubsystem.category}
+                </span>
+              </div>
+              <span
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: activeSubsystem.accent }}
+              />
+            </div>
 
-              return (
-                <button
-                  key={mod.id}
-                  onClick={() => setSelectedId(mod.id)}
-                  className={`w-full text-left p-3 rounded-2xl transition-all cursor-pointer flex items-center justify-between border ${
-                    isSelected
-                      ? "bg-white border-black/[0.12] shadow-sm text-black"
-                      : "bg-transparent border-transparent hover:bg-black/[0.03] text-[#71717a]"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${
-                        isSelected ? "bg-black text-white" : "bg-black/[0.05] text-[#52525b]"
-                      }`}
-                    >
-                      <IconComp size={15} />
-                    </div>
-                    <div>
-                      <span className="text-xs font-semibold block leading-tight text-[#18181b]">
-                        {mod.name}
-                      </span>
-                      <span className="text-[10px] text-[#71717a] font-mono">
-                        {mod.category}
-                      </span>
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pt-6">
+              <div className="md:col-span-7">
+                <h2 className="font-clash font-bold text-2xl text-[#0f172a] mb-2 leading-tight">
+                  {activeSubsystem.name}
+                </h2>
+                <p className="text-sm text-[#52525b] leading-relaxed mb-6 font-normal">
+                  {activeSubsystem.overview}
+                </p>
+
+                <div className="p-3 rounded-xl bg-[#f8f9fa] border border-black/[0.05] font-mono text-xs text-[#18181b] mb-4">
+                  <span className="text-[10px] text-[#71717a] block uppercase mb-1">Runtime Instruction Schematic</span>
+                  <code className="text-amber-700 font-medium">{activeSubsystem.schematic}</code>
+                </div>
+              </div>
+
+              <div className="md:col-span-5 flex flex-col justify-between">
+                <div className="space-y-4">
+                  <div className="p-3.5 rounded-xl border border-black/[0.06] bg-black/[0.01]">
+                    <span className="text-[10px] font-mono uppercase text-[#71717a] block mb-1">
+                      INTERNAL COMPONENT
+                    </span>
+                    <span className="text-xs font-mono font-medium text-[#18181b]">
+                      {activeSubsystem.subsystem}
+                    </span>
                   </div>
 
-                  {isSelected && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0 mr-1" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Center Column: 3D V8 Orbital Core */}
-          <div className="lg:col-span-6 order-1 lg:order-2 flex flex-col items-center justify-center">
-            <V8OrbitalCore3D
-              activeId={selectedId}
-              onSelectSubsystem={(id) => setSelectedId(id)}
-            />
-          </div>
-
-          {/* Right Column: Subsystem Dossier & Launch Action */}
-          <div className="lg:col-span-3 order-3">
-            <div className="rounded-[24px] bg-white border border-black/[0.08] p-6 shadow-[0_12px_32px_rgba(0,0,0,0.04)]">
-              <div className="flex items-center justify-between mb-4">
-                <span className="px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-black/[0.05] text-[#18181b]">
-                  MODULE {activeSubsystem.index}
-                </span>
-                <span
-                  className="w-2.5 h-2.5 rounded-full"
-                  style={{ backgroundColor: activeSubsystem.accent }}
-                />
-              </div>
-
-              <span className="text-xs font-mono text-[#71717a] block mb-1">
-                {activeSubsystem.category}
-              </span>
-
-              <h2 className="font-clash font-bold text-xl text-[#0f172a] mb-2 leading-tight">
-                {activeSubsystem.name}
-              </h2>
-
-              <p className="text-xs text-[#52525b] leading-relaxed mb-6">
-                {activeSubsystem.overview}
-              </p>
-
-              <div className="space-y-3 pt-4 border-t border-black/[0.06] mb-6">
-                <div>
-                  <span className="text-[10px] font-mono uppercase text-[#71717a] block mb-0.5">
-                    INTERNAL COMPONENT
-                  </span>
-                  <span className="text-xs font-mono font-medium text-[#18181b]">
-                    {activeSubsystem.subsystem}
-                  </span>
+                  <div className="p-3.5 rounded-xl border border-black/[0.06] bg-black/[0.01]">
+                    <span className="text-[10px] font-mono uppercase text-[#71717a] block mb-1">
+                      RUNTIME MECHANIC
+                    </span>
+                    <span className="text-xs font-mono font-medium text-[#18181b]">
+                      {activeSubsystem.mechanic}
+                    </span>
+                  </div>
                 </div>
 
-                <div>
-                  <span className="text-[10px] font-mono uppercase text-[#71717a] block mb-0.5">
-                    RUNTIME MECHANIC
-                  </span>
-                  <span className="text-xs font-mono font-medium text-[#18181b]">
-                    {activeSubsystem.mechanic}
-                  </span>
-                </div>
+                <a
+                  href={activeSubsystem.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-clash font-semibold bg-[#18181b] !text-white hover:bg-black transition-all cursor-pointer shadow-sm"
+                >
+                  <span className="!text-white">Launch {activeSubsystem.name}</span>
+                  <ArrowUpRight size={14} className="!text-white" />
+                </a>
               </div>
-
-              <a
-                href={activeSubsystem.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-clash font-semibold bg-[#18181b] !text-white hover:bg-black transition-all cursor-pointer shadow-sm"
-              >
-                <span className="!text-white">Launch {activeSubsystem.name}</span>
-                <ArrowUpRight size={14} className="!text-white" />
-              </a>
             </div>
           </div>
         </div>
