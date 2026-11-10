@@ -1,28 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
-  ArrowUpRight,
   Sparkles,
+  ArrowUpRight,
+  Terminal,
+  Cpu,
+  Layers,
+  Activity,
+  Workflow,
+  CheckCircle2,
   Code2,
-  Grip
+  Timer,
+  Boxes
 } from "lucide-react";
-import V8EngineOrbit3D, { V8_SATELLITES } from "./V8EngineOrbit3D";
+import V8RuntimeProfiler, { V8_MODULE_SYSTEMS, V8ModuleMeta } from "./V8RuntimeProfiler";
 import { OnboardingTour } from "./OnboardingTour";
 
+const SYSTEM_ICONS = {
+  variables: Boxes,
+  "control-flow": Workflow,
+  "functions-scope": Cpu,
+  "arrays-iteration": Layers,
+  "objects-maps": Sparkles,
+  "async-event-loop": Timer,
+  "dom-apis": Activity
+};
+
 export function HubScene() {
-  const [activeId, setActiveId] = useState<string>("variables");
-  const activeSatellite = V8_SATELLITES.find((s) => s.id === activeId) || V8_SATELLITES[0];
+  const [selectedId, setSelectedId] = useState<string>("async-event-loop");
+
+  const activeModule = useMemo<V8ModuleMeta>(() => {
+    return V8_MODULE_SYSTEMS.find((m) => m.id === selectedId) || V8_MODULE_SYSTEMS[0];
+  }, [selectedId]);
 
   return (
-    <div className="min-h-screen bg-[#fafafb] text-[#18181b] font-cabinet selection:bg-slate-200 selection:text-black relative overflow-x-hidden flex flex-col justify-between">
+    <div className="min-h-screen bg-[#fafafb] text-[#18181b] font-cabinet selection:bg-slate-200 selection:text-black relative overflow-x-hidden">
       <OnboardingTour />
 
-      <header className="sticky top-0 z-50 border-b border-black/[0.06] bg-[#fafafb]/85 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-black/[0.06] bg-[#fafafb]/90 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 h-18 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-400 text-black flex items-center justify-center font-clash font-bold text-sm shadow-xs">
+            <div className="w-9 h-9 rounded-xl bg-amber-400 text-black flex items-center justify-center font-clash font-bold text-sm shadow-sm">
               JS
             </div>
             <div>
@@ -30,25 +50,9 @@ export function HubScene() {
                 JAVASCRIPT UNIVERSE
               </span>
               <span className="text-[11px] text-[#71717a] block font-normal">
-                Kinetic 3D V8 Runtime Gyroscope
+                V8 Engine Architecture &amp; Runtime Visualizers
               </span>
             </div>
-          </div>
-
-          <div className="hidden md:flex items-center gap-1 p-1 rounded-full bg-black/[0.03] border border-black/[0.06]">
-            {V8_SATELLITES.map((sat) => (
-              <button
-                key={sat.id}
-                onClick={() => setActiveId(sat.id)}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
-                  activeId === sat.id
-                    ? "bg-black text-white shadow-xs font-semibold"
-                    : "text-[#52525b] hover:text-black hover:bg-black/[0.04]"
-                }`}
-              >
-                {sat.shortLabel}
-              </button>
-            ))}
           </div>
 
           <div className="flex items-center gap-3">
@@ -74,11 +78,10 @@ export function HubScene() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-8 pb-16 w-full flex-1 flex flex-col justify-center relative z-10">
-        <div className="text-center max-w-2xl mx-auto mb-6">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono tracking-wider text-[#71717a] uppercase bg-black/[0.03] border border-black/[0.06] mb-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            <span>V8 RUNTIME GYROSCOPE &middot; 2026</span>
+      <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-10 pb-28 relative z-10">
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <span className="inline-block text-[11px] font-mono tracking-widest text-[#71717a] uppercase mb-3">
+            V8 RUNTIME CORE &middot; 2026
           </span>
 
           <h1
@@ -87,152 +90,155 @@ export function HubScene() {
           >
             Understand JavaScript, <br />
             <span className="font-instrument italic font-normal text-[#18181b]">
-              inside the V8 engine.
+              down to the V8 heap.
             </span>
           </h1>
 
-          <p className="text-sm sm:text-base text-[#52525b] max-w-lg mx-auto mt-3 font-normal leading-relaxed">
-            Drag to rotate the V8 runtime gyroscope. Click any subsystem satellite to align its execution mechanics and launch the simulator.
+          <p className="text-sm sm:text-base text-[#52525b] max-w-lg mx-auto mt-4 font-normal leading-relaxed">
+            Examine the Call Stack, Microtask queue draining, hidden class transitions, and heap allocations across 7 dedicated visualizers.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-6xl mx-auto w-full my-4">
-          <div className="lg:col-span-8 flex flex-col items-center justify-center relative">
-            <V8EngineOrbit3D
-              activeId={activeId}
-              onSelectSatellite={(id) => setActiveId(id)}
-            />
-            <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#71717a] pointer-events-none mt-1">
-              <Grip size={13} />
-              <span>Drag to spin freely &middot; Click satellite to align</span>
+        {/* 4-col / 8-col Interactive Studio Workbench */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-24">
+          {/* Left Column: Subsystem Selector */}
+          <div className="lg:col-span-4 flex flex-col gap-2">
+            <span className="text-[11px] font-mono tracking-wider text-[#71717a] uppercase block mb-1">
+              CHOOSE A V8 RUNTIME SUBSYSTEM
+            </span>
+
+            {V8_MODULE_SYSTEMS.map((mod) => {
+              const isSelected = selectedId === mod.id;
+              const IconComp = SYSTEM_ICONS[mod.id as keyof typeof SYSTEM_ICONS] || Boxes;
+
+              return (
+                <button
+                  key={mod.id}
+                  onClick={() => setSelectedId(mod.id)}
+                  className={`w-full text-left p-3.5 rounded-2xl transition-all cursor-pointer flex items-center justify-between border ${
+                    isSelected
+                      ? "bg-white border-black/[0.12] shadow-sm text-black"
+                      : "bg-transparent border-transparent hover:bg-black/[0.03] text-[#71717a]"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                        isSelected ? "bg-black text-white" : "bg-black/[0.05] text-[#52525b]"
+                      }`}
+                    >
+                      <IconComp size={16} />
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold block leading-tight text-[#18181b]">
+                        {mod.name}
+                      </span>
+                      <span className="text-[10px] text-[#71717a] font-mono">
+                        {mod.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  {isSelected && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-black shrink-0 mr-1" />
+                  )}
+                </button>
+              );
+            })}
+
+            <div className="mt-4 p-5 rounded-2xl bg-white border border-black/[0.06] shadow-xs">
+              <span className="text-[10px] font-mono uppercase text-[#71717a] block mb-1">
+                Active Engine Invariant
+              </span>
+              <p className="text-xs font-mono text-[#0f172a] leading-relaxed">
+                {activeModule.invariant}
+              </p>
             </div>
           </div>
 
-          <div className="lg:col-span-4 flex flex-col justify-center">
-            <div className="rounded-[28px] bg-white/90 backdrop-blur-xl border border-black/[0.08] p-7 shadow-[0_20px_45px_rgba(0,0,0,0.06)] relative overflow-hidden transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2.5">
-                  <span
-                    className="w-3 h-3 rounded-full shadow-xs"
-                    style={{ backgroundColor: activeSatellite.accent }}
-                  />
-                  <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#71717a]">
-                    MODULE {activeSatellite.index} &middot; {activeSatellite.category}
-                  </span>
-                </div>
-              </div>
-
-              <h2 className="font-clash font-bold text-2xl text-[#0f172a] mb-2 leading-tight">
-                {activeSatellite.name}
-              </h2>
-
-              <p className="text-xs sm:text-sm text-[#52525b] leading-relaxed mb-6 font-normal">
-                {activeSatellite.tagline}
-              </p>
-
-              <div className="p-3.5 rounded-2xl bg-[#f8f9fa] border border-black/[0.04] mb-6 space-y-2">
-                <div>
-                  <span className="text-[10px] font-mono uppercase text-[#71717a] block mb-0.5">
-                    INTERNAL COMPONENT
-                  </span>
-                  <span className="text-xs font-mono font-semibold text-[#18181b]">
-                    {activeSatellite.subsystem}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[10px] font-mono uppercase text-[#71717a] block mb-0.5">
-                    RUNTIME MECHANIC
-                  </span>
-                  <span className="text-xs font-mono text-[#52525b]">
-                    {activeSatellite.mechanic}
-                  </span>
-                </div>
-              </div>
-
-              <a
-                href={activeSatellite.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl text-xs font-clash font-semibold bg-[#18181b] !text-white hover:bg-black transition-all cursor-pointer shadow-sm group"
-              >
-                <span className="!text-white">Launch {activeSatellite.shortLabel} Visualizer</span>
-                <ArrowUpRight size={14} className="!text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </a>
-            </div>
+          {/* Right Column: Live V8 Runtime Profiler Viewport */}
+          <div className="lg:col-span-8">
+            <V8RuntimeProfiler
+              activeId={selectedId}
+              onSelectModule={(id) => setSelectedId(id)}
+            />
           </div>
         </div>
 
-        <section className="pt-16 mt-8 border-t border-black/[0.06]">
-          <div className="flex items-center justify-between mb-6">
+        {/* All 7 V8 Systems Catalog */}
+        <section className="pt-16 border-t border-black/[0.06]">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-              <span className="text-[11px] font-mono uppercase tracking-wider text-[#71717a] block">
-                CATALOG
+              <span className="text-[11px] font-mono uppercase tracking-widest text-[#71717a] block mb-1">
+                STANDALONE VISUALIZERS
               </span>
-              <h2 className="font-clash font-semibold text-xl text-[#0f172a]">
+              <h2 className="font-clash font-semibold text-2xl text-[#0f172a]">
                 All 7 V8 Engine Systems
               </h2>
             </div>
-            <span className="text-xs font-mono text-[#71717a]">7 LIVE MICRO-FRONTENDS</span>
+            <span className="text-xs font-mono text-[#71717a]">
+              7 MICRO-FRONTENDS DEPLOYED
+            </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {V8_SATELLITES.map((sat) => (
-              <a
-                key={sat.id}
-                href={sat.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group p-5 rounded-2xl bg-white border border-black/[0.06] hover:border-black/[0.18] hover:shadow-[0_12px_24px_rgba(0,0,0,0.05)] transition-all flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span
-                      className="text-xs font-mono font-semibold px-2 py-0.5 rounded"
-                      style={{
-                        backgroundColor: `${sat.accent}15`,
-                        color: sat.accent
-                      }}
-                    >
-                      {sat.index} &middot; {sat.shortLabel}
-                    </span>
-                    <span className="text-[11px] font-mono text-[#71717a] uppercase">
-                      {sat.category}
-                    </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {V8_MODULE_SYSTEMS.map((item) => {
+              const IconComp = SYSTEM_ICONS[item.id as keyof typeof SYSTEM_ICONS] || Boxes;
+
+              return (
+                <a
+                  key={item.id}
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group p-6 rounded-[22px] bg-white border border-black/[0.06] hover:border-black/[0.18] hover:shadow-[0_12px_28px_rgba(0,0,0,0.06)] transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-9 h-9 rounded-xl bg-black/[0.04] text-[#18181b] flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
+                        <IconComp size={16} />
+                      </div>
+                      <span className="text-[10px] font-mono uppercase text-[#71717a]">
+                        MODULE {item.index}
+                      </span>
+                    </div>
+
+                    <h3 className="font-clash font-semibold text-base text-[#0f172a] mb-1.5 group-hover:text-black">
+                      {item.name}
+                    </h3>
+
+                    <p className="text-xs text-[#52525b] leading-relaxed mb-4">
+                      {item.tagline}
+                    </p>
+
+                    <div className="py-2 px-3 rounded-lg bg-[#f8f9fa] border border-black/[0.04] text-[11px] font-mono text-[#52525b] mb-4">
+                      {item.subsystem}
+                    </div>
                   </div>
 
-                  <h3 className="font-clash font-semibold text-base text-[#0f172a] mb-1 group-hover:text-black">
-                    {sat.name}
-                  </h3>
-
-                  <p className="text-xs text-[#52525b] leading-relaxed mb-3">
-                    {sat.tagline}
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-black/[0.05] flex items-center justify-between text-xs font-semibold text-[#18181b]">
-                  <span className="font-mono text-[11px] text-[#71717a] truncate max-w-[200px]">
-                    {sat.subsystem}
-                  </span>
-                  <ArrowUpRight
-                    size={14}
-                    className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
-                  />
-                </div>
-              </a>
-            ))}
+                  <div className="pt-4 border-t border-black/[0.05] flex items-center justify-between text-xs font-semibold text-[#18181b]">
+                    <span>Open Visualizer</span>
+                    <ArrowUpRight
+                      size={14}
+                      className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+                    />
+                  </div>
+                </a>
+              );
+            })}
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-black/[0.06] bg-white py-6">
+      <footer className="border-t border-black/[0.06] bg-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#71717a]">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-amber-400" />
             <span className="font-clash font-semibold text-[#0f172a]">
-              JAVASCRIPT UNIVERSE &middot; 3D V8 GYROSCOPE
+              JAVASCRIPT UNIVERSE
             </span>
           </div>
-          <div>Bespoke Spatial Architecture &middot; 2026</div>
+          <div>Bespoke Architectural Experience &middot; 2026</div>
         </div>
       </footer>
     </div>
