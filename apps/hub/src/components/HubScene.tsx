@@ -15,7 +15,7 @@ import {
   Timer,
   Boxes
 } from "lucide-react";
-import V8RuntimeProfiler, { V8_MODULE_SYSTEMS, V8ModuleMeta } from "./V8RuntimeProfiler";
+import V8OrbitalCore3D, { V8_SUBSYSTEMS, V8SubsystemMeta } from "./V8OrbitalCore3D";
 import { OnboardingTour } from "./OnboardingTour";
 
 const SYSTEM_ICONS = {
@@ -31,8 +31,8 @@ const SYSTEM_ICONS = {
 export function HubScene() {
   const [selectedId, setSelectedId] = useState<string>("async-event-loop");
 
-  const activeModule = useMemo<V8ModuleMeta>(() => {
-    return V8_MODULE_SYSTEMS.find((m) => m.id === selectedId) || V8_MODULE_SYSTEMS[0];
+  const activeSubsystem = useMemo<V8SubsystemMeta>(() => {
+    return V8_SUBSYSTEMS.find((m) => m.id === selectedId) || V8_SUBSYSTEMS[0];
   }, [selectedId]);
 
   return (
@@ -50,7 +50,7 @@ export function HubScene() {
                 JAVASCRIPT UNIVERSE
               </span>
               <span className="text-[11px] text-[#71717a] block font-normal">
-                V8 Engine Architecture &amp; Runtime Visualizers
+                Spatial V8 Runtime Engine &amp; Execution Visualizers
               </span>
             </div>
           </div>
@@ -81,7 +81,7 @@ export function HubScene() {
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-10 pb-28 relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <span className="inline-block text-[11px] font-mono tracking-widest text-[#71717a] uppercase mb-3">
-            V8 RUNTIME CORE &middot; 2026
+            SPATIAL V8 ENGINE ARCHITECTURE &middot; 2026
           </span>
 
           <h1
@@ -95,19 +95,19 @@ export function HubScene() {
           </h1>
 
           <p className="text-sm sm:text-base text-[#52525b] max-w-lg mx-auto mt-4 font-normal leading-relaxed">
-            Examine the Call Stack, Microtask queue draining, hidden class transitions, and heap allocations across 7 dedicated visualizers.
+            Orbit the spatial V8 runtime core. Navigate across 7 execution realms to launch their dedicated interactive visualizers.
           </p>
         </div>
 
-        {/* 4-col / 8-col Interactive Studio Workbench */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-24">
+        {/* 3-Part Spatial Hero Gateway */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-24">
           {/* Left Column: Subsystem Selector */}
-          <div className="lg:col-span-4 flex flex-col gap-2">
+          <div className="lg:col-span-3 order-2 lg:order-1 flex flex-col gap-2">
             <span className="text-[11px] font-mono tracking-wider text-[#71717a] uppercase block mb-1">
-              CHOOSE A V8 RUNTIME SUBSYSTEM
+              SELECT RUNTIME SUBSYSTEM
             </span>
 
-            {V8_MODULE_SYSTEMS.map((mod) => {
+            {V8_SUBSYSTEMS.map((mod) => {
               const isSelected = selectedId === mod.id;
               const IconComp = SYSTEM_ICONS[mod.id as keyof typeof SYSTEM_ICONS] || Boxes;
 
@@ -115,7 +115,7 @@ export function HubScene() {
                 <button
                   key={mod.id}
                   onClick={() => setSelectedId(mod.id)}
-                  className={`w-full text-left p-3.5 rounded-2xl transition-all cursor-pointer flex items-center justify-between border ${
+                  className={`w-full text-left p-3 rounded-2xl transition-all cursor-pointer flex items-center justify-between border ${
                     isSelected
                       ? "bg-white border-black/[0.12] shadow-sm text-black"
                       : "bg-transparent border-transparent hover:bg-black/[0.03] text-[#71717a]"
@@ -123,11 +123,11 @@ export function HubScene() {
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${
                         isSelected ? "bg-black text-white" : "bg-black/[0.05] text-[#52525b]"
                       }`}
                     >
-                      <IconComp size={16} />
+                      <IconComp size={15} />
                     </div>
                     <div>
                       <span className="text-xs font-semibold block leading-tight text-[#18181b]">
@@ -145,32 +145,80 @@ export function HubScene() {
                 </button>
               );
             })}
-
-            <div className="mt-4 p-5 rounded-2xl bg-white border border-black/[0.06] shadow-xs">
-              <span className="text-[10px] font-mono uppercase text-[#71717a] block mb-1">
-                Active Engine Invariant
-              </span>
-              <p className="text-xs font-mono text-[#0f172a] leading-relaxed">
-                {activeModule.invariant}
-              </p>
-            </div>
           </div>
 
-          {/* Right Column: Live V8 Runtime Profiler Viewport */}
-          <div className="lg:col-span-8">
-            <V8RuntimeProfiler
+          {/* Center Column: 3D V8 Orbital Core */}
+          <div className="lg:col-span-6 order-1 lg:order-2 flex flex-col items-center justify-center">
+            <V8OrbitalCore3D
               activeId={selectedId}
-              onSelectModule={(id) => setSelectedId(id)}
+              onSelectSubsystem={(id) => setSelectedId(id)}
             />
+          </div>
+
+          {/* Right Column: Subsystem Dossier & Launch Action */}
+          <div className="lg:col-span-3 order-3">
+            <div className="rounded-[24px] bg-white border border-black/[0.08] p-6 shadow-[0_12px_32px_rgba(0,0,0,0.04)]">
+              <div className="flex items-center justify-between mb-4">
+                <span className="px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-black/[0.05] text-[#18181b]">
+                  MODULE {activeSubsystem.index}
+                </span>
+                <span
+                  className="w-2.5 h-2.5 rounded-full"
+                  style={{ backgroundColor: activeSubsystem.accent }}
+                />
+              </div>
+
+              <span className="text-xs font-mono text-[#71717a] block mb-1">
+                {activeSubsystem.category}
+              </span>
+
+              <h2 className="font-clash font-bold text-xl text-[#0f172a] mb-2 leading-tight">
+                {activeSubsystem.name}
+              </h2>
+
+              <p className="text-xs text-[#52525b] leading-relaxed mb-6">
+                {activeSubsystem.overview}
+              </p>
+
+              <div className="space-y-3 pt-4 border-t border-black/[0.06] mb-6">
+                <div>
+                  <span className="text-[10px] font-mono uppercase text-[#71717a] block mb-0.5">
+                    INTERNAL COMPONENT
+                  </span>
+                  <span className="text-xs font-mono font-medium text-[#18181b]">
+                    {activeSubsystem.subsystem}
+                  </span>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-mono uppercase text-[#71717a] block mb-0.5">
+                    RUNTIME MECHANIC
+                  </span>
+                  <span className="text-xs font-mono font-medium text-[#18181b]">
+                    {activeSubsystem.mechanic}
+                  </span>
+                </div>
+              </div>
+
+              <a
+                href={activeSubsystem.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-clash font-semibold bg-[#18181b] !text-white hover:bg-black transition-all cursor-pointer shadow-sm"
+              >
+                <span className="!text-white">Launch {activeSubsystem.name}</span>
+                <ArrowUpRight size={14} className="!text-white" />
+              </a>
+            </div>
           </div>
         </div>
 
-        {/* All 7 V8 Systems Catalog */}
+        {/* All 7 Standalone Visualizers Catalog */}
         <section className="pt-16 border-t border-black/[0.06]">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
               <span className="text-[11px] font-mono uppercase tracking-widest text-[#71717a] block mb-1">
-                STANDALONE VISUALIZERS
+                STANDALONE APPLICATIONS
               </span>
               <h2 className="font-clash font-semibold text-2xl text-[#0f172a]">
                 All 7 V8 Engine Systems
@@ -182,7 +230,7 @@ export function HubScene() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {V8_MODULE_SYSTEMS.map((item) => {
+            {V8_SUBSYSTEMS.map((item) => {
               const IconComp = SYSTEM_ICONS[item.id as keyof typeof SYSTEM_ICONS] || Boxes;
 
               return (
@@ -217,7 +265,7 @@ export function HubScene() {
                   </div>
 
                   <div className="pt-4 border-t border-black/[0.05] flex items-center justify-between text-xs font-semibold text-[#18181b]">
-                    <span>Open Visualizer</span>
+                    <span>Open Standalone Visualizer</span>
                     <ArrowUpRight
                       size={14}
                       className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
