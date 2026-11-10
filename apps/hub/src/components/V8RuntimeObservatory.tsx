@@ -138,6 +138,186 @@ const SUBSYSTEM_ICONS = {
   "dom-apis": Activity
 };
 
+function V8SchematicViewport({ id }: { id: string }) {
+  if (id === "variables") {
+    return (
+      <div className="w-full flex flex-col items-center justify-center gap-3">
+        <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
+          <div className="p-3 rounded-xl bg-white/[0.05] border border-white/20 flex flex-col items-center">
+            <span className="text-[9px] font-mono text-amber-400 font-bold mb-1">CALL STACK</span>
+            <span className="text-xs font-mono text-white font-semibold">Smi: 42</span>
+            <span className="text-[8px] font-mono text-white/40">val &lt;&lt; 1 | 0x0</span>
+          </div>
+          <div className="p-3 rounded-xl bg-white/[0.05] border border-white/20 flex flex-col items-center">
+            <span className="text-[9px] font-mono text-cyan-400 font-bold mb-1">HEAP POINTER</span>
+            <span className="text-xs font-mono text-white font-semibold">0x7FFF0040</span>
+            <span className="text-[8px] font-mono text-white/40">Tagged Pointer</span>
+          </div>
+        </div>
+        <div className="w-full px-4 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-between text-[10px] font-mono text-white/50">
+          <span>GC PHASE: SCAVENGER</span>
+          <span className="text-amber-400">YOUNG GEN ALLOC</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (id === "control-flow") {
+    return (
+      <div className="w-full flex flex-col items-center justify-center gap-2.5">
+        <div className="w-full max-w-xs space-y-1.5 font-mono text-xs">
+          <div className="p-2 rounded bg-white/10 border border-white/20 flex justify-between text-white">
+            <span className="text-emerald-400">LdaNamedProperty</span>
+            <span className="text-white/40">[a0]</span>
+          </div>
+          <div className="p-2 rounded bg-white/[0.04] border border-white/[0.08] flex justify-between text-white/70">
+            <span className="text-amber-400">TestEqualStrict</span>
+            <span className="text-white/40">[a1]</span>
+          </div>
+          <div className="p-2 rounded bg-white/[0.02] border border-white/[0.06] flex justify-between text-white/50">
+            <span className="text-rose-400">JumpIfFalse</span>
+            <span className="text-white/40">[+0x14]</span>
+          </div>
+        </div>
+        <div className="w-full px-4 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-between text-[10px] font-mono text-white/50 mt-1">
+          <span>IGNITION ACCUMULATOR</span>
+          <span className="text-emerald-400">DISPATCH READY</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (id === "functions-scope") {
+    return (
+      <div className="w-full flex flex-col items-center justify-center gap-2.5">
+        <div className="flex items-center gap-2 justify-center w-full">
+          {[
+            { name: "Local", tag: "ctx_0" },
+            { name: "Closure", tag: "heap_retain" },
+            { name: "Global", tag: "window" }
+          ].map((scope, idx) => (
+            <div key={idx} className="flex items-center gap-1.5">
+              <div className="px-3 py-2 rounded-xl bg-white/[0.05] border border-white/20 flex flex-col items-center shadow-xs">
+                <span className="text-xs font-mono font-semibold text-white">{scope.name}</span>
+                <span className="text-[8px] font-mono text-purple-400">{scope.tag}</span>
+              </div>
+              {idx < 2 && <span className="text-white/40 font-mono text-xs">→</span>}
+            </div>
+          ))}
+        </div>
+        <div className="w-full px-4 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-between text-[10px] font-mono text-white/50 mt-2">
+          <span>STATIC LEXICAL CHAIN</span>
+          <span className="text-purple-400">HEAP CLOSURE RETENTION</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (id === "arrays-iteration") {
+    return (
+      <div className="w-full flex flex-col items-center justify-center gap-2">
+        <div className="flex flex-col gap-1.5 w-full max-w-xs font-mono text-xs">
+          <div className="p-2 rounded bg-emerald-500/10 border border-emerald-500/30 flex justify-between text-emerald-300">
+            <span>PACKED_SMI</span>
+            <span className="text-[10px]">O(1) FAST ACCESS</span>
+          </div>
+          <div className="p-2 rounded bg-amber-500/10 border border-amber-500/20 flex justify-between text-amber-300">
+            <span>PACKED_DOUBLE</span>
+            <span className="text-[10px]">64-BIT UNBOXED</span>
+          </div>
+          <div className="p-2 rounded bg-rose-500/10 border border-rose-500/20 flex justify-between text-rose-300">
+            <span>HOLEY_ELEMENTS</span>
+            <span className="text-[10px]">PROTOTYPE LOOKUP</span>
+          </div>
+        </div>
+        <div className="w-full px-4 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-between text-[10px] font-mono text-white/50 mt-1">
+          <span>V8 TRANSITION LADDER</span>
+          <span className="text-emerald-400">NO DEOPT DETECTED</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (id === "objects-maps") {
+    return (
+      <div className="w-full flex flex-col items-center justify-center gap-2.5">
+        <div className="flex items-center gap-2 justify-center w-full">
+          {[
+            { map: "Map0", prop: "empty" },
+            { map: "Map1", prop: "+x (0x08)" },
+            { map: "Map2", prop: "+y (0x10)" }
+          ].map((m, idx) => (
+            <div key={idx} className="flex items-center gap-1.5">
+              <div className="px-3 py-2 rounded-xl bg-white/[0.05] border border-white/20 flex flex-col items-center shadow-xs">
+                <span className="text-xs font-mono font-bold text-white">{m.map}</span>
+                <span className="text-[8px] font-mono text-fuchsia-400">{m.prop}</span>
+              </div>
+              {idx < 2 && <span className="text-white/40 font-mono text-xs">→</span>}
+            </div>
+          ))}
+        </div>
+        <div className="w-full px-4 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-between text-[10px] font-mono text-white/50 mt-2">
+          <span>TURBOFAN INLINE CACHE</span>
+          <span className="text-fuchsia-400">MONOMORPHIC HIT</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (id === "async-event-loop") {
+    return (
+      <div className="w-full flex flex-col items-center justify-center gap-2.5">
+        <div className="grid grid-cols-2 gap-2 w-full max-w-xs font-mono text-xs">
+          <div className="p-2.5 rounded-xl bg-white/[0.05] border border-white/20 text-center">
+            <span className="text-[9px] text-amber-400 font-bold block mb-1">CALL STACK</span>
+            <span className="text-xs text-white">main()</span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center">
+            <span className="text-[9px] text-emerald-400 font-bold block mb-1">MICROTASKS (P0)</span>
+            <span className="text-xs text-white">Promise.then</span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-center">
+            <span className="text-[9px] text-cyan-400 font-bold block mb-1">RENDER PHASE</span>
+            <span className="text-xs text-white">requestAnim</span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-center">
+            <span className="text-[9px] text-rose-400 font-bold block mb-1">MACROTASKS (P1)</span>
+            <span className="text-xs text-white">setTimeout</span>
+          </div>
+        </div>
+        <div className="w-full px-4 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-between text-[10px] font-mono text-white/50 mt-1">
+          <span>LIBUV EVENT RING</span>
+          <span className="text-emerald-400">MICROTASKS DRAINED</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full flex flex-col items-center justify-center gap-2.5">
+      <div className="flex items-center gap-2 justify-center w-full">
+        {[
+          { phase: "Capture", id: "1" },
+          { phase: "Target", id: "2" },
+          { phase: "Bubble", id: "3" }
+        ].map((p, idx) => (
+          <div key={idx} className="flex items-center gap-1.5">
+            <div className="px-3 py-2 rounded-xl bg-white/[0.05] border border-white/20 flex flex-col items-center shadow-xs">
+              <span className="text-xs font-mono font-bold text-white">{p.phase}</span>
+              <span className="text-[8px] font-mono text-cyan-400">Phase {p.id}</span>
+            </div>
+            {idx < 2 && <span className="text-white/40 font-mono text-xs">→</span>}
+          </div>
+        ))}
+      </div>
+      <div className="w-full px-4 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-between text-[10px] font-mono text-white/50 mt-2">
+        <span>BLINK C++ BINDING</span>
+        <span className="text-cyan-400">WRAPPER RETAINED</span>
+      </div>
+    </div>
+  );
+}
+
 interface V8RuntimeObservatoryProps {
   activeId: string;
   onSelectSubsystem: (id: string) => void;
@@ -148,7 +328,7 @@ export default function V8RuntimeObservatory({
   onSelectSubsystem
 }: V8RuntimeObservatoryProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [tilt, setTilt] = useState({ x: 6, y: -4 });
+  const [tilt, setTilt] = useState({ x: 5, y: -3 });
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -159,23 +339,22 @@ export default function V8RuntimeObservatory({
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const tiltX = ((y - centerY) / centerY) * -8;
-    const tiltY = ((x - centerX) / centerX) * 10;
+    const tiltX = ((y - centerY) / centerY) * -6;
+    const tiltY = ((x - centerX) / centerX) * 8;
 
     setTilt({ x: tiltX, y: tiltY });
   }, []);
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
-    setTilt({ x: 5, y: -3 });
+    setTilt({ x: 4, y: -2 });
   }, []);
 
   const activeSubsystem = V8_SUBSYSTEMS.find((m) => m.id === activeId) || V8_SUBSYSTEMS[0];
-  const IconComp = SUBSYSTEM_ICONS[activeSubsystem.id as keyof typeof SUBSYSTEM_ICONS] || Boxes;
 
   return (
     <div className="w-full max-w-6xl mx-auto select-none">
-      <div className="flex items-center justify-between overflow-x-auto pb-4 mb-6 border-b border-black/[0.08] gap-2 scrollbar-none">
+      <div className="flex items-center justify-start sm:justify-center overflow-x-auto pb-4 mb-6 border-b border-black/[0.06] gap-2">
         {V8_SUBSYSTEMS.map((subsystem) => {
           const isSelected = subsystem.id === activeId;
           const TabIcon = SUBSYSTEM_ICONS[subsystem.id as keyof typeof SUBSYSTEM_ICONS] || Boxes;
@@ -186,13 +365,13 @@ export default function V8RuntimeObservatory({
               onClick={() => onSelectSubsystem(subsystem.id)}
               className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-mono transition-all cursor-pointer whitespace-nowrap border ${
                 isSelected
-                  ? "bg-[#18181b] text-white border-transparent shadow-sm"
+                  ? "bg-[#18181b] !text-white border-transparent shadow-sm"
                   : "bg-white text-[#71717a] border-black/[0.06] hover:border-black/[0.15] hover:text-[#18181b]"
               }`}
             >
-              <TabIcon size={14} className={isSelected ? "text-amber-400" : "text-[#71717a]"} />
-              <span className="font-semibold tracking-tight">{subsystem.index}</span>
-              <span className="font-sans font-medium">{subsystem.shortName}</span>
+              <TabIcon size={14} className={isSelected ? "!text-amber-400" : "text-[#71717a]"} />
+              <span className={`font-semibold tracking-tight ${isSelected ? "!text-white" : ""}`}>{subsystem.index}</span>
+              <span className={`font-sans font-medium ${isSelected ? "!text-white" : ""}`}>{subsystem.shortName}</span>
             </button>
           );
         })}
@@ -286,26 +465,18 @@ export default function V8RuntimeObservatory({
 
             <div 
               style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d" }}
-              className="lg:col-span-5 flex flex-col items-center justify-center p-6 rounded-2xl bg-black/40 border border-white/[0.08] relative min-h-[300px]"
+              className="lg:col-span-5 flex flex-col items-center justify-between p-6 rounded-2xl bg-black/50 border border-white/[0.1] relative min-h-[320px]"
             >
-              <div className="absolute top-3 left-4 text-[10px] font-mono text-white/40 tracking-wider">
-                V8 ENGINE REACTOR TELEMETRY
+              <div className="w-full flex items-center justify-between text-[10px] font-mono text-white/40 tracking-wider pb-3 border-b border-white/[0.06]">
+                <span>V8 REACTOR SCHEMATIC</span>
+                <span className="text-amber-400">HOT JIT</span>
               </div>
               
-              <div className="w-16 h-16 rounded-2xl bg-white/[0.06] border border-white/[0.12] flex items-center justify-center text-amber-400 mb-6 shadow-inner">
-                <IconComp size={32} />
+              <div className="w-full my-auto py-4">
+                <V8SchematicViewport id={activeSubsystem.id} />
               </div>
 
-              <div className="w-full text-center space-y-2">
-                <div className="font-mono text-xs text-amber-300 bg-white/[0.05] py-2 px-4 rounded-xl border border-white/[0.08] inline-block max-w-full truncate">
-                  {activeSubsystem.schematic}
-                </div>
-                <p className="text-xs text-white/50 max-w-xs mx-auto">
-                  {activeSubsystem.tagline}
-                </p>
-              </div>
-
-              <div className="w-full pt-6 mt-6 border-t border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-white/40">
+              <div className="w-full pt-3 border-t border-white/[0.06] flex items-center justify-between text-[10px] font-mono text-white/40">
                 <span>ISOLATE: 0x2A1B</span>
                 <span>HEAP: 64-BIT TAGGED</span>
               </div>
