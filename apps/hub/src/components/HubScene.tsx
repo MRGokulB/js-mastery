@@ -15,7 +15,7 @@ import {
   Timer,
   Boxes
 } from "lucide-react";
-import V8KineticEngine3D, { V8_SUBSYSTEMS, V8SubsystemMeta } from "./V8KineticEngine3D";
+import V8RuntimeObservatory, { V8_SUBSYSTEMS, V8SubsystemMeta } from "./V8RuntimeObservatory";
 import { OnboardingTour } from "./OnboardingTour";
 
 const SYSTEM_ICONS = {
@@ -81,162 +81,92 @@ export function HubScene() {
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-10 pb-28 relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <span className="inline-block text-[11px] font-mono tracking-widest text-[#71717a] uppercase mb-3">
-            SPATIAL V8 ENGINE ARCHITECTURE &middot; 2026
+            V8 RUNTIME OBSERVATORY &middot; 2026
           </span>
 
           <h1
             className="font-clash font-semibold text-[#0f172a] tracking-[-0.035em] leading-[1.08] text-center"
-            style={{ fontSize: "clamp(38px, 4.5vw, 68px)" }}
+            style={{ fontSize: "clamp(36px, 4.2vw, 64px)" }}
           >
-            Understand JavaScript, <br />
+            JavaScript Deconstructed. <br />
             <span className="font-instrument italic font-normal text-[#18181b]">
-              down to the V8 engine.
+              From syntax to the V8 engine.
             </span>
           </h1>
 
           <p className="text-sm sm:text-base text-[#52525b] max-w-lg mx-auto mt-4 font-normal leading-relaxed">
-            Inspect Ignition bytecode, TurboFan JIT optimizations, and the microtask scheduler. Navigate across 7 core V8 execution subsystems to launch their dedicated interactive visualizers.
+            Seven interactive visualizers dissecting execution context activation records, Ignition bytecode dispatch, hidden class shapes, and the event loop.
           </p>
         </div>
 
-        {/* Spatial 3D V8 Kinetic Engine Gateway */}
-        <div className="mb-20">
-          <V8KineticEngine3D
-            activeId={selectedId}
-            onSelectSubsystem={(id) => setSelectedId(id)}
-          />
-        </div>
+        {/* V8 Runtime Observatory Stage */}
+        <V8RuntimeObservatory
+          activeId={selectedId}
+          onSelectSubsystem={(id) => setSelectedId(id)}
+        />
 
-        {/* Selected Subsystem Telemetry Dossier */}
-        <div className="max-w-4xl mx-auto mb-24">
-          <div className="rounded-[28px] bg-white border border-black/[0.08] p-6 sm:p-8 shadow-[0_16px_40px_rgba(0,0,0,0.04)]">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-black/[0.06]">
-              <div className="flex items-center gap-3">
-                <span className="px-3 py-1 rounded-full text-xs font-mono uppercase tracking-wider bg-black/[0.05] text-[#18181b] font-semibold">
-                  SUBSYSTEM {activeSubsystem.index} · ACTIVE
-                </span>
-                <span className="text-xs font-mono text-[#71717a]">
-                  {activeSubsystem.category}
-                </span>
-              </div>
-              <span
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: activeSubsystem.accent }}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pt-6">
-              <div className="md:col-span-7">
-                <h2 className="font-clash font-bold text-2xl text-[#0f172a] mb-2 leading-tight">
-                  {activeSubsystem.name}
-                </h2>
-                <p className="text-sm text-[#52525b] leading-relaxed mb-6 font-normal">
-                  {activeSubsystem.overview}
-                </p>
-
-                <div className="p-3 rounded-xl bg-[#f8f9fa] border border-black/[0.05] font-mono text-xs text-[#18181b] mb-4">
-                  <span className="text-[10px] text-[#71717a] block uppercase mb-1">Runtime Instruction Schematic</span>
-                  <code className="text-amber-700 font-medium">{activeSubsystem.schematic}</code>
-                </div>
-              </div>
-
-              <div className="md:col-span-5 flex flex-col justify-between">
-                <div className="space-y-4">
-                  <div className="p-3.5 rounded-xl border border-black/[0.06] bg-black/[0.01]">
-                    <span className="text-[10px] font-mono uppercase text-[#71717a] block mb-1">
-                      INTERNAL COMPONENT
-                    </span>
-                    <span className="text-xs font-mono font-medium text-[#18181b]">
-                      {activeSubsystem.subsystem}
-                    </span>
-                  </div>
-
-                  <div className="p-3.5 rounded-xl border border-black/[0.06] bg-black/[0.01]">
-                    <span className="text-[10px] font-mono uppercase text-[#71717a] block mb-1">
-                      RUNTIME MECHANIC
-                    </span>
-                    <span className="text-xs font-mono font-medium text-[#18181b]">
-                      {activeSubsystem.mechanic}
-                    </span>
-                  </div>
-                </div>
-
-                <a
-                  href={activeSubsystem.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-6 w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-clash font-semibold bg-[#18181b] !text-white hover:bg-black transition-all cursor-pointer shadow-sm"
-                >
-                  <span className="!text-white">Launch {activeSubsystem.name}</span>
-                  <ArrowUpRight size={14} className="!text-white" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* All 7 Standalone Visualizers Catalog */}
-        <section className="pt-16 border-t border-black/[0.06]">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+        {/* Architectural Directory Index */}
+        <section className="pt-12 border-t border-black/[0.08]">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
             <div>
               <span className="text-[11px] font-mono uppercase tracking-widest text-[#71717a] block mb-1">
-                STANDALONE APPLICATIONS
+                RUNTIME REGISTRY
               </span>
               <h2 className="font-clash font-semibold text-2xl text-[#0f172a]">
-                All 7 V8 Engine Systems
+                All 7 V8 Subsystems
               </h2>
             </div>
             <span className="text-xs font-mono text-[#71717a]">
-              7 MICRO-FRONTENDS DEPLOYED
+              7 DEPLOYED MICRO-APPLICATIONS
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="divide-y divide-black/[0.06] border-y border-black/[0.06] bg-white rounded-2xl shadow-xs overflow-hidden">
             {V8_SUBSYSTEMS.map((item) => {
               const IconComp = SYSTEM_ICONS[item.id as keyof typeof SYSTEM_ICONS] || Boxes;
+              const isSelected = item.id === selectedId;
 
               return (
-                <a
+                <div
                   key={item.id}
-                  href={item.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group p-6 rounded-[22px] bg-white border border-black/[0.06] hover:border-black/[0.18] hover:shadow-[0_12px_28px_rgba(0,0,0,0.06)] transition-all flex flex-col justify-between"
+                  onClick={() => setSelectedId(item.id)}
+                  className={`p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors cursor-pointer ${
+                    isSelected ? "bg-black/[0.02]" : "hover:bg-black/[0.01]"
+                  }`}
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-9 h-9 rounded-xl bg-black/[0.04] text-[#18181b] flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
-                        <IconComp size={16} />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                        <span className="text-[10px] font-mono uppercase text-[#71717a]">
-                          DIE M{item.index}
-                        </span>
-                      </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-xs font-mono text-[#71717a] w-6">
+                      {item.index}
+                    </span>
+                    <div className="w-8 h-8 rounded-lg bg-black/[0.04] text-[#18181b] flex items-center justify-center">
+                      <IconComp size={15} />
                     </div>
+                    <div>
+                      <h3 className="font-clash font-semibold text-sm text-[#0f172a] leading-tight">
+                        {item.name}
+                      </h3>
+                      <span className="text-xs text-[#71717a] font-sans">
+                        {item.tagline}
+                      </span>
+                    </div>
+                  </div>
 
-                    <h3 className="font-clash font-semibold text-base text-[#0f172a] mb-1.5 group-hover:text-black">
-                      {item.name}
-                    </h3>
-
-                    <p className="text-xs text-[#52525b] leading-relaxed mb-4">
-                      {item.tagline}
-                    </p>
-
-                    <div className="py-2 px-3 rounded-lg bg-[#f8f9fa] border border-black/[0.04] text-[11px] font-mono text-[#52525b] mb-4">
+                  <div className="flex items-center gap-6 sm:justify-end">
+                    <span className="text-xs font-mono text-[#52525b] hidden md:inline">
                       {item.subsystem}
-                    </div>
+                    </span>
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-black/[0.1] text-xs font-medium text-[#18181b] hover:bg-black hover:text-white transition-all shadow-2xs whitespace-nowrap"
+                    >
+                      <span>Open Realm</span>
+                      <ArrowUpRight size={13} />
+                    </a>
                   </div>
-
-                  <div className="pt-4 border-t border-black/[0.05] flex items-center justify-between text-xs font-semibold text-[#18181b]">
-                    <span>Open Standalone Visualizer</span>
-                    <ArrowUpRight
-                      size={14}
-                      className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
-                    />
-                  </div>
-                </a>
+                </div>
               );
             })}
           </div>
