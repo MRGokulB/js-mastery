@@ -27,6 +27,7 @@ export interface V8SubsystemMeta {
   accentGlow: string;
   mechanic: string;
   schematic: string;
+  register: string;
   overview: string;
 }
 
@@ -43,6 +44,7 @@ export const V8_SUBSYSTEMS: V8SubsystemMeta[] = [
     accentGlow: "rgba(245, 158, 11, 0.4)",
     mechanic: "Contiguous Stack / Dynamic Heap Pointer Allocation",
     schematic: "SMI_TAG: val << 1 | 0x0 · HEAP_PTR: 0x7FFF...",
+    register: "ISOLATE: 0x2A1B · SMI_TAG: 31-BIT · GC: YOUNG_GEN",
     overview: "Hardware-level memory modeling exploring 31-bit Small Integer tagging, execution frame registers, and V8 Scavenger garbage collection."
   },
   {
@@ -57,6 +59,7 @@ export const V8_SUBSYSTEMS: V8SubsystemMeta[] = [
     accentGlow: "rgba(16, 185, 129, 0.4)",
     mechanic: "Conditional Branch Jump Offset Registers",
     schematic: "LdaNamedProperty [a0] | JumpIfFalse [offset: +0x14]",
+    register: "BYTECODE_OFFSET: +0x00A4 · ACCUMULATOR: TRUE",
     overview: "AST conditional branch resolution, switch statement jump tables, and boolean coercion bitmasks inside Ignition bytecode."
   },
   {
@@ -71,6 +74,7 @@ export const V8_SUBSYSTEMS: V8SubsystemMeta[] = [
     accentGlow: "rgba(139, 92, 246, 0.4)",
     mechanic: "Context Stack Linked Lexical Environment",
     schematic: "[[Scopes]]: [Closure(outer), Script, Global]",
+    register: "LEXICAL_ENV: CLOSURE[0x9F] · ACTIVATION: EXEC",
     overview: "Execution context creation phases, persistent heap closures, and static lexical scoping chains."
   },
   {
@@ -85,6 +89,7 @@ export const V8_SUBSYSTEMS: V8SubsystemMeta[] = [
     accentGlow: "rgba(14, 165, 233, 0.4)",
     mechanic: "Fast Contiguous Indexed Int32 Array Buffer",
     schematic: "PACKED_SMI -> PACKED_DOUBLE -> HOLEY_ELEMENTS",
+    register: "ELEMENTS_KIND: PACKED_SMI · CAPACITY: 16",
     overview: "Fast Smi Elements, holey array avoidances, and amortized array capacity doubling in memory."
   },
   {
@@ -99,6 +104,7 @@ export const V8_SUBSYSTEMS: V8SubsystemMeta[] = [
     accentGlow: "rgba(217, 70, 239, 0.4)",
     mechanic: "Shape Transition Tree & Property Offset Table",
     schematic: "Map0 -> Map1(x: +0x08) -> Map2(y: +0x10) [MONO_IC]",
+    register: "TRANSITION_MAP: 0x48 · INLINE_CACHE: MONOMORPHIC",
     overview: "V8 Hidden Classes (Shapes) transition trees, monomorphic inline caching, and prototype chain lookups."
   },
   {
@@ -113,6 +119,7 @@ export const V8_SUBSYSTEMS: V8SubsystemMeta[] = [
     accentGlow: "rgba(244, 63, 94, 0.4)",
     mechanic: "Dual Priority Queue Scheduler (Microtask P0 / Timer P1)",
     schematic: "DRAIN_MICROTASKS() -> RENDER -> TICK_MACROTASK()",
+    register: "MICROTASKS: 0 PENDING · EVENT_PHASE: ACTIVE",
     overview: "Call stack execution, Web API delegation, Promise microtask drain strict priority, and timer phase ticks."
   },
   {
@@ -127,6 +134,7 @@ export const V8_SUBSYSTEMS: V8SubsystemMeta[] = [
     accentGlow: "rgba(6, 182, 212, 0.4)",
     mechanic: "C++ Wrapper Object Reference Handle",
     schematic: "PHASE: CAPTURING (1) -> AT_TARGET (2) -> BUBBLING (3)",
+    register: "EVENT_PHASE: AT_TARGET · BLINK_WRAPPER: RETAINED",
     overview: "C++ Blink bindings, DOM node wrapper memory lifecycles, and three-phase event capture/bubble propagation."
   }
 ];
@@ -151,7 +159,7 @@ export default function V8KineticEngine3D({
   onSelectSubsystem
 }: V8KineticEngine3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [tilt, setTilt] = useState({ x: 12, y: -8 });
+  const [tilt, setTilt] = useState({ x: 10, y: -6 });
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -162,15 +170,15 @@ export default function V8KineticEngine3D({
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const tiltX = ((y - centerY) / centerY) * -14;
-    const tiltY = ((x - centerX) / centerX) * 16;
+    const tiltX = ((y - centerY) / centerY) * -12;
+    const tiltY = ((x - centerX) / centerX) * 14;
 
     setTilt({ x: tiltX, y: tiltY });
   }, []);
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
-    setTilt({ x: 10, y: -6 });
+    setTilt({ x: 8, y: -5 });
   }, []);
 
   const activeSubsystem = V8_SUBSYSTEMS.find((m) => m.id === activeId) || V8_SUBSYSTEMS[0];
@@ -188,12 +196,12 @@ export default function V8KineticEngine3D({
           style={{
             transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
             transformStyle: "preserve-3d",
-            transition: isHovered ? "transform 0.12s ease-out" : "transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)"
+            transition: isHovered ? "transform 0.1s ease-out" : "transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)"
           }}
-          className="relative w-full rounded-[32px] p-6 sm:p-8 bg-[#0b0d13] border border-white/[0.12] shadow-[0_32px_80px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.06)] overflow-hidden"
+          className="relative w-full rounded-[32px] p-6 sm:p-8 bg-[#0b0d13] border border-white/[0.12] shadow-[0_36px_90px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.06)] overflow-hidden"
         >
           <div 
-            className="absolute inset-0 opacity-[0.07] pointer-events-none"
+            className="absolute inset-0 opacity-[0.08] pointer-events-none"
             style={{
               backgroundImage: "radial-gradient(#ffffff 1px, transparent 1px), linear-gradient(to right, #ffffff08 1px, transparent 1px), linear-gradient(to bottom, #ffffff08 1px, transparent 1px)",
               backgroundSize: "24px 24px, 48px 48px, 48px 48px"
@@ -305,7 +313,7 @@ export default function V8KineticEngine3D({
           >
             <div className="flex items-center gap-3">
               <div 
-                className="w-3 h-3 rounded-full flex items-center justify-center"
+                className="w-3.5 h-3.5 rounded-full flex items-center justify-center"
                 style={{ backgroundColor: activeSubsystem.accent }}
               >
                 <div className="w-1.5 h-1.5 rounded-full bg-white" />
@@ -316,7 +324,7 @@ export default function V8KineticEngine3D({
                     ROUTED SUBSYSTEM: {activeSubsystem.name.toUpperCase()}
                   </span>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-white/80">
-                    {activeSubsystem.subsystem}
+                    {activeSubsystem.register}
                   </span>
                 </div>
                 <p className="text-[11px] text-white/60 font-sans mt-0.5 line-clamp-1">

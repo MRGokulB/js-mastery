@@ -90,12 +90,12 @@ export function HubScene() {
           >
             Understand JavaScript, <br />
             <span className="font-instrument italic font-normal text-[#18181b]">
-              down to the V8 heap.
+              down to the V8 engine.
             </span>
           </h1>
 
           <p className="text-sm sm:text-base text-[#52525b] max-w-lg mx-auto mt-4 font-normal leading-relaxed">
-            Orbit the spatial V8 runtime core. Navigate across 7 execution realms to launch their dedicated interactive visualizers.
+            Inspect Ignition bytecode, TurboFan JIT optimizations, and the microtask scheduler. Navigate across 7 core V8 execution subsystems to launch their dedicated interactive visualizers.
           </p>
         </div>
 
@@ -208,9 +208,12 @@ export function HubScene() {
                       <div className="w-9 h-9 rounded-xl bg-black/[0.04] text-[#18181b] flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
                         <IconComp size={16} />
                       </div>
-                      <span className="text-[10px] font-mono uppercase text-[#71717a]">
-                        MODULE {item.index}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                        <span className="text-[10px] font-mono uppercase text-[#71717a]">
+                          DIE M{item.index}
+                        </span>
+                      </div>
                     </div>
 
                     <h3 className="font-clash font-semibold text-base text-[#0f172a] mb-1.5 group-hover:text-black">
