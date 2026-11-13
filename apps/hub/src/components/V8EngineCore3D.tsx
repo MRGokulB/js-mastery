@@ -13,10 +13,8 @@ export interface V8ModuleMeta {
   tagline: string;
   url: string;
   accent: string;
-  accentHex: number;
+  chipColor: string;
   mechanic: string;
-  schematic: string;
-  codeSnippet: string;
 }
 
 export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
@@ -24,205 +22,141 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     id: "variables",
     index: "01",
     name: "Variables, Stack & Heap",
-    shortTitle: "V8 Stack & Heap",
+    shortTitle: "VARIABLES",
     category: "Memory",
-    subsystem: "V8 Scavenger GC",
+    subsystem: "V8 Scavenger GC & Memory Allocator",
     tagline: "Stack frames, 31-bit Smis, and heap references",
     url: "https://variables-pi.vercel.app/",
-    accent: "#f59e0b",
-    accentHex: 0xf59e0b,
-    mechanic: "Contiguous Stack / Dynamic Heap Pointer",
-    schematic: "[ Stack Frame ] -> [ 0xHeap ]",
-    codeSnippet: "Smi: (val << 1) | 0"
+    accent: "#d97706",
+    chipColor: "#fef08a", // Soft amber ceramic
+    mechanic: "Contiguous Stack / Dynamic Heap Pointer"
   },
   {
     id: "control-flow",
     index: "02",
     name: "Control Flow & Logic",
-    shortTitle: "Control & AST",
+    shortTitle: "CONTROL",
     category: "Interpreter",
-    subsystem: "Ignition Dispatcher",
+    subsystem: "Ignition Bytecode Dispatcher",
     tagline: "AST branch jumping and truthy bitmasks",
     url: "https://control-flow-ruby.vercel.app",
-    accent: "#10b981",
-    accentHex: 0x10b981,
-    mechanic: "Conditional Branch Jump Offset Registers",
-    schematic: "AST Branch -> Jump If False",
-    codeSnippet: "JumpIfFalse [r0], [offset]"
+    accent: "#059669",
+    chipColor: "#bbf7d0", // Soft mint ceramic
+    mechanic: "Conditional Branch Jump Offset Registers"
   },
   {
     id: "functions-scope",
     index: "03",
     name: "Functions & Closures",
-    shortTitle: "Scope & Closures",
+    shortTitle: "SCOPE",
     category: "Scope",
-    subsystem: "Context Resolver",
+    subsystem: "Context Resolver & Activation Records",
     tagline: "Lexical environments and heap closure retention",
     url: "https://functions-scope.vercel.app/",
-    accent: "#a855f7",
-    accentHex: 0xa855f7,
-    mechanic: "Context Stack Linked Lexical Environment",
-    schematic: "[[Scope]] -> Outer LexicalEnv",
-    codeSnippet: "ctx->set_context_slot(var)"
+    accent: "#7c3aed",
+    chipColor: "#e9d5ff", // Soft lilac ceramic
+    mechanic: "Context Stack Linked Lexical Environment"
   },
   {
     id: "arrays-iteration",
     index: "04",
     name: "Arrays & Fast Elements",
-    shortTitle: "Fast Elements",
+    shortTitle: "ARRAYS",
     category: "Elements",
-    subsystem: "Elements Table",
+    subsystem: "V8 Elements Transition Table",
     tagline: "Packed Smi elements and amortized expansion",
     url: "https://arrays-iteration.vercel.app/",
-    accent: "#38bdf8",
-    accentHex: 0x38bdf8,
-    mechanic: "Fast Contiguous Indexed Int32 Array Buffer",
-    schematic: "[ PACKED_SMI -> HOLEY_ELEMENTS ]",
-    codeSnippet: "elements->get(i)"
+    accent: "#0284c7",
+    chipColor: "#bfdbfe", // Soft sky blue ceramic
+    mechanic: "Fast Contiguous Indexed Int32 Array Buffer"
   },
   {
     id: "objects-maps",
     index: "05",
     name: "Objects & Hidden Classes",
-    shortTitle: "Hidden Classes",
+    shortTitle: "OBJECTS",
     category: "Compiler",
-    subsystem: "TurboFan IC Shapes",
+    subsystem: "TurboFan JIT Type Feedback Vector",
     tagline: "V8 Shapes, inline caches and prototype lookups",
     url: "https://objects-maps.vercel.app/",
-    accent: "#f43f5e",
-    accentHex: 0xf43f5e,
-    mechanic: "Shape Transition Tree & Property Offset Table",
-    schematic: "Map0 -> Map1(+x) -> Map2(+y)",
-    codeSnippet: "IC: Monomorphic Slot Hit"
+    accent: "#c026d3",
+    chipColor: "#fbcfe8", // Soft peach/pink ceramic
+    mechanic: "Shape Transition Tree & Property Offset Table"
   },
   {
     id: "async-event-loop",
     index: "06",
     name: "Async & The Event Loop",
-    shortTitle: "The Event Loop",
+    shortTitle: "ASYNC",
     category: "Async",
-    subsystem: "Libuv Task Queue",
+    subsystem: "Libuv / Browser Event Loop Ring",
     tagline: "Microtask drain priority and macrotask timers",
     url: "https://async-event-loop.vercel.app",
-    accent: "#ec4899",
-    accentHex: 0xec4899,
-    mechanic: "Dual Priority Queue Scheduler (P0 / P1)",
-    schematic: "Stack -> Microtasks -> Timers",
-    codeSnippet: "drain_microtask_queue()"
+    accent: "#e11d48",
+    chipColor: "#fecdd3", // Soft rose ceramic
+    mechanic: "Dual Priority Queue Scheduler (P0 / P1)"
   },
   {
     id: "dom-apis",
     index: "07",
     name: "DOM & Render Pipeline",
-    shortTitle: "DOM & Render",
+    shortTitle: "DOM",
     category: "Rendering",
-    subsystem: "Blink Compositor",
+    subsystem: "Blink Layout & GPU Compositor",
     tagline: "Critical rendering path and GPU layer geometry",
     url: "https://dom-apis.vercel.app",
-    accent: "#06b6d4",
-    accentHex: 0x06b6d4,
-    mechanic: "Render Tree & Paint Layer Tree Compositor",
-    schematic: "DOM + CSSOM -> Paint -> GPU",
-    codeSnippet: "requestAnimationFrame(frame)"
+    accent: "#0891b2",
+    chipColor: "#a5f3fc", // Soft cyan ceramic
+    mechanic: "Render Tree & Paint Layer Tree Compositor"
   }
 ];
 
-function createV8TopicCardCanvas(mod: V8ModuleMeta, isSelected: boolean, isHovered: boolean): HTMLCanvasElement {
+function createCleanV8CardCanvas(mod: V8ModuleMeta, isSelected: boolean, isHovered: boolean): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
-  canvas.width = 1024;
-  canvas.height = 768;
+  canvas.width = 512;
+  canvas.height = 512;
   const ctx = canvas.getContext("2d");
   if (!ctx) return canvas;
 
-  // Background gradient
-  const bgGrad = ctx.createLinearGradient(0, 0, 1024, 768);
-  if (isSelected) {
-    bgGrad.addColorStop(0, "#161b28");
-    bgGrad.addColorStop(1, "#0c101a");
-  } else if (isHovered) {
-    bgGrad.addColorStop(0, "#141824");
-    bgGrad.addColorStop(1, "#0e111a");
-  } else {
-    bgGrad.addColorStop(0, "#0f131e");
-    bgGrad.addColorStop(1, "#0a0c14");
-  }
+  // Solid clean pastel background
+  ctx.fillStyle = mod.chipColor;
+  ctx.fillRect(0, 0, 512, 512);
 
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, 1024, 768);
+  // Subtle clean border
+  ctx.lineWidth = isSelected ? 16 : 8;
+  ctx.strokeStyle = isSelected ? "#0f172a" : isHovered ? "rgba(15, 23, 42, 0.4)" : "rgba(15, 23, 42, 0.15)";
+  ctx.strokeRect(8, 8, 496, 496);
 
-  // Outer border
-  ctx.lineWidth = isSelected ? 12 : 6;
-  ctx.strokeStyle = isSelected ? mod.accent : isHovered ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.1)";
-  ctx.strokeRect(20, 20, 984, 728);
+  // Top Index Badge
+  ctx.fillStyle = "#0f172a";
+  ctx.font = "bold 32px sans-serif";
+  ctx.fillText(mod.index, 40, 72);
 
-  // Top accent bar
-  ctx.fillStyle = mod.accent;
-  ctx.fillRect(20, 20, 984, 18);
+  // Category Tag
+  ctx.fillStyle = "rgba(15, 23, 42, 0.65)";
+  ctx.font = "bold 20px monospace";
+  ctx.fillText(mod.category.toUpperCase(), 40, 108);
 
-  // Header: Index & Category Pill
-  ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
+  // Status indicator dot
   ctx.beginPath();
-  ctx.roundRect(60, 75, 220, 56, 28);
+  ctx.arc(460, 64, 14, 0, Math.PI * 2);
+  ctx.fillStyle = isSelected ? "#0f172a" : "rgba(15, 23, 42, 0.25)";
   ctx.fill();
 
-  ctx.fillStyle = mod.accent;
-  ctx.font = "bold 26px sans-serif";
-  ctx.fillText(`${mod.index} · ${mod.category.toUpperCase()}`, 82, 112);
-
-  // Status LED dot
-  ctx.beginPath();
-  ctx.arc(930, 102, 14, 0, Math.PI * 2);
-  ctx.fillStyle = isSelected ? mod.accent : "rgba(255,255,255,0.3)";
-  ctx.fill();
-  if (isSelected) {
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "#ffffff";
-    ctx.stroke();
-  }
-
-  // Topic Title
-  ctx.fillStyle = "#ffffff";
+  // Primary Bold Short Title
+  ctx.fillStyle = "#0f172a";
   ctx.font = "bold 64px sans-serif";
-  ctx.fillText(mod.shortTitle, 60, 220);
+  ctx.fillText(mod.shortTitle, 40, 280);
 
   // Subsystem Tag
-  ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
-  ctx.font = "500 32px monospace";
-  ctx.fillText(mod.subsystem, 60, 285);
+  ctx.fillStyle = "rgba(15, 23, 42, 0.6)";
+  ctx.font = "500 24px monospace";
+  ctx.fillText(mod.subsystem.split("&")[0].trim(), 40, 330);
 
-  // Schematic / Code Box
-  ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
-  ctx.beginPath();
-  ctx.roundRect(60, 340, 904, 250, 20);
-  ctx.fill();
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
-  ctx.stroke();
-
-  // Box Header
-  ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
-  ctx.font = "bold 22px monospace";
-  ctx.fillText("V8 RUNTIME MECHANIC / INVARIANT", 90, 385);
-
-  // Schematic content
-  ctx.fillStyle = mod.accent;
-  ctx.font = "bold 38px monospace";
-  ctx.fillText(mod.schematic, 90, 460);
-
-  // Code snippet
-  ctx.fillStyle = "#e2e8f0";
-  ctx.font = "32px monospace";
-  ctx.fillText(mod.codeSnippet, 90, 535);
-
-  // Footer Tagline
-  ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
-  ctx.font = "400 28px sans-serif";
-  ctx.fillText(mod.tagline, 60, 660);
-
-  // Corner grid marks
-  ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
-  ctx.font = "bold 20px monospace";
-  ctx.fillText("V8-UNIVERSE · RUNTIME-SYS", 690, 660);
+  // Bottom corner branding
+  ctx.fillStyle = "rgba(15, 23, 42, 0.35)";
+  ctx.font = "bold 18px monospace";
+  ctx.fillText("V8 · 2026", 40, 460);
 
   return canvas;
 }
@@ -251,8 +185,8 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
     scene.background = null;
 
     const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
-    camera.position.set(0, 5.2, 8.2);
-    camera.lookAt(0, -0.3, 0);
+    camera.position.set(0, 5.0, 7.8);
+    camera.lookAt(0, -0.2, 0);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -264,14 +198,14 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.05;
     container.appendChild(renderer.domElement);
 
     // Studio Lighting
-    const ambientLight = new THREE.AmbientLight(0x181e2b, 1.8);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.9);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
+    const keyLight = new THREE.DirectionalLight(0xfffbf2, 2.4);
     keyLight.position.set(5, 9, 6);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 1024;
@@ -279,29 +213,24 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
     keyLight.shadow.bias = -0.0005;
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0xf59e0b, 1.1);
+    const fillLight = new THREE.DirectionalLight(0xe8f0fe, 1.2);
     fillLight.position.set(-6, 5, -3);
     scene.add(fillLight);
 
-    const rimLight = new THREE.PointLight(0xffffff, 0.9, 15);
+    const rimLight = new THREE.PointLight(0xffffff, 0.8, 15);
     rimLight.position.set(0, 6, -5);
     scene.add(rimLight);
-
-    // Active Accent Point Light
-    const activePointLight = new THREE.PointLight(0xf59e0b, 2.8, 9);
-    activePointLight.position.set(0, 2.5, 0);
-    scene.add(activePointLight);
 
     const coreGroup = new THREE.Group();
     scene.add(coreGroup);
 
-    // Dark Titanium Circular Substrate Base Slab
-    const baseGeo = new THREE.CylinderGeometry(4.2, 4.4, 0.22, 48);
+    // Soft Ceramic Circular Substrate Base Slab
+    const baseGeo = new THREE.CylinderGeometry(3.6, 3.8, 0.22, 48);
     const baseMat = new THREE.MeshPhysicalMaterial({
-      color: 0x0e1118,
-      metalness: 0.85,
-      roughness: 0.35,
-      clearcoat: 0.4,
+      color: 0xf1f3f7,
+      metalness: 0.08,
+      roughness: 0.45,
+      clearcoat: 0.35,
       clearcoatRoughness: 0.2
     });
     const baseMesh = new THREE.Mesh(baseGeo, baseMat);
@@ -309,54 +238,53 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
     baseMesh.receiveShadow = true;
     coreGroup.add(baseMesh);
 
-    // Center V8 Core JIT Reactor (Brushed Aluminum)
-    const centerGeo = new THREE.CylinderGeometry(1.0, 1.1, 0.38, 36);
+    // Center V8 Core Hub (Brushed Aluminum)
+    const centerGeo = new THREE.CylinderGeometry(0.9, 0.95, 0.36, 32);
     const centerMat = new THREE.MeshPhysicalMaterial({
-      color: 0x1f2438,
-      metalness: 0.9,
-      roughness: 0.2,
-      clearcoat: 0.5
+      color: 0xe4e4e7,
+      metalness: 0.85,
+      roughness: 0.25,
+      clearcoat: 0.4
     });
     const centerMesh = new THREE.Mesh(centerGeo, centerMat);
-    centerMesh.position.y = 0.19;
+    centerMesh.position.y = 0.18;
     centerMesh.castShadow = true;
     centerMesh.receiveShadow = true;
     coreGroup.add(centerMesh);
 
     // Center Core Cap
-    const capGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.08, 32);
+    const capGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.08, 32);
     const capMat = new THREE.MeshStandardMaterial({
-      color: 0x18181b,
+      color: 0x0f172a,
       metalness: 0.3,
       roughness: 0.3
     });
     const capMesh = new THREE.Mesh(capGeo, capMat);
-    capMesh.position.y = 0.40;
+    capMesh.position.y = 0.38;
     coreGroup.add(capMesh);
 
-    // Contact Shadow
-    const shadowGeo = new THREE.PlaneGeometry(16, 16);
-    const shadowMat = new THREE.ShadowMaterial({ opacity: 0.35 });
+    // Diffuse Ground Contact Shadow
+    const shadowGeo = new THREE.PlaneGeometry(14, 14);
+    const shadowMat = new THREE.ShadowMaterial({ opacity: 0.16 });
     const groundMesh = new THREE.Mesh(shadowGeo, shadowMat);
     groundMesh.rotation.x = -Math.PI / 2;
     groundMesh.position.y = -0.23;
     groundMesh.receiveShadow = true;
     scene.add(groundMesh);
 
-    // 7 Radial Topic Card Meshes in Orbital Layout
+    // 7 Radial Module Blocks positioned in circular orbit
     const cardMeshes: {
       id: string;
       mesh: THREE.Mesh;
       baseY: number;
       targetY: number;
       topMat: THREE.MeshPhysicalMaterial;
-      sideMat: THREE.MeshPhysicalMaterial;
       mod: V8ModuleMeta;
       texture: THREE.CanvasTexture;
     }[] = [];
 
-    const cardGeo = new THREE.BoxGeometry(1.7, 0.22, 1.3);
-    const radius = 2.85;
+    const cardGeo = new THREE.BoxGeometry(1.35, 0.24, 1.15);
+    const radius = 2.4;
 
     V8_MODULE_SYSTEMS.forEach((mod, idx) => {
       const angle = (idx * (2 * Math.PI)) / V8_MODULE_SYSTEMS.length;
@@ -364,28 +292,28 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
       const z = Math.sin(angle) * radius;
 
       const isSelected = mod.id === activeIdRef.current;
-      const canvas = createV8TopicCardCanvas(mod, isSelected, false);
+      const canvas = createCleanV8CardCanvas(mod, isSelected, false);
       const texture = new THREE.CanvasTexture(canvas);
       texture.anisotropy = 8;
 
       const sideMat = new THREE.MeshPhysicalMaterial({
-        color: 0x141824,
-        metalness: 0.8,
-        roughness: 0.3,
-        clearcoat: 0.4
+        color: new THREE.Color(mod.chipColor).multiplyScalar(0.92),
+        metalness: 0.1,
+        roughness: 0.35,
+        clearcoat: 0.5
       });
 
       const topMat = new THREE.MeshPhysicalMaterial({
         map: texture,
-        metalness: 0.2,
-        roughness: 0.35,
-        clearcoat: 0.6,
-        clearcoatRoughness: 0.2
+        metalness: 0.12,
+        roughness: 0.32,
+        clearcoat: 0.7,
+        clearcoatRoughness: 0.18
       });
 
       const materials = [sideMat, sideMat, topMat, sideMat, sideMat, sideMat];
       const mesh = new THREE.Mesh(cardGeo, materials);
-      mesh.position.set(x, 0.11, z);
+      mesh.position.set(x, 0.12, z);
       mesh.rotation.y = -angle;
       mesh.castShadow = true;
       mesh.receiveShadow = true;
@@ -395,10 +323,9 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
       cardMeshes.push({
         id: mod.id,
         mesh,
-        baseY: 0.11,
-        targetY: 0.11,
+        baseY: 0.12,
+        targetY: 0.12,
         topMat,
-        sideMat,
         mod,
         texture
       });
@@ -408,7 +335,7 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
       cardMeshes.forEach((item) => {
         const isSel = item.id === activeModId;
         const isHov = item.id === hoveredModId;
-        const canvas = createV8TopicCardCanvas(item.mod, isSel, isHov);
+        const canvas = createCleanV8CardCanvas(item.mod, isSel, isHov);
         item.texture.image = canvas;
         item.texture.needsUpdate = true;
       });
@@ -493,22 +420,12 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
         updateCardTextures(activeIdRef.current, hoveredId);
       }
 
-      const activeMod = V8_MODULE_SYSTEMS.find((m) => m.id === activeIdRef.current);
-      if (activeMod) {
-        activePointLight.color.setHex(activeMod.accentHex);
-      }
-
       cardMeshes.forEach((item) => {
         const isActive = item.id === activeIdRef.current;
         const isHovered = item.id === hoveredId;
 
         item.targetY = isActive ? item.baseY + 0.38 : isHovered ? item.baseY + 0.18 : item.baseY;
         item.mesh.position.y = THREE.MathUtils.damp(item.mesh.position.y, item.targetY, 9, delta);
-
-        if (isActive) {
-          activePointLight.position.x = THREE.MathUtils.damp(activePointLight.position.x, item.mesh.position.x, 8, delta);
-          activePointLight.position.z = THREE.MathUtils.damp(activePointLight.position.z, item.mesh.position.z, 8, delta);
-        }
       });
 
       renderer.render(scene, camera);
@@ -548,7 +465,7 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
   }, []);
 
   return (
-    <div className="relative w-full h-[480px] sm:h-[520px] select-none flex items-center justify-center">
+    <div className="relative w-full h-[480px] sm:h-[560px] select-none flex items-center justify-center">
       <div ref={mountRef} className="w-full h-full" />
     </div>
   );
