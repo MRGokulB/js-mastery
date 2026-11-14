@@ -355,7 +355,7 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: V8EngineCor
         <div>
           <div className="flex items-center gap-2.5 mb-1.5">
             <span
-              className="w-2.5 h-2.5 rounded-full animate-pulse"
+              className="w-2.5 h-2.5 rounded-full"
               style={{ backgroundColor: activeModule.accent }}
             />
             <span className="text-xs font-bold tracking-wider uppercase text-slate-500 font-mono">
@@ -444,7 +444,7 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: V8EngineCor
                 <Boxes size={15} className="text-indigo-600" />
                 <span>Live Interactive Architecture</span>
               </div>
-              <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
+              <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200/60">
                 Interactive State
               </span>
             </div>
@@ -456,7 +456,7 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: V8EngineCor
                     <span className="text-xs font-bold text-amber-900 font-mono">
                       CALL STACK (Fast Local Memory)
                     </span>
-                    <span className="text-[10px] bg-amber-200 text-amber-800 px-2 py-0.5 rounded-full font-bold">
+                    <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-semibold border border-amber-200/60">
                       Stack Frame
                     </span>
                   </div>
@@ -479,7 +479,7 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: V8EngineCor
                     <span className="text-xs font-bold text-indigo-900 font-mono">
                       HEAP MEMORY (Dynamic Object Storage)
                     </span>
-                    <span className="text-[10px] bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded-full font-bold">
+                    <span className="text-[10px] bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-md font-semibold border border-indigo-200/60">
                       Heap Block
                     </span>
                   </div>
