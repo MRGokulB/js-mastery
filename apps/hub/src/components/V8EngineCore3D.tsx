@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Layers,
   Workflow,
@@ -11,11 +11,10 @@ import {
   Activity,
   ArrowUpRight,
   Sparkles,
-  Zap,
   Play,
   RotateCcw,
-  ChevronLeft,
-  ChevronRight,
+  Zap,
+  Sliders,
   Braces
 } from "lucide-react";
 
@@ -45,7 +44,7 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     tagline: "Stack frames, 31-bit Smis, and heap references",
     url: "https://variables-pi.vercel.app/",
     accent: "#f59e0b",
-    chipColor: "rgba(245, 158, 11, 0.2)",
+    chipColor: "#fef3c7",
     codeSnippet: "let count = 42; // Smi: 31-bit integer\nlet user = { id: 100 }; // Heap object pointer",
     glyph: "Smi: (val << 1) | 0 · Heap 0x7A40"
   },
@@ -59,7 +58,7 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     tagline: "AST branch jumping and truthy bitmasks",
     url: "https://control-flow-ruby.vercel.app",
     accent: "#10b981",
-    chipColor: "rgba(16, 185, 129, 0.2)",
+    chipColor: "#d1fae5",
     codeSnippet: "if (score < 100) {\n  advanceLevel();\n} // Ignition JumpIfFalse",
     glyph: "JumpIfFalse [r0], [offset]"
   },
@@ -73,7 +72,7 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     tagline: "Lexical environments and heap closure retention",
     url: "https://functions-scope.vercel.app/",
     accent: "#8b5cf6",
-    chipColor: "rgba(139, 92, 246, 0.2)",
+    chipColor: "#ede9fe",
     codeSnippet: "function outer() {\n  const token = '0x99';\n  return () => token;\n}",
     glyph: "[[Scope]] -> Outer LexicalEnv"
   },
@@ -86,8 +85,8 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     subsystem: "Elements Table",
     tagline: "Packed Smi elements and amortized expansion",
     url: "https://arrays-iteration.vercel.app/",
-    accent: "#06b6d4",
-    chipColor: "rgba(6, 182, 212, 0.2)",
+    accent: "#0284c7",
+    chipColor: "#e0f2fe",
     codeSnippet: "const arr = [10, 20, 30, 40];\n// PACKED_SMI -> HOLEY on element delete",
     glyph: "[ PACKED_SMI -> HOLEY_ELEMENTS ]"
   },
@@ -100,8 +99,8 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     subsystem: "TurboFan JIT",
     tagline: "Shape transitions and inline cache slots",
     url: "https://objects-maps.vercel.app/",
-    accent: "#f97316",
-    chipColor: "rgba(249, 115, 22, 0.2)",
+    accent: "#ea580c",
+    chipColor: "#ffedd5",
     codeSnippet: "const p = {}; // Map 0\np.x = 10; // Map 1 (Offset 0)\np.y = 20; // Map 2 (Offset 1)",
     glyph: "Map [Shape 0] -> add(y) -> [Shape 1]"
   },
@@ -114,8 +113,8 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     subsystem: "Libuv / TaskQueue",
     tagline: "Call stack drain and microtask priority queuing",
     url: "https://async-event-loop-ten.vercel.app/",
-    accent: "#f43f5e",
-    chipColor: "rgba(244, 63, 94, 0.2)",
+    accent: "#e11d48",
+    chipColor: "#ffe4e6",
     codeSnippet: "Promise.resolve().then(microtask);\nsetTimeout(macrotask, 0);",
     glyph: "Microtask.drain() -> Render -> Macrotask"
   },
@@ -128,504 +127,275 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     subsystem: "Blink Tree Sync",
     tagline: "C++ bindings, layout reflow, and layer paint",
     url: "https://dom-apis.vercel.app/",
-    accent: "#14b8a6",
-    chipColor: "rgba(20, 184, 166, 0.2)",
+    accent: "#0d9488",
+    chipColor: "#ccfbf1",
     codeSnippet: "const el = document.getElementById('app');\nel.classList.add('active'); // Layer reflow",
     glyph: "Blink [LayoutObject] -> Compositor Quad"
   }
 ];
 
-const SYSTEM_ICONS = {
-  variables: Layers,
-  "control-flow": Workflow,
-  "functions-scope": Code2,
-  "arrays-iteration": Cpu,
-  "objects-maps": Terminal,
-  "async-event-loop": Activity,
-  "dom-apis": Layers
-};
-
-function CodeTerminalPane({ item, step, onStep }: { item: V8ModuleMeta; step: number; onStep: () => void }) {
-  return (
-    <div className="flex flex-col justify-between h-full bg-[#0b0f19] text-slate-200 rounded-2xl p-4 sm:p-5 font-mono text-xs border border-white/10 shadow-lg relative overflow-hidden">
-      <div className="pointer-events-none absolute -right-16 -top-16 w-40 h-40 rounded-full bg-cyan-500/10 blur-3xl" />
-
-      <div className="relative z-10">
-        <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
-            <span className="text-[11px] text-slate-400 font-mono ml-2">runtime.js</span>
-          </div>
-          <span className="text-[10px] uppercase font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded">
-            V8 JIT SOURCE
-          </span>
-        </div>
-
-        <pre className="text-xs text-amber-300 leading-relaxed font-mono p-3.5 rounded-xl bg-black/50 border border-white/5 mb-4 overflow-x-auto">
-          <code>{item.codeSnippet}</code>
-        </pre>
-
-        <div className="space-y-1.5 text-[11px]">
-          <div className="flex items-center justify-between text-slate-400">
-            <span>IGNITION DISPATCH:</span>
-            <span className="text-cyan-400 font-bold">OPCODE REGISTER 0x{((step % 4) + 1) * 8}</span>
-          </div>
-          <div className="p-2.5 rounded-lg bg-black/60 border border-white/10 text-slate-300 font-mono text-xs flex items-center justify-between">
-            <span className="text-cyan-300 font-bold">&gt; LdaNamedProperty a0, [0x0{step % 4}]</span>
-            <span className="text-[10px] text-slate-500">ACC &lt;-- r{step % 2}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="relative z-10 pt-3 border-t border-white/10 mt-3">
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={onStep}
-          className="w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:translate-y-0.5"
-        >
-          <Play size={12} className="fill-current" />
-          <span>Step V8 Engine Execution</span>
-        </motion.button>
-      </div>
-    </div>
-  );
-}
-
-function V8MemoryLensPane({ item, step }: { item: V8ModuleMeta; step: number }) {
-  const modId = item.id;
-
-  if (modId === "variables") {
-    const isSmi = step % 2 === 0;
-    return (
-      <div className="flex flex-col justify-between h-full bg-[#0e1424] text-slate-200 rounded-2xl p-4 sm:p-5 border border-white/10 shadow-lg font-mono text-xs relative overflow-hidden">
-        <div className="pointer-events-none absolute -left-16 -bottom-16 w-40 h-40 rounded-full bg-violet-500/10 blur-3xl" />
-
-        <div className="relative z-10">
-          <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
-            <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              V8 MEMORY ARCHITECTURE (STACK VS HEAP)
-            </span>
-            <span className="text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded font-bold">
-              31-BIT TAGGED SMI
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className={`p-3.5 rounded-xl border transition-all ${isSmi ? "bg-amber-500/10 border-amber-400/80 shadow-[0_0_12px_rgba(245,158,11,0.2)]" : "bg-white/5 border-white/10 opacity-50"}`}>
-              <div className="text-[10px] text-amber-400 uppercase font-bold mb-1">Stack (RSP Register)</div>
-              <div className="text-sm font-bold text-white">val: 42 (0x54)</div>
-              <div className="text-[10px] text-slate-400 mt-1">Immediate 31-bit integer</div>
-            </div>
-
-            <div className={`p-3.5 rounded-xl border transition-all ${!isSmi ? "bg-cyan-500/10 border-cyan-400/80 shadow-[0_0_12px_rgba(6,182,212,0.2)]" : "bg-white/5 border-white/10 opacity-50"}`}>
-              <div className="text-[10px] text-cyan-400 uppercase font-bold mb-1">V8 Heap Nursery</div>
-              <div className="text-sm font-bold text-white">{!isSmi ? "{ id: 100, v8: true }" : "Unallocated"}</div>
-              <div className="text-[10px] text-slate-400 mt-1">{!isSmi ? "ptr: 0x7A40_B00" : "Nursery Empty"}</div>
-            </div>
-          </div>
-
-          <div className="p-3 rounded-xl bg-black/40 border border-white/10 text-[11px] text-slate-300 space-y-1">
-            <div className="flex justify-between">
-              <span className="text-slate-400">Smi bitmask:</span>
-              <span className="font-bold text-amber-400">(val &lt;&lt; 1) | 0</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Heap pointer tag:</span>
-              <span className="font-bold text-cyan-400">(address) | 1</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="relative z-10 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
-          <span>Active State: {isSmi ? "Stack Integer (Zero Heap Allocation)" : "Heap Object Allocated"}</span>
-          <span className="font-bold text-amber-400">Scavenger GC</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (modId === "control-flow") {
-    return (
-      <div className="flex flex-col justify-between h-full bg-[#0e1424] text-slate-200 rounded-2xl p-4 sm:p-5 border border-white/10 shadow-lg font-mono text-xs">
-        <div>
-          <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
-            <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              AST BRANCH EVALUATION &amp; JUMP TABLE
-            </span>
-            <span className="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded font-bold">
-              BYTECODE DISPATCH
-            </span>
-          </div>
-
-          <div className="space-y-2 mb-4">
-            <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center justify-between">
-              <span className="font-bold">[0x00] TestLessThan r0, [100]</span>
-              <span className="text-[10px] font-bold">&rarr; True</span>
-            </div>
-            <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 flex items-center justify-between">
-              <span>[0x04] JumpIfFalse [0x18]</span>
-              <span className="text-[10px] text-slate-500">Bypassed</span>
-            </div>
-            <div className="p-2.5 rounded-xl bg-cyan-500/20 border border-cyan-400/50 text-cyan-200 flex items-center justify-between shadow-xs">
-              <span className="font-bold">[0x08] Star r0 &rarr; Accumulator</span>
-              <span className="text-[10px] text-cyan-300 font-bold">Active PC</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
-          <span>Register Allocation: r0, a0</span>
-          <span className="font-bold text-emerald-400">Ignition Dispatcher</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (modId === "functions-scope") {
-    return (
-      <div className="flex flex-col justify-between h-full bg-[#0e1424] text-slate-200 rounded-2xl p-4 sm:p-5 border border-white/10 shadow-lg font-mono text-xs">
-        <div>
-          <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
-            <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              LEXICAL SCOPE RESOLUTION &amp; CLOSURE
-            </span>
-            <span className="text-[10px] text-purple-400 bg-purple-500/10 border border-purple-500/30 px-2 py-0.5 rounded font-bold">
-              [[SCOPE]] CHAIN
-            </span>
-          </div>
-
-          <div className="space-y-2 mb-4">
-            <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 flex justify-between">
-              <span>Global Lexical Environment</span>
-              <span className="text-[10px] text-slate-500">Window / GlobalThis</span>
-            </div>
-            <div className="p-2.5 rounded-xl bg-purple-500/15 border border-purple-500/40 text-purple-200 font-bold flex justify-between ml-3">
-              <span>&uarr; Outer Function Scope [token: &apos;0x99&apos;]</span>
-              <span className="text-[10px] text-purple-400">Heap Retained</span>
-            </div>
-            <div className="p-2.5 rounded-xl bg-purple-600 text-white font-bold flex justify-between ml-6 shadow-xs">
-              <span>&uarr; Inner Closure Invocation</span>
-              <span className="text-[10px] text-purple-200">Active Stack</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
-          <span>Context allocation escapes to V8 heap</span>
-          <span className="font-bold text-purple-400">Context Stack</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (modId === "arrays-iteration") {
-    return (
-      <div className="flex flex-col justify-between h-full bg-[#0e1424] text-slate-200 rounded-2xl p-4 sm:p-5 border border-white/10 shadow-lg font-mono text-xs">
-        <div>
-          <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
-            <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              FAST CONTIGUOUS BUFFER VS HOLEY ELEMENTS
-            </span>
-            <span className="text-[10px] text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 px-2 py-0.5 rounded font-bold">
-              ELEMENTS KIND
-            </span>
-          </div>
-
-          <div className="grid grid-cols-4 gap-2 mb-4">
-            {[10, 20, 30, 40].map((v, i) => (
-              <div key={i} className="p-3 rounded-xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-200 text-center font-bold shadow-xs">
-                <div className="text-[8px] opacity-70">[{i}]</div>
-                <div className="text-sm">{v}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="p-3 rounded-xl bg-black/40 border border-white/10 text-[11px] text-slate-300 space-y-1">
-            <div className="flex justify-between">
-              <span className="text-slate-400">Current Kind:</span>
-              <span className="font-bold text-cyan-400">PACKED_SMI_ELEMENTS</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Memory Layout:</span>
-              <span className="font-bold text-white">Contiguous Int32 Array</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
-          <span>O(1) Direct Offset Indexing</span>
-          <span className="font-bold text-cyan-400">Elements Table</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (modId === "objects-maps") {
-    return (
-      <div className="flex flex-col justify-between h-full bg-[#0e1424] text-slate-200 rounded-2xl p-4 sm:p-5 border border-white/10 shadow-lg font-mono text-xs">
-        <div>
-          <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
-            <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              TURBOFAN HIDDEN CLASS TRANSITION TREE
-            </span>
-            <span className="text-[10px] text-orange-400 bg-orange-500/10 border border-orange-500/30 px-2 py-0.5 rounded font-bold">
-              INLINE CACHE
-            </span>
-          </div>
-
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-center">
-              <div className="text-[9px] text-slate-500">Shape 0</div>
-              <div className="font-bold text-slate-300">Map 0x00</div>
-            </div>
-            <span className="text-orange-400 font-bold">&rarr;</span>
-            <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-center">
-              <div className="text-[9px] text-slate-500">Shape 1</div>
-              <div className="font-bold text-slate-300">+x (Off: 0)</div>
-            </div>
-            <span className="text-orange-400 font-bold">&rarr;</span>
-            <div className="p-2.5 rounded-xl bg-orange-500/30 border border-orange-400/60 text-orange-200 text-center font-bold shadow-xs">
-              <div className="text-[9px] opacity-80">Shape 2</div>
-              <div>+y (Off: 1)</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
-          <span>Fast field access via fixed offset descriptors</span>
-          <span className="font-bold text-orange-400">TurboFan JIT</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (modId === "async-event-loop") {
-    return (
-      <div className="flex flex-col justify-between h-full bg-[#0e1424] text-slate-200 rounded-2xl p-4 sm:p-5 border border-white/10 shadow-lg font-mono text-xs">
-        <div>
-          <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
-            <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              EVENT LOOP PRIORITY DRAIN CYCLE
-            </span>
-            <span className="text-[10px] text-rose-400 bg-rose-500/10 border border-rose-500/30 px-2 py-0.5 rounded font-bold">
-              LIBUV DRAIN
-            </span>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2 mb-4 text-center">
-            <div className="p-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-200 font-bold shadow-xs">
-              <div className="text-[8px] opacity-80">STAGE 1</div>
-              <div className="text-xs">Call Stack</div>
-            </div>
-            <div className="p-3 rounded-xl bg-purple-500/20 border border-purple-500/40 text-purple-200 font-bold">
-              <div className="text-[8px] opacity-80">STAGE 2</div>
-              <div className="text-xs">Microtasks</div>
-            </div>
-            <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-slate-400">
-              <div className="text-[8px] opacity-60">STAGE 3</div>
-              <div className="text-xs">Macrotasks</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
-          <span>Microtasks drain completely before timers fire</span>
-          <span className="font-bold text-rose-400">Event Loop</span>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col justify-between h-full bg-[#0e1424] text-slate-200 rounded-2xl p-4 sm:p-5 border border-white/10 shadow-lg font-mono text-xs">
-      <div>
-        <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
-          <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-            BLINK COMPOSITOR &amp; C++ BINDINGS
-          </span>
-          <span className="text-[10px] text-teal-400 bg-teal-500/10 border border-teal-500/30 px-2 py-0.5 rounded font-bold">
-            GPU COMPOSITE
-          </span>
-        </div>
-
-        <div className="grid grid-cols-4 gap-2 mb-4 text-center">
-          <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300">DOM</div>
-          <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300">Style</div>
-          <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300">Layout</div>
-          <div className="p-2.5 rounded-xl bg-teal-500/30 border border-teal-400/50 text-teal-200 font-bold shadow-xs">Paint</div>
-        </div>
-      </div>
-
-      <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
-        <span>C++ handles synchronize with V8 garbage collection</span>
-        <span className="font-bold text-teal-400">Blink Engine</span>
-      </div>
-    </div>
-  );
-}
-
-interface Props {
+interface V8EngineCore3DProps {
   activeId: string;
   onSelectModule: (id: string) => void;
 }
 
-export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
+export default function V8EngineCore3D({ activeId, onSelectModule }: V8EngineCore3DProps) {
   const [step, setStep] = useState(0);
-  const activeIdx = V8_MODULE_SYSTEMS.findIndex((m) => m.id === activeId);
-  const activeModule = V8_MODULE_SYSTEMS[activeIdx] || V8_MODULE_SYSTEMS[0];
-  const IconComp = SYSTEM_ICONS[activeModule.id as keyof typeof SYSTEM_ICONS] || Layers;
+  const [pipelinePhase, setPipelinePhase] = useState<"source" | "bytecode" | "memory">("source");
+  const [scale, setScale] = useState<number>(1);
 
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  const activeModule = useMemo(() => {
+    return V8_MODULE_SYSTEMS.find((m) => m.id === activeId) || V8_MODULE_SYSTEMS[0];
+  }, [activeId]);
 
-  const rotateX = useSpring(useTransform(mouseY, [-200, 200], [2, -2]), {
-    stiffness: 300,
-    damping: 30
-  });
-  const rotateY = useSpring(useTransform(mouseX, [-200, 200], [-2, 2]), {
-    stiffness: 300,
-    damping: 30
-  });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    mouseX.set(x);
-    mouseY.set(y);
+  const handleStep = () => {
+    setStep((prev) => (prev + 1) % 4);
   };
 
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
+  const handleReset = () => {
+    setStep(0);
   };
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (["1", "2", "3", "4", "5", "6", "7"].includes(e.key)) {
-        const idx = parseInt(e.key, 10) - 1;
-        if (V8_MODULE_SYSTEMS[idx]) {
-          onSelectModule(V8_MODULE_SYSTEMS[idx].id);
-        }
-      } else if (e.key === "ArrowLeft") {
-        const prev = (activeIdx - 1 + V8_MODULE_SYSTEMS.length) % V8_MODULE_SYSTEMS.length;
-        onSelectModule(V8_MODULE_SYSTEMS[prev].id);
-      } else if (e.key === "ArrowRight") {
-        const next = (activeIdx + 1) % V8_MODULE_SYSTEMS.length;
-        onSelectModule(V8_MODULE_SYSTEMS[next].id);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeIdx, onSelectModule]);
+  const isSmi = step % 2 === 0;
 
   return (
-    <div style={{ perspective: 1200 }} className="w-full h-full flex flex-col justify-between select-none">
-      <motion.div
-        style={{
-          rotateX,
-          rotateY,
-          transformStyle: "preserve-3d"
-        }}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        className="w-full cyber-glass rounded-[28px] p-5 sm:p-7 flex flex-col justify-between h-full shadow-2xl relative overflow-hidden"
-      >
-        <div className="relative z-10">
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10 mb-5">
-            <div className="flex items-center gap-3">
-              <motion.div
-                whileHover={{ rotate: 10, scale: 1.05 }}
-                className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-xs"
-                style={{ backgroundColor: activeModule.chipColor, color: activeModule.accent }}
+    <div className="w-full skeuo-rack-bezel rounded-[28px] p-4 sm:p-7 relative select-none">
+      <div className="absolute top-4 left-4 skeuo-screw" />
+      <div className="absolute top-4 right-4 skeuo-screw" />
+      <div className="absolute bottom-4 left-4 skeuo-screw" />
+      <div className="absolute bottom-4 right-4 skeuo-screw" />
+
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-5 mb-5 border-b border-white/[0.08] px-2">
+        <div className="flex items-center gap-3">
+          <span className="led-diode-amber" />
+          <span className="font-mono text-xs font-bold tracking-wider text-slate-200 uppercase">
+            V8 RUNTIME BENCH // SYSTEM 0{activeModule.index} &middot; {activeModule.shortTitle}
+          </span>
+          <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-amber-500/10 text-amber-400 border border-amber-500/30 font-semibold">
+            {activeModule.category}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 text-[11px] font-mono text-slate-400">
+            <span className="px-1.5 text-[10px] text-slate-500 uppercase">PIPELINE:</span>
+            <button
+              onClick={() => setPipelinePhase("source")}
+              className={`px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
+                pipelinePhase === "source"
+                  ? "bg-amber-400/20 text-amber-300 border border-amber-400/40"
+                  : "hover:text-white"
+              }`}
+            >
+              SOURCE
+            </button>
+            <button
+              onClick={() => setPipelinePhase("bytecode")}
+              className={`px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
+                pipelinePhase === "bytecode"
+                  ? "bg-cyan-400/20 text-cyan-300 border border-cyan-400/40"
+                  : "hover:text-white"
+              }`}
+            >
+              BYTECODE
+            </button>
+            <button
+              onClick={() => setPipelinePhase("memory")}
+              className={`px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
+                pipelinePhase === "memory"
+                  ? "bg-purple-400/20 text-purple-300 border border-purple-400/40"
+                  : "hover:text-white"
+              }`}
+            >
+              MEMORY
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 text-[11px] font-mono text-slate-400">
+            <span className="px-1.5 text-[10px] text-slate-500 uppercase">SCALE:</span>
+            {[1, 2, 4].map((s) => (
+              <button
+                key={s}
+                onClick={() => setScale(s)}
+                className={`px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
+                  scale === s
+                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                    : "hover:text-white"
+                }`}
               >
-                <IconComp size={18} />
-              </motion.div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-bold">
-                    V8 ENGINE CORE // SYSTEM 0{activeIdx + 1}
-                  </span>
-                  <span
-                    className="w-2 h-2 rounded-full shadow-[0_0_8px_currentColor]"
-                    style={{ backgroundColor: activeModule.accent, color: activeModule.accent }}
-                  />
+                {s}X
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5">
+        <div className="lg:col-span-6 flex flex-col justify-between v8-terminal-screen rounded-2xl p-5 border border-white/10 shadow-lg min-h-[340px]">
+          <div>
+            <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 shadow-xs" />
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 shadow-xs" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 shadow-xs" />
+                <span className="text-[11px] text-slate-400 font-mono ml-2">runtime.js</span>
+              </div>
+              <span className="text-[10px] uppercase font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded font-mono">
+                V8 JIT SOURCE
+              </span>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-black/60 border border-white/5 mb-4 font-mono text-xs text-amber-300 leading-relaxed overflow-x-auto relative">
+              <div className="absolute left-1 top-3.5 bottom-3.5 w-1 bg-amber-400/80 rounded-full" />
+              <pre className="pl-3">
+                <code>{activeModule.codeSnippet}</code>
+              </pre>
+            </div>
+
+            <div className="space-y-2 font-mono text-xs">
+              <div className="flex items-center justify-between text-slate-400 text-[11px]">
+                <span className="uppercase tracking-wider">IGNITION DISPATCH STREAM:</span>
+                <span className="text-cyan-400 font-bold">OPCODE REGISTER 0x{((step % 4) + 1) * 8}</span>
+              </div>
+              <div className="p-2.5 rounded-lg bg-black/70 border border-white/10 text-slate-300 flex items-center justify-between">
+                <span className="text-cyan-300 font-bold">&gt; LdaNamedProperty a0, [0x0{step % 4}]</span>
+                <span className="text-[11px] text-slate-500">ACC &larr; r{step % 2}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 pt-1 text-[11px]">
+                <div className="p-2 rounded bg-black/40 border border-white/5 text-center">
+                  <div className="text-[9px] text-slate-500 uppercase">ACC</div>
+                  <div className="text-amber-300 font-bold">42 (0x2A)</div>
                 </div>
-                <h2 className="text-xl font-bold font-cabinet text-white">{activeModule.name}</h2>
+                <div className="p-2 rounded bg-black/40 border border-white/5 text-center">
+                  <div className="text-[9px] text-slate-500 uppercase">r0 (Object)</div>
+                  <div className="text-cyan-300 font-bold">0x7A40</div>
+                </div>
+                <div className="p-2 rounded bg-black/40 border border-white/5 text-center">
+                  <div className="text-[9px] text-slate-500 uppercase">SP</div>
+                  <div className="text-slate-300 font-bold">0x7FFF..</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-white/10 mt-4 flex items-center gap-3">
+            <button
+              onClick={handleStep}
+              className="flex-1 py-2.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 active:translate-y-0.5 text-slate-950 font-clash font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
+            >
+              <Play size={13} className="fill-current" />
+              <span>Step Engine Execution</span>
+            </button>
+            <button
+              onClick={handleReset}
+              className="py-2.5 px-3.5 rounded-xl bg-white/10 hover:bg-white/15 text-slate-300 font-mono text-xs flex items-center gap-1.5 transition-colors cursor-pointer border border-white/10"
+              title="Reset Execution Step"
+            >
+              <RotateCcw size={13} />
+              <span>Reset</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="lg:col-span-6 flex flex-col justify-between bg-white rounded-2xl p-5 shadow-lg border border-slate-200 min-h-[340px]">
+          <div>
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">
+                  V8 RUNTIME ARCHITECTURE
+                </span>
+                <h4 className="font-clash font-bold text-base text-slate-900">
+                  {activeModule.name}
+                </h4>
+              </div>
+              <span className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                {activeModule.subsystem}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div
+                className={`p-3.5 rounded-xl border transition-all ${
+                  isSmi
+                    ? "bg-amber-50/80 border-amber-300 shadow-sm"
+                    : "bg-slate-50 border-slate-200 opacity-60"
+                }`}
+              >
+                <div className="text-[10px] font-mono text-amber-700 uppercase font-bold mb-1">
+                  Stack (RSP Register)
+                </div>
+                <div className="font-mono text-sm font-bold text-slate-900">
+                  val: 42 (0x54)
+                </div>
+                <div className="text-[10px] text-slate-500 mt-1 font-mono">
+                  Immediate 31-bit integer
+                </div>
+              </div>
+
+              <div
+                className={`p-3.5 rounded-xl border transition-all ${
+                  !isSmi
+                    ? "bg-cyan-50/80 border-cyan-300 shadow-sm"
+                    : "bg-slate-50 border-slate-200 opacity-60"
+                }`}
+              >
+                <div className="text-[10px] font-mono text-cyan-700 uppercase font-bold mb-1">
+                  V8 Heap Nursery
+                </div>
+                <div className="font-mono text-sm font-bold text-slate-900 truncate">
+                  {!isSmi ? "{ id: 100, v8: true }" : "Unallocated"}
+                </div>
+                <div className="text-[10px] text-slate-500 mt-1 font-mono truncate">
+                  {!isSmi ? "ptr: 0x7A40_B00" : "Nursery Empty"}
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono text-slate-400 hidden sm:inline">Navigate:</span>
-              <motion.button
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.92 }}
-                onClick={() => {
-                  const prev = (activeIdx - 1 + V8_MODULE_SYSTEMS.length) % V8_MODULE_SYSTEMS.length;
-                  onSelectModule(V8_MODULE_SYSTEMS[prev].id);
-                }}
-                className="w-8 h-8 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center text-slate-300 hover:bg-white hover:text-black transition-colors cursor-pointer"
-                aria-label="Previous"
-              >
-                <ChevronLeft size={16} />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.92 }}
-                onClick={() => {
-                  const next = (activeIdx + 1) % V8_MODULE_SYSTEMS.length;
-                  onSelectModule(V8_MODULE_SYSTEMS[next].id);
-                }}
-                className="w-8 h-8 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center text-slate-300 hover:bg-white hover:text-black transition-colors cursor-pointer"
-                aria-label="Next"
-              >
-                <ChevronRight size={16} />
-              </motion.button>
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono space-y-1.5 mb-4">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Smi bitmask tag:</span>
+                <span className="font-bold text-amber-600">(val &lt;&lt; 1) | 0</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Heap pointer tag:</span>
+                <span className="font-bold text-cyan-600">(address) | 1</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Execution Frame:</span>
+                <span className="font-bold text-slate-800">Context[{activeModule.index}]</span>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5">
-            <div className="lg:col-span-6 h-[290px]">
-              <CodeTerminalPane
-                item={activeModule}
-                step={step}
-                onStep={() => setStep((s) => s + 1)}
-              />
-            </div>
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-xs font-mono text-slate-500">
+              State: {isSmi ? "Stack Smi (Zero Heap Alloc)" : "Heap Object Allocated"}
+            </span>
 
-            <div className="lg:col-span-6 h-[290px]">
-              <V8MemoryLensPane
-                item={activeModule}
-                step={step}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="relative z-10 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 font-mono text-xs">
-          <div className="flex items-center gap-2 bg-black/40 px-3.5 py-1.5 rounded-lg border border-white/10 text-slate-300">
-            <span className="text-[10px] text-slate-400 font-bold uppercase">SCHEMATIC:</span>
-            <span className="font-bold text-amber-400">{activeModule.glyph}</span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-[11px] text-slate-400 hidden sm:inline">Hotkeys: [1-7]</span>
-            <motion.a
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+            <a
               href={activeModule.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 !text-black font-bold text-xs flex items-center gap-2 transition-all shadow-md cursor-pointer active:translate-y-0.5"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 !text-white font-clash font-bold text-xs shadow-sm transition-all"
             >
-              <span className="!text-black font-bold">Deploy Visualizer ↗</span>
-            </motion.a>
+              <span className="!text-white">Full Workbench</span>
+              <ArrowUpRight size={13} className="!text-white" />
+            </a>
           </div>
         </div>
-      </motion.div>
+      </div>
+
+      <div className="px-2 pt-2 border-t border-white/[0.08] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono text-slate-400">
+        <div className="flex items-center gap-2">
+          <span className="text-slate-500 uppercase">SCHEMATIC INVARIANT:</span>
+          <span className="text-amber-400 font-bold">{activeModule.glyph}</span>
+        </div>
+        <div className="flex items-center gap-3 text-[11px] text-slate-400">
+          <span>Subsystem: {activeModule.subsystem}</span>
+          <span className="text-slate-600">&middot;</span>
+          <span>Latency: ~0.14ms</span>
+        </div>
+      </div>
     </div>
   );
 }
