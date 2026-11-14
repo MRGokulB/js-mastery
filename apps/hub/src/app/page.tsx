@@ -109,10 +109,10 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("open-jsm-tour"))}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-all text-xs font-semibold text-slate-700 shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-all text-xs font-semibold text-slate-700 shadow-xs cursor-pointer focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
             >
-              <Sparkles size={14} className="text-amber-500" />
-              <span>Interactive Tour</span>
+              <Compass size={14} className="text-slate-600" />
+              <span>Tour</span>
             </button>
 
             <a
@@ -130,16 +130,11 @@ export default function Home() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-10 sm:pt-14 pb-28 relative z-10">
         <section className="mb-10 text-center sm:text-left">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200/70 text-indigo-700 font-semibold text-xs mb-4 shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
-            <span>Interactive JavaScript Roadmap &middot; 2026</span>
-          </div>
-
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
             <div className="max-w-2xl">
               <h1 className="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
                 Understand JavaScript, <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-indigo-600 to-cyan-500">
+                <span className="text-slate-500 font-semibold">
                   from the inside out.
                 </span>
               </h1>
