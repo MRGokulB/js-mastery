@@ -350,22 +350,22 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: V8EngineCor
   };
 
   return (
-    <div className="w-full glass-panel rounded-3xl p-6 sm:p-9 shadow-xl relative overflow-hidden transition-all">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-slate-200/80">
+    <div className="w-full bg-white dark:bg-slate-900/90 rounded-3xl p-6 sm:p-9 shadow-xl border border-slate-200/80 dark:border-slate-800 relative overflow-hidden transition-all">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-slate-200/80 dark:border-slate-800">
         <div>
           <div className="flex items-center gap-2.5 mb-1.5">
             <span
               className="w-2.5 h-2.5 rounded-full"
               style={{ backgroundColor: activeModule.accent }}
             />
-            <span className="text-xs font-bold tracking-wider uppercase text-slate-500 font-mono">
+            <span className="text-xs font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400 font-mono">
               Module {activeModule.index} &middot; {activeModule.category}
             </span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             {activeModule.name}
           </h3>
-          <p className="text-sm text-slate-600 mt-1 max-w-xl">
+          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-xl">
             {activeModule.tagline}
           </p>
         </div>
@@ -373,15 +373,15 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: V8EngineCor
         <div className="flex items-center gap-2.5 self-end sm:self-auto">
           <button
             onClick={handleNextStep}
-            className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs flex items-center gap-2 shadow-sm transition-all cursor-pointer hover:shadow hover:-translate-y-0.5 active:translate-y-0"
+            className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-slate-950 text-white font-semibold text-xs flex items-center gap-2 shadow-sm transition-all cursor-pointer hover:shadow hover:-translate-y-0.5 active:translate-y-0"
           >
-            <Play size={13} className="fill-current text-amber-400" />
+            <Play size={13} className="fill-current text-amber-400 dark:text-slate-950" />
             <span>Next Step ({stepIndex + 1}/{activeModule.explanationSteps.length})</span>
           </button>
 
           <button
             onClick={handleReset}
-            className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer"
+            className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
             title="Reset Step"
           >
             <RotateCcw size={15} />
@@ -437,55 +437,55 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: V8EngineCor
           </div>
         </div>
 
-        <div className="lg:col-span-6 flex flex-col justify-between bg-white rounded-2xl p-6 border border-slate-200 shadow-md">
+        <div className="lg:col-span-6 flex flex-col justify-between bg-white dark:bg-slate-950/70 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-md">
           <div>
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider font-mono">
-                <Boxes size={15} className="text-indigo-600" />
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider font-mono">
+                <Boxes size={15} className="text-indigo-600 dark:text-indigo-400" />
                 <span>Live Interactive Architecture</span>
               </div>
-              <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200/60">
+              <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200/60 dark:border-slate-700">
                 Interactive State
               </span>
             </div>
 
             {activeModule.id === "variables" && (
               <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-amber-50/80 border border-amber-200/90 shadow-xs">
+                <div className="p-4 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/90 dark:border-amber-800/50 shadow-xs">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold text-amber-900 font-mono">
+                    <span className="text-xs font-bold text-amber-900 dark:text-amber-300 font-mono">
                       CALL STACK (Fast Local Memory)
                     </span>
-                    <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-semibold border border-amber-200/60">
+                    <span className="text-[10px] bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 px-2 py-0.5 rounded-md font-semibold border border-amber-200/60 dark:border-amber-700/60">
                       Stack Frame
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                    <div className="bg-white p-2.5 rounded-lg border border-amber-200 shadow-xs">
-                      <div className="text-slate-500 text-[11px]">count</div>
-                      <div className="text-sm font-bold text-amber-600">{stepIndex >= 2 ? "43" : "42"}</div>
-                      <div className="text-[10px] text-slate-400">Primitive (in-place)</div>
+                    <div className="bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-amber-200 dark:border-amber-800/60 shadow-xs">
+                      <div className="text-slate-500 dark:text-slate-400 text-[11px]">count</div>
+                      <div className="text-sm font-bold text-amber-600 dark:text-amber-400">{stepIndex >= 2 ? "43" : "42"}</div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500">Primitive (in-place)</div>
                     </div>
-                    <div className="bg-white p-2.5 rounded-lg border border-amber-200 shadow-xs">
-                      <div className="text-slate-500 text-[11px]">user</div>
-                      <div className="text-sm font-bold text-indigo-600">&rarr; Heap Ref</div>
-                      <div className="text-[10px] text-slate-400">Pointer: 0x7A40</div>
+                    <div className="bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-amber-200 dark:border-amber-800/60 shadow-xs">
+                      <div className="text-slate-500 dark:text-slate-400 text-[11px]">user</div>
+                      <div className="text-sm font-bold text-indigo-600 dark:text-indigo-400">&rarr; Heap Ref</div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500">Pointer: 0x7A40</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-indigo-50/80 border border-indigo-200/90 shadow-xs">
+                <div className="p-4 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/30 border border-indigo-200/90 dark:border-indigo-800/50 shadow-xs">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold text-indigo-900 font-mono">
+                    <span className="text-xs font-bold text-indigo-900 dark:text-indigo-300 font-mono">
                       HEAP MEMORY (Dynamic Object Storage)
                     </span>
-                    <span className="text-[10px] bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-md font-semibold border border-indigo-200/60">
+                    <span className="text-[10px] bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-200 px-2 py-0.5 rounded-md font-semibold border border-indigo-200/60 dark:border-indigo-700/60">
                       Heap Block
                     </span>
                   </div>
-                  <div className="bg-white p-3 rounded-lg border border-indigo-200 text-xs font-mono">
-                    <div className="text-slate-500 text-[11px] mb-1">Heap Address: 0x7A40</div>
-                    <div className="font-bold text-slate-800">
+                  <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-indigo-200 dark:border-indigo-800/60 text-xs font-mono">
+                    <div className="text-slate-500 dark:text-slate-400 text-[11px] mb-1">Heap Address: 0x7A40</div>
+                    <div className="font-bold text-slate-800 dark:text-slate-200">
                       &#123; id: {stepIndex >= 3 ? "101" : "100"}, name: &apos;Alex&apos; &#125;
                     </div>
                   </div>
