@@ -13,7 +13,7 @@ export interface V8ModuleMeta {
   tagline: string;
   url: string;
   accent: string;
-  accentHex: number;
+  chipColor: string;
   mechanic: string;
   glyph: string;
 }
@@ -28,8 +28,8 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     subsystem: "V8 Scavenger GC",
     tagline: "Stack frames, 31-bit Smis, and heap references",
     url: "https://variables-pi.vercel.app/",
-    accent: "#f59e0b",
-    accentHex: 0xf59e0b,
+    accent: "#d97706",
+    chipColor: "#fef08a",
     mechanic: "Contiguous Stack / Dynamic Heap Pointer",
     glyph: "Smi: (val << 1) | 0 · Heap 0x"
   },
@@ -42,8 +42,8 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     subsystem: "Ignition Dispatcher",
     tagline: "AST branch jumping and truthy bitmasks",
     url: "https://control-flow-ruby.vercel.app",
-    accent: "#10b981",
-    accentHex: 0x10b981,
+    accent: "#059669",
+    chipColor: "#bbf7d0",
     mechanic: "Conditional Branch Jump Offset Registers",
     glyph: "JumpIfFalse [r0], [offset]"
   },
@@ -56,8 +56,8 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     subsystem: "Context Resolver",
     tagline: "Lexical environments and heap closure retention",
     url: "https://functions-scope.vercel.app/",
-    accent: "#a855f7",
-    accentHex: 0xa855f7,
+    accent: "#7c3aed",
+    chipColor: "#e9d5ff",
     mechanic: "Context Stack Linked Lexical Environment",
     glyph: "[[Scope]] -> Outer LexicalEnv"
   },
@@ -70,8 +70,8 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     subsystem: "Elements Table",
     tagline: "Packed Smi elements and amortized expansion",
     url: "https://arrays-iteration.vercel.app/",
-    accent: "#38bdf8",
-    accentHex: 0x38bdf8,
+    accent: "#0284c7",
+    chipColor: "#bfdbfe",
     mechanic: "Fast Contiguous Indexed Int32 Array Buffer",
     glyph: "[ PACKED_SMI -> HOLEY_ELEMENTS ]"
   },
@@ -84,8 +84,8 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     subsystem: "TurboFan IC Shapes",
     tagline: "V8 Shapes, inline caches and prototype lookups",
     url: "https://objects-maps.vercel.app/",
-    accent: "#f43f5e",
-    accentHex: 0xf43f5e,
+    accent: "#c026d3",
+    chipColor: "#fbcfe8",
     mechanic: "Shape Transition Tree & Property Offset Table",
     glyph: "Map0 -> Map1(+x) -> Map2(+y)"
   },
@@ -98,8 +98,8 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     subsystem: "Libuv / Task Queue",
     tagline: "Microtask drain priority and macrotask timers",
     url: "https://async-event-loop.vercel.app",
-    accent: "#ec4899",
-    accentHex: 0xec4899,
+    accent: "#e11d48",
+    chipColor: "#fecdd3",
     mechanic: "Dual Priority Queue Scheduler (P0 / P1)",
     glyph: "Stack -> Microtasks -> Timers"
   },
@@ -112,8 +112,8 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     subsystem: "Blink Compositor",
     tagline: "Critical rendering path and GPU layer geometry",
     url: "https://dom-apis.vercel.app",
-    accent: "#06b6d4",
-    accentHex: 0x06b6d4,
+    accent: "#0891b2",
+    chipColor: "#a5f3fc",
     mechanic: "Render Tree & Paint Layer Tree Compositor",
     glyph: "DOM + CSSOM -> Paint -> GPU"
   }
@@ -126,108 +126,46 @@ function createTactileV8CardCanvas(mod: V8ModuleMeta, isSelected: boolean, isHov
   const ctx = canvas.getContext("2d");
   if (!ctx) return canvas;
 
-  const bgGrad = ctx.createLinearGradient(0, 0, 1024, 1024);
-  if (isSelected) {
-    bgGrad.addColorStop(0, "#1a2236");
-    bgGrad.addColorStop(1, "#101625");
-  } else if (isHovered) {
-    bgGrad.addColorStop(0, "#161d2d");
-    bgGrad.addColorStop(1, "#0d131f");
-  } else {
-    bgGrad.addColorStop(0, "#131826");
-    bgGrad.addColorStop(1, "#0a0e17");
-  }
-
-  ctx.fillStyle = bgGrad;
+  ctx.fillStyle = mod.chipColor;
   ctx.fillRect(0, 0, 1024, 1024);
 
-  ctx.lineWidth = isSelected ? 20 : 10;
-  ctx.strokeStyle = isSelected ? mod.accent : isHovered ? "rgba(255, 255, 255, 0.4)" : "rgba(255, 255, 255, 0.12)";
+  ctx.lineWidth = isSelected ? 24 : 12;
+  ctx.strokeStyle = isSelected ? "#0f172a" : isHovered ? "rgba(15, 23, 42, 0.45)" : "rgba(15, 23, 42, 0.18)";
   ctx.strokeRect(18, 18, 988, 988);
 
-  ctx.fillStyle = mod.accent;
-  ctx.fillRect(18, 18, 988, 22);
+  ctx.fillStyle = "#0f172a";
+  ctx.font = "bold 60px sans-serif";
+  ctx.fillText(mod.index, 70, 130);
 
-  ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
-  ctx.beginPath();
-  ctx.roundRect(70, 75, 280, 70, 35);
-  ctx.fill();
+  ctx.fillStyle = "rgba(15, 23, 42, 0.65)";
+  ctx.font = "bold 32px monospace";
+  ctx.fillText(mod.category.toUpperCase(), 70, 195);
 
-  ctx.fillStyle = mod.accent;
+  ctx.fillStyle = isSelected ? "#0f172a" : "rgba(15, 23, 42, 0.25)";
+  ctx.fillRect(860, 70, 72, 36);
+  ctx.fillStyle = "#d97706";
+  ctx.fillRect(868, 78, 56, 20);
+
+  ctx.fillStyle = "#0f172a";
+  ctx.font = "bold 108px sans-serif";
+  ctx.fillText(mod.shortTitle, 70, 500);
+
+  ctx.fillStyle = "rgba(15, 23, 42, 0.75)";
   ctx.font = "bold 38px monospace";
-  ctx.fillText(`${mod.index} · ${mod.category.toUpperCase()}`, 100, 124);
+  ctx.fillText(mod.glyph, 70, 595);
 
-  ctx.beginPath();
-  ctx.arc(930, 110, 16, 0, Math.PI * 2);
-  ctx.fillStyle = isSelected ? mod.accent : "rgba(255, 255, 255, 0.25)";
-  ctx.fill();
-  if (isSelected) {
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
-    ctx.stroke();
-  }
-
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 106px sans-serif";
-  ctx.fillText(mod.shortTitle, 70, 480);
-
-  ctx.fillStyle = mod.accent;
-  ctx.font = "bold 44px monospace";
-  ctx.fillText(mod.glyph, 70, 585);
-
-  ctx.fillStyle = "rgba(255, 255, 255, 0.65)";
+  ctx.fillStyle = "rgba(15, 23, 42, 0.55)";
   ctx.font = "500 40px monospace";
-  ctx.fillText(mod.subsystem, 70, 700);
+  ctx.fillText(mod.subsystem, 70, 705);
 
-  ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+  ctx.fillStyle = "rgba(15, 23, 42, 0.12)";
   ctx.fillRect(70, 830, 884, 4);
 
-  ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
-  ctx.font = "bold 34px monospace";
-  ctx.fillText("V8 · RUNTIME SPEC 2026", 70, 915);
+  ctx.fillStyle = "rgba(15, 23, 42, 0.4)";
+  ctx.font = "bold 32px monospace";
+  ctx.fillText("V8 · RUNTIME SPEC 2026", 70, 910);
 
   return canvas;
-}
-
-function createTurntableTexture(): THREE.CanvasTexture {
-  const canvas = document.createElement("canvas");
-  canvas.width = 1024;
-  canvas.height = 1024;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return new THREE.CanvasTexture(canvas);
-
-  ctx.fillStyle = "#121724";
-  ctx.fillRect(0, 0, 1024, 1024);
-
-  const cx = 512;
-  const cy = 512;
-
-  ctx.strokeStyle = "rgba(245, 158, 11, 0.25)";
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.arc(cx, cy, 470, 0, Math.PI * 2);
-  ctx.stroke();
-
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(cx, cy, 320, 0, Math.PI * 2);
-  ctx.arc(cx, cy, 180, 0, Math.PI * 2);
-  ctx.stroke();
-
-  for (let i = 0; i < 7; i++) {
-    const angle = (i * 2 * Math.PI) / 7;
-    ctx.strokeStyle = "rgba(245, 158, 11, 0.35)";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(cx + Math.cos(angle) * 180, cy + Math.sin(angle) * 180);
-    ctx.lineTo(cx + Math.cos(angle) * 460, cy + Math.sin(angle) * 460);
-    ctx.stroke();
-  }
-
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.anisotropy = 16;
-  return texture;
 }
 
 interface Props {
@@ -253,7 +191,7 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
     const scene = new THREE.Scene();
     scene.background = null;
 
-    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -265,7 +203,7 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.05;
     container.appendChild(renderer.domElement);
 
     const applyResponsiveCamera = () => {
@@ -276,22 +214,22 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
       camera.aspect = aspect;
 
       if (aspect < 1.0) {
-        const extraDist = (1.0 - aspect) * 5.2;
-        camera.position.set(0, 4.8 + extraDist * 0.35, 7.6 + extraDist);
+        const extraDist = (1.0 - aspect) * 4.8;
+        camera.position.set(0, 4.6 + extraDist * 0.35, 7.8 + extraDist);
       } else {
-        camera.position.set(0, 4.8, 7.6);
+        camera.position.set(0, 4.5, 7.5);
       }
-      camera.lookAt(0, -0.2, 0);
+      camera.lookAt(0, -0.15, 0);
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
 
     applyResponsiveCamera();
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.0);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xfff7ed, 2.4);
+    const keyLight = new THREE.DirectionalLight(0xfffbf2, 2.6);
     keyLight.position.set(5, 9, 6);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 1024;
@@ -299,43 +237,36 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
     keyLight.shadow.bias = -0.0005;
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.8);
-    rimLight.position.set(-6, 6, -5);
-    scene.add(rimLight);
+    const fillLight = new THREE.DirectionalLight(0xe8f0fe, 1.3);
+    fillLight.position.set(-6, 5, -3);
+    scene.add(fillLight);
 
-    const activePointLight = new THREE.PointLight(0xf59e0b, 2.5, 9);
-    activePointLight.position.set(0, 2.2, 0);
-    scene.add(activePointLight);
+    const rimLight = new THREE.PointLight(0xffffff, 1.0, 16);
+    rimLight.position.set(0, 6, -5);
+    scene.add(rimLight);
 
     const coreGroup = new THREE.Group();
     scene.add(coreGroup);
 
-    const turntableTexture = createTurntableTexture();
-    const baseGeo = new THREE.CylinderGeometry(3.6, 3.8, 0.24, 48);
-    const baseMatSide = new THREE.MeshPhysicalMaterial({
-      color: 0x0f1422,
-      metalness: 0.25,
-      roughness: 0.35,
-      clearcoat: 0.4
+    const baseGeo = new THREE.CylinderGeometry(3.6, 3.8, 0.22, 48);
+    const baseMat = new THREE.MeshPhysicalMaterial({
+      color: 0xf1f3f7,
+      metalness: 0.08,
+      roughness: 0.45,
+      clearcoat: 0.35,
+      clearcoatRoughness: 0.2
     });
-    const baseMatTop = new THREE.MeshPhysicalMaterial({
-      map: turntableTexture,
-      metalness: 0.2,
-      roughness: 0.4,
-      clearcoat: 0.5
-    });
-    const baseMaterials = [baseMatSide, baseMatTop, baseMatSide];
-    const baseMesh = new THREE.Mesh(baseGeo, baseMaterials);
-    baseMesh.position.y = -0.12;
+    const baseMesh = new THREE.Mesh(baseGeo, baseMat);
+    baseMesh.position.y = -0.11;
     baseMesh.receiveShadow = true;
     coreGroup.add(baseMesh);
 
     const centerGeo = new THREE.CylinderGeometry(0.85, 0.9, 0.32, 32);
     const centerMat = new THREE.MeshPhysicalMaterial({
-      color: 0x1e293b,
-      metalness: 0.65,
+      color: 0xe4e4e7,
+      metalness: 0.85,
       roughness: 0.25,
-      clearcoat: 0.6
+      clearcoat: 0.4
     });
     const centerMesh = new THREE.Mesh(centerGeo, centerMat);
     centerMesh.position.y = 0.16;
@@ -345,8 +276,8 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
 
     const capGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.08, 32);
     const capMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      metalness: 0.4,
+      color: 0x0f172a,
+      metalness: 0.3,
       roughness: 0.3
     });
     const capMesh = new THREE.Mesh(capGeo, capMat);
@@ -354,10 +285,10 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
     coreGroup.add(capMesh);
 
     const shadowGeo = new THREE.PlaneGeometry(14, 14);
-    const shadowMat = new THREE.ShadowMaterial({ opacity: 0.4 });
+    const shadowMat = new THREE.ShadowMaterial({ opacity: 0.18 });
     const groundMesh = new THREE.Mesh(shadowGeo, shadowMat);
     groundMesh.rotation.x = -Math.PI / 2;
-    groundMesh.position.y = -0.26;
+    groundMesh.position.y = -0.23;
     groundMesh.receiveShadow = true;
     scene.add(groundMesh);
 
@@ -371,7 +302,7 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
       texture: THREE.CanvasTexture;
     }[] = [];
 
-    const cardGeo = new THREE.BoxGeometry(1.45, 0.26, 1.25);
+    const cardGeo = new THREE.BoxGeometry(1.48, 0.24, 1.28);
     const radius = 2.4;
 
     V8_MODULE_SYSTEMS.forEach((mod, idx) => {
@@ -387,23 +318,23 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
       texture.minFilter = THREE.LinearMipmapLinearFilter;
 
       const sideMat = new THREE.MeshPhysicalMaterial({
-        color: 0x0f1523,
-        metalness: 0.2,
+        color: new THREE.Color(mod.chipColor).multiplyScalar(0.92),
+        metalness: 0.12,
         roughness: 0.35,
         clearcoat: 0.5
       });
 
       const topMat = new THREE.MeshPhysicalMaterial({
         map: texture,
-        metalness: 0.15,
-        roughness: 0.3,
-        clearcoat: 0.8,
-        clearcoatRoughness: 0.15
+        metalness: 0.12,
+        roughness: 0.32,
+        clearcoat: 0.7,
+        clearcoatRoughness: 0.18
       });
 
       const materials = [sideMat, sideMat, topMat, sideMat, sideMat, sideMat];
       const mesh = new THREE.Mesh(cardGeo, materials);
-      mesh.position.set(x, 0.13, z);
+      mesh.position.set(x, 0.12, z);
       mesh.rotation.y = 0;
       mesh.castShadow = true;
       mesh.receiveShadow = true;
@@ -413,8 +344,8 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
       cardMeshes.push({
         id: mod.id,
         mesh,
-        baseY: 0.13,
-        targetY: 0.13,
+        baseY: 0.12,
+        targetY: 0.12,
         topMat,
         mod,
         texture
@@ -456,8 +387,8 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
       mouse.x = rawX;
       mouse.y = rawY;
 
-      parallaxTargetX = rawX * 0.12;
-      parallaxTargetY = rawY * 0.08;
+      parallaxTargetX = rawX * 0.1;
+      parallaxTargetY = rawY * 0.06;
 
       if (isDragging) {
         const dx = e.clientX - prevMouseX;
@@ -494,7 +425,7 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
       lastTime = currentTime;
 
       if (!isDragging) {
-        targetRotationY += 0.0012;
+        targetRotationY += 0.001;
       }
 
       const combinedTargetY = targetRotationY + parallaxTargetX;
@@ -520,22 +451,12 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
         updateCardTextures(activeIdRef.current, hoveredId);
       }
 
-      const currentActive = V8_MODULE_SYSTEMS.find((m) => m.id === activeIdRef.current);
-      if (currentActive) {
-        activePointLight.color.setHex(currentActive.accentHex);
-      }
-
       cardMeshes.forEach((item) => {
         const isActive = item.id === activeIdRef.current;
         const isHovered = item.id === hoveredId;
 
         item.targetY = isActive ? item.baseY + 0.38 : isHovered ? item.baseY + 0.18 : item.baseY;
         item.mesh.position.y = THREE.MathUtils.damp(item.mesh.position.y, item.targetY, 9, delta);
-
-        if (isActive) {
-          activePointLight.position.x = THREE.MathUtils.damp(activePointLight.position.x, item.mesh.position.x, 8, delta);
-          activePointLight.position.z = THREE.MathUtils.damp(activePointLight.position.z, item.mesh.position.z, 8, delta);
-        }
       });
 
       renderer.render(scene, camera);
@@ -556,7 +477,6 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
       cardMeshes.forEach((item) => {
         item.texture.dispose();
       });
-      turntableTexture.dispose();
 
       scene.clear();
       renderer.dispose();
@@ -567,8 +487,8 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
   }, []);
 
   return (
-    <div className="relative w-full h-[360px] sm:h-[460px] lg:h-[520px] select-none flex items-center justify-center">
-      <div ref={mountRef} className="w-full h-full" />
+    <div className="relative w-full h-full min-h-[520px] sm:min-h-[600px] lg:min-h-[680px] select-none flex items-center justify-center">
+      <div ref={mountRef} className="w-full h-full absolute inset-0" />
     </div>
   );
 }
