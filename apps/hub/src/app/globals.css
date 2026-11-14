@@ -40,29 +40,53 @@ a {
 }
 
 /* Liquid Glassmorphism & Electric Cool System */
+.dot-matrix-bg {
+  background-image: radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.aurora-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: 0.28;
+  mix-blend-mode: multiply;
+  animation: floatOrb 12s ease-in-out infinite alternate;
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  100% {
+    transform: translate(30px, 20px) scale(1.08);
+  }
+}
+
 .liquid-glass {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(32px) saturate(200%);
-  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(36px) saturate(210%);
+  -webkit-backdrop-filter: blur(36px) saturate(210%);
   border: 1px solid rgba(255, 255, 255, 0.95);
-  box-shadow: 0 30px 80px -15px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(226, 232, 240, 0.8), inset 0 1.5px 0 rgba(255, 255, 255, 1);
+  box-shadow: 0 30px 80px -15px rgba(15, 23, 42, 0.07), 0 0 0 1px rgba(226, 232, 240, 0.8), inset 0 1.5px 0 rgba(255, 255, 255, 1);
 }
 
 .liquid-glass-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(241, 245, 249, 0.75) 100%);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.8) 100%);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
   box-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 .liquid-glass-card:hover {
-  border-color: rgba(59, 130, 246, 0.4);
-  box-shadow: 0 24px 50px -8px rgba(59, 130, 246, 0.12), inset 0 1px 0 rgba(255, 255, 255, 1);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 24px 50px -8px rgba(99, 102, 241, 0.15), inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 .liquid-glass-pill {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(226, 232, 240, 0.9);
@@ -71,10 +95,10 @@ a {
 
 .minimal-prism {
   background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(36px) saturate(210%);
-  -webkit-backdrop-filter: blur(36px) saturate(210%);
+  backdrop-filter: blur(40px) saturate(220%);
+  -webkit-backdrop-filter: blur(40px) saturate(220%);
   border: 1px solid rgba(255, 255, 255, 1);
-  box-shadow: 0 32px 90px -20px rgba(15, 23, 42, 0.09), 0 0 0 1px rgba(226, 232, 240, 0.7), inset 0 1.5px 0 rgba(255, 255, 255, 1);
+  box-shadow: 0 32px 90px -20px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(226, 232, 240, 0.7), inset 0 1.5px 0 rgba(255, 255, 255, 1);
 }
 
 .neo-pill-btn {

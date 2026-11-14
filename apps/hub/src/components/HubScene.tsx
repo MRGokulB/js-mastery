@@ -37,7 +37,9 @@ function BentoRefractionCard({ item, IconComp }: { item: V8ModuleMeta; IconComp:
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <a
+    <motion.a
+      whileHover={{ y: -4, scale: 1.01 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
@@ -47,8 +49,16 @@ function BentoRefractionCard({ item, IconComp }: { item: V8ModuleMeta; IconComp:
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative p-5 rounded-[22px] bg-white border border-slate-200 hover:border-indigo-400 hover:shadow-md transition-all flex flex-col justify-between overflow-hidden cursor-pointer"
+      className="group relative p-5 rounded-[22px] bg-white border border-slate-200/90 hover:border-indigo-400 hover:shadow-lg transition-all flex flex-col justify-between overflow-hidden cursor-pointer"
     >
+      <div
+        className="pointer-events-none absolute -inset-px transition-opacity duration-300 rounded-[22px]"
+        style={{
+          opacity: isHovered ? 1 : 0,
+          background: `radial-gradient(350px circle at ${mousePos.x}px ${mousePos.y}px, rgba(99, 102, 241, 0.1), transparent 75%)`
+        }}
+      />
+
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-3">
           <div
@@ -57,7 +67,7 @@ function BentoRefractionCard({ item, IconComp }: { item: V8ModuleMeta; IconComp:
           >
             <IconComp size={16} />
           </div>
-          <span className="text-[10px] font-space uppercase text-slate-500 tracking-wider px-2 py-0.5 rounded-full bg-slate-100">
+          <span className="text-[10px] font-space uppercase text-slate-500 tracking-wider px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200">
             SYSTEM {item.index}
           </span>
         </div>
@@ -83,7 +93,7 @@ function BentoRefractionCard({ item, IconComp }: { item: V8ModuleMeta; IconComp:
           className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-indigo-600"
         />
       </div>
-    </a>
+    </motion.a>
   );
 }
 
@@ -96,10 +106,14 @@ export function HubScene() {
   }, [selectedId]);
 
   return (
-    <div className="h-screen w-screen max-h-screen bg-[#f8fafc] text-[#090d16] font-cabinet selection:bg-indigo-100 selection:text-black flex flex-col justify-between overflow-hidden relative">
+    <div className="h-screen w-screen max-h-screen bg-[#f8fafc] dot-matrix-bg text-[#090d16] font-cabinet selection:bg-indigo-100 selection:text-black flex flex-col justify-between overflow-hidden relative">
       <OnboardingTour />
 
-      <header className="h-16 shrink-0 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl z-50 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+      <div className="aurora-orb w-[420px] h-[420px] bg-indigo-400 top-[-80px] left-[15%]" />
+      <div className="aurora-orb w-[380px] h-[380px] bg-cyan-300 top-[20%] right-[10%] [animation-delay:4s]" />
+      <div className="aurora-orb w-[360px] h-[360px] bg-amber-200 bottom-[-60px] left-[35%] [animation-delay:8s]" />
+
+      <header className="h-16 shrink-0 border-b border-slate-200/80 bg-white/85 backdrop-blur-xl z-50 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-xl bg-slate-900 text-indigo-400 flex items-center justify-center font-syne font-bold text-xs shadow-xs">
             JS
@@ -114,24 +128,33 @@ export function HubScene() {
           </div>
         </div>
 
-        <div className="hidden md:flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 border border-slate-200">
+        <div className="hidden md:flex items-center gap-1.5 p-1 rounded-xl bg-slate-100/80 backdrop-blur-md border border-slate-200">
           {V8_MODULE_SYSTEMS.map((mod) => {
             const isSelected = selectedId === mod.id;
             return (
               <button
                 key={mod.id}
                 onClick={() => setSelectedId(mod.id)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-syne font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`relative px-2.5 py-1 rounded-lg text-xs font-syne font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                   isSelected
-                    ? "bg-slate-900 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white"
+                    ? "text-white"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
                 }`}
               >
-                <span
-                  className="w-1.5 h-1.5 rounded-full"
-                  style={{ backgroundColor: mod.accent }}
-                />
-                <span>0{mod.index} · {mod.shortTitle}</span>
+                {isSelected && (
+                  <motion.div
+                    layoutId="activePillIndicator"
+                    className="absolute inset-0 bg-slate-900 rounded-lg shadow-xs"
+                    transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-1.5">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: mod.accent }}
+                  />
+                  <span>0{mod.index} · {mod.shortTitle}</span>
+                </span>
               </button>
             );
           })}
@@ -143,36 +166,42 @@ export function HubScene() {
             <span>HEAP: 4.2 MB / 16 MB</span>
           </div>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => setShowCatalogModal(true)}
             className="neo-pill-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-syne font-semibold text-slate-900 cursor-pointer"
           >
             <Grid size={13} className="text-indigo-600" />
             <span className="hidden sm:inline">All Systems</span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => window.dispatchEvent(new CustomEvent("open-jsm-tour"))}
             className="neo-pill-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-syne font-semibold text-slate-900 cursor-pointer"
           >
             <Sparkles size={13} className="text-amber-500" />
             <span>Tour</span>
-          </button>
+          </motion.button>
 
-          <a
-            href="https://github.com/MRGokB/js-mastery"
+          <motion.a
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            href="https://github.com/MRGokulB/js-mastery"
             target="_blank"
             rel="noopener noreferrer"
-            className="neo-pill-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-syne font-semibold text-slate-900"
+            className="neo-pill-btn inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-syne font-semibold text-slate-900"
             aria-label="GitHub Repository"
           >
             <Code2 size={13} />
             <span className="hidden sm:inline">Source ↗</span>
-          </a>
+          </motion.a>
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 flex flex-col justify-between overflow-hidden">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex flex-col justify-between overflow-hidden relative z-10">
         <div className="w-full flex-1 flex flex-col justify-center">
           <V8EngineCore3D
             activeId={selectedId}
@@ -181,7 +210,7 @@ export function HubScene() {
         </div>
       </main>
 
-      <footer className="h-10 shrink-0 border-t border-slate-200/80 bg-white px-4 sm:px-8 flex items-center justify-between text-[11px] font-space text-slate-500">
+      <footer className="h-10 shrink-0 border-t border-slate-200/80 bg-white/80 backdrop-blur-md px-4 sm:px-8 flex items-center justify-between text-[11px] font-space text-slate-500 relative z-10">
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-indigo-600" />
           <span className="font-syne font-bold text-slate-900">JavaScript Universe</span>
@@ -211,8 +240,9 @@ export function HubScene() {
               initial={{ scale: 0.95, y: 16 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 16 }}
+              transition={{ type: "spring", stiffness: 350, damping: 28 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-[28px] border border-slate-200 shadow-2xl w-full max-w-5xl max-h-[85vh] overflow-y-auto p-6 sm:p-8"
+              className="bg-white/95 backdrop-blur-xl rounded-[28px] border border-slate-200 shadow-2xl w-full max-w-5xl max-h-[85vh] overflow-y-auto p-6 sm:p-8"
             >
               <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
                 <div>

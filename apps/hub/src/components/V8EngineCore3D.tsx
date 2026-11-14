@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
   Layers,
   Workflow,
@@ -12,7 +12,6 @@ import {
   ArrowUpRight,
   Sparkles,
   Zap,
-  CheckCircle2,
   Play,
   RotateCcw,
   ChevronLeft,
@@ -154,38 +153,52 @@ function LiveInteractiveSandbox({ modId }: { modId: string }) {
     return (
       <div className="space-y-3 font-space">
         <div className="grid grid-cols-2 gap-2.5">
-          <div
+          <motion.div
+            layout
+            animate={{ scale: isSmi ? 1.02 : 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
             className={`p-3 rounded-xl border transition-all ${
               isSmi
-                ? "bg-indigo-50 border-indigo-200 text-indigo-950 font-bold shadow-xs"
-                : "bg-white border-slate-200 text-slate-500"
+                ? "bg-indigo-50/80 border-indigo-300 text-indigo-950 font-bold shadow-xs"
+                : "bg-white/80 border-slate-200 text-slate-500"
             }`}
           >
-            <div className="text-[10px] uppercase tracking-wider text-indigo-700">31-Bit Smi (Stack)</div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase tracking-wider text-indigo-700">31-Bit Smi (Stack)</span>
+              {isSmi && <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-ping" />}
+            </div>
             <div className="text-xs font-mono font-bold mt-1">val: 42 (0x54)</div>
             <div className="text-[10px] text-indigo-800/80 mt-0.5">Tagged: (42 &lt;&lt; 1) | 0</div>
-          </div>
+          </motion.div>
 
-          <div
+          <motion.div
+            layout
+            animate={{ scale: !isSmi ? 1.02 : 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
             className={`p-3 rounded-xl border transition-all ${
               !isSmi
-                ? "bg-indigo-50 border-indigo-200 text-indigo-950 font-bold shadow-xs"
-                : "bg-white border-slate-200 text-slate-500"
+                ? "bg-indigo-50/80 border-indigo-300 text-indigo-950 font-bold shadow-xs"
+                : "bg-white/80 border-slate-200 text-slate-500"
             }`}
           >
-            <div className="text-[10px] uppercase tracking-wider text-indigo-700">Heap Allocation</div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase tracking-wider text-indigo-700">Heap Allocation</span>
+              {!isSmi && <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-ping" />}
+            </div>
             <div className="text-xs font-mono font-bold mt-1">{!isSmi ? "{ id: 100, v8: true }" : "Nursery (Empty)"}</div>
             <div className="text-[10px] text-indigo-800/80 mt-0.5">{!isSmi ? "ptr: 0x7A40_B00" : "Unallocated"}</div>
-          </div>
+          </motion.div>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.015, y: -1 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => setStep((s) => s + 1)}
-          className="w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-syne font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:translate-y-0.5"
+          className="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-syne font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
         >
           <Play size={12} />
           <span>{isSmi ? "Promote Smi to Heap Object" : "Compact Heap to 31-bit Smi"}</span>
-        </button>
+        </motion.button>
       </div>
     );
   }
@@ -201,7 +214,12 @@ function LiveInteractiveSandbox({ modId }: { modId: string }) {
 
     return (
       <div className="space-y-3 font-space">
-        <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex flex-col justify-between">
+        <motion.div
+          key={step}
+          initial={{ opacity: 0.8, y: 2 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 flex flex-col justify-between"
+        >
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] uppercase font-bold text-emerald-700">Ignition Bytecode Opcode</span>
             <span className="text-[10px] font-mono text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded font-bold">
@@ -210,15 +228,17 @@ function LiveInteractiveSandbox({ modId }: { modId: string }) {
           </div>
           <div className="text-xs font-mono font-bold text-emerald-900 mt-0.5">{current.op}</div>
           <div className="text-[10.5px] text-emerald-700 mt-0.5">{current.desc}</div>
-        </div>
+        </motion.div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.015, y: -1 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => setStep((s) => s + 1)}
-          className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-syne font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:translate-y-0.5"
+          className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-syne font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
         >
           <Play size={12} />
           <span>Step Ignition Register [ {(step % ops.length) + 1} / 4 ]</span>
-        </button>
+        </motion.button>
       </div>
     );
   }
@@ -227,7 +247,7 @@ function LiveInteractiveSandbox({ modId }: { modId: string }) {
     const retained = step % 2 === 1;
     return (
       <div className="space-y-3 font-space">
-        <div className="p-3 rounded-xl bg-purple-50 border border-purple-200 text-purple-950">
+        <div className="p-3 rounded-xl bg-purple-50/80 border border-purple-200 text-purple-950">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] uppercase font-bold text-purple-700">Scope Chain Retention</span>
             <span className="text-[10px] font-bold text-purple-800">{retained ? "HEAP RETAINED" : "CLEAN STACK"}</span>
@@ -240,13 +260,15 @@ function LiveInteractiveSandbox({ modId }: { modId: string }) {
           </div>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.015, y: -1 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => setStep((s) => s + 1)}
-          className="w-full py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-syne font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:translate-y-0.5"
+          className="w-full py-2.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-syne font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
         >
           <Play size={12} />
           <span>{retained ? "Release Lexical Closure" : "Retain Closure on V8 Heap"}</span>
-        </button>
+        </motion.button>
       </div>
     );
   }
@@ -255,7 +277,7 @@ function LiveInteractiveSandbox({ modId }: { modId: string }) {
     const isPacked = step % 2 === 0;
     return (
       <div className="space-y-3 font-space">
-        <div className="p-3 rounded-xl bg-sky-50 border border-sky-200 text-sky-950">
+        <div className="p-3 rounded-xl bg-sky-50/80 border border-sky-200 text-sky-950">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] uppercase font-bold text-sky-700">V8 Array Elements Kind</span>
             <span className="text-[10px] font-mono text-sky-800 font-bold">
@@ -270,13 +292,15 @@ function LiveInteractiveSandbox({ modId }: { modId: string }) {
           </div>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.015, y: -1 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => setStep((s) => s + 1)}
-          className="w-full py-2 px-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-syne font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:translate-y-0.5"
+          className="w-full py-2.5 px-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-syne font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
         >
           <Play size={12} />
           <span>{isPacked ? "Delete Element (Trigger Holey Deopt)" : "Normalize Array (Packed Smi)"}</span>
-        </button>
+        </motion.button>
       </div>
     );
   }
@@ -291,7 +315,7 @@ function LiveInteractiveSandbox({ modId }: { modId: string }) {
 
     return (
       <div className="space-y-3 font-space">
-        <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-950">
+        <div className="p-3 rounded-xl bg-amber-50/80 border border-amber-200 text-amber-950">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] uppercase font-bold text-amber-700">TurboFan Shape Transition</span>
             <span className="text-[10px] font-bold text-amber-800">{curShape.ic}</span>
@@ -304,13 +328,15 @@ function LiveInteractiveSandbox({ modId }: { modId: string }) {
           </div>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.015, y: -1 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => setStep((s) => s + 1)}
-          className="w-full py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-syne font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:translate-y-0.5"
+          className="w-full py-2.5 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-syne font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
         >
           <Play size={12} />
           <span>Transition Object Shape [ {(step % 3) + 1} / 3 ]</span>
-        </button>
+        </motion.button>
       </div>
     );
   }
@@ -325,7 +351,7 @@ function LiveInteractiveSandbox({ modId }: { modId: string }) {
 
     return (
       <div className="space-y-3 font-space">
-        <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-950">
+        <div className="p-3 rounded-xl bg-rose-50/80 border border-rose-200 text-rose-950">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] uppercase font-bold text-rose-700">Event Loop Priority Phase</span>
             <span className="text-[10px] font-bold text-rose-800">Priority {(step % 3) + 1}</span>
@@ -334,20 +360,22 @@ function LiveInteractiveSandbox({ modId }: { modId: string }) {
           <div className="text-[10.5px] text-rose-700 mt-0.5">{curPhase.queue}</div>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.015, y: -1 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => setStep((s) => s + 1)}
-          className="w-full py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-syne font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:translate-y-0.5"
+          className="w-full py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-syne font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
         >
           <Play size={12} />
           <span>Advance Event Loop Phase</span>
-        </button>
+        </motion.button>
       </div>
     );
   }
 
   return (
     <div className="space-y-3 font-space">
-      <div className="p-3 rounded-xl bg-teal-50 border border-teal-200 text-teal-950">
+      <div className="p-3 rounded-xl bg-teal-50/80 border border-teal-200 text-teal-950">
         <div className="flex items-center justify-between mb-1">
           <span className="text-[10px] uppercase font-bold text-teal-700">Blink Render Engine</span>
           <span className="text-[10px] font-bold text-teal-800">GPU Composite</span>
@@ -356,13 +384,15 @@ function LiveInteractiveSandbox({ modId }: { modId: string }) {
         <div className="text-[10.5px] text-teal-700 mt-0.5">V8 C++ binding bridges JavaScript objects to Blink DOM nodes</div>
       </div>
 
-      <button
+      <motion.button
+        whileHover={{ scale: 1.015, y: -1 }}
+        whileTap={{ scale: 0.98 }}
         onClick={() => setStep((s) => s + 1)}
-        className="w-full py-2 px-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-syne font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:translate-y-0.5"
+        className="w-full py-2.5 px-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-syne font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
       >
         <Play size={12} />
         <span>Step Blink Compositor Quad</span>
-      </button>
+      </motion.button>
     </div>
   );
 }
@@ -370,7 +400,7 @@ function LiveInteractiveSandbox({ modId }: { modId: string }) {
 function LiveMemoryArchitectureLens({ modId }: { modId: string }) {
   if (modId === "variables") {
     return (
-      <div className="h-full flex flex-col justify-between p-5 rounded-2xl bg-slate-50 border border-slate-200 font-space">
+      <div className="h-full flex flex-col justify-between p-5 rounded-2xl bg-white/70 border border-slate-200/90 font-space shadow-2xs backdrop-blur-md">
         <div className="flex items-center justify-between text-xs text-indigo-900 font-bold">
           <span>V8 STACK FRAME &larr;&rarr; HEAP ALLOCATION</span>
           <span className="text-[10px] bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-bold">31-BIT TAG</span>
@@ -379,20 +409,20 @@ function LiveMemoryArchitectureLens({ modId }: { modId: string }) {
         <div className="grid grid-cols-2 gap-3 my-3">
           <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2">
             <span className="text-[10px] font-bold text-slate-500 uppercase block">Stack Frame (RSP)</span>
-            <div className="p-2 rounded-lg bg-indigo-50 text-indigo-900 font-mono text-xs font-bold border border-indigo-200">
+            <div className="p-2 rounded-lg bg-indigo-50/80 text-indigo-900 font-mono text-xs font-bold border border-indigo-200">
               0x00: 42 (0x54) [Smi]
             </div>
-            <div className="p-2 rounded-lg bg-indigo-50 text-indigo-900 font-mono text-xs font-bold border border-indigo-200">
+            <div className="p-2 rounded-lg bg-indigo-50/80 text-indigo-900 font-mono text-xs font-bold border border-indigo-200">
               0x08: &rarr; 0x7A40_B00
             </div>
           </div>
 
           <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2">
             <span className="text-[10px] font-bold text-slate-500 uppercase block">V8 Heap Nursery</span>
-            <div className="p-2 rounded-lg bg-purple-50 text-purple-900 font-mono text-xs font-bold border border-purple-200">
+            <div className="p-2 rounded-lg bg-purple-50/80 text-purple-900 font-mono text-xs font-bold border border-purple-200">
               [Map: 0x1A] [Len: 2]
             </div>
-            <div className="p-2 rounded-lg bg-purple-50 text-purple-900 font-mono text-xs font-bold border border-purple-200">
+            <div className="p-2 rounded-lg bg-purple-50/80 text-purple-900 font-mono text-xs font-bold border border-purple-200">
               Elements: 0x7A40_C10
             </div>
           </div>
@@ -408,7 +438,7 @@ function LiveMemoryArchitectureLens({ modId }: { modId: string }) {
 
   if (modId === "control-flow") {
     return (
-      <div className="h-full flex flex-col justify-between p-5 rounded-2xl bg-slate-50 border border-slate-200 font-space">
+      <div className="h-full flex flex-col justify-between p-5 rounded-2xl bg-white/70 border border-slate-200/90 font-space shadow-2xs backdrop-blur-md">
         <div className="flex items-center justify-between text-xs text-emerald-900 font-bold">
           <span>AST CONTROL FLOW &amp; REGISTER PIPELINE</span>
           <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">IGNITION JIT</span>
@@ -439,7 +469,7 @@ function LiveMemoryArchitectureLens({ modId }: { modId: string }) {
 
   if (modId === "functions-scope") {
     return (
-      <div className="h-full flex flex-col justify-between p-5 rounded-2xl bg-slate-50 border border-slate-200 font-space">
+      <div className="h-full flex flex-col justify-between p-5 rounded-2xl bg-white/70 border border-slate-200/90 font-space shadow-2xs backdrop-blur-md">
         <div className="flex items-center justify-between text-xs text-purple-900 font-bold">
           <span>LEXICAL ENVIRONMENT RESOLUTION</span>
           <span className="text-[10px] bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-bold">CLOSURE SCOPE</span>
@@ -450,7 +480,7 @@ function LiveMemoryArchitectureLens({ modId }: { modId: string }) {
             <span className="text-purple-900 font-bold">Global LexicalEnv: [window, document]</span>
             <span className="text-[10px] text-purple-600">Root Scope</span>
           </div>
-          <div className="p-2.5 rounded-xl bg-purple-50 border border-purple-300 text-xs font-mono flex items-center justify-between ml-4">
+          <div className="p-2.5 rounded-xl bg-purple-50/80 border border-purple-300 text-xs font-mono flex items-center justify-between ml-4">
             <span className="text-purple-900 font-bold">&uarr; Outer Fn LexicalEnv: [token, auth]</span>
             <span className="text-[10px] text-purple-700 font-bold">Heap Retained</span>
           </div>
@@ -470,7 +500,7 @@ function LiveMemoryArchitectureLens({ modId }: { modId: string }) {
 
   if (modId === "arrays-iteration") {
     return (
-      <div className="h-full flex flex-col justify-between p-5 rounded-2xl bg-slate-50 border border-slate-200 font-space">
+      <div className="h-full flex flex-col justify-between p-5 rounded-2xl bg-white/70 border border-slate-200/90 font-space shadow-2xs backdrop-blur-md">
         <div className="flex items-center justify-between text-xs text-sky-900 font-bold">
           <span>FAST ELEMENTS CONTIGUOUS BUFFER</span>
           <span className="text-[10px] bg-sky-100 text-sky-800 px-2 py-0.5 rounded font-bold">O(1) STRIDE</span>
@@ -501,7 +531,7 @@ function LiveMemoryArchitectureLens({ modId }: { modId: string }) {
 
   if (modId === "objects-maps") {
     return (
-      <div className="h-full flex flex-col justify-between p-5 rounded-2xl bg-slate-50 border border-slate-200 font-space">
+      <div className="h-full flex flex-col justify-between p-5 rounded-2xl bg-white/70 border border-slate-200/90 font-space shadow-2xs backdrop-blur-md">
         <div className="flex items-center justify-between text-xs text-amber-900 font-bold">
           <span>TURBOFAN HIDDEN CLASS MAP TRANSITION</span>
           <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">INLINE CACHE</span>
@@ -534,7 +564,7 @@ function LiveMemoryArchitectureLens({ modId }: { modId: string }) {
 
   if (modId === "async-event-loop") {
     return (
-      <div className="h-full flex flex-col justify-between p-5 rounded-2xl bg-slate-50 border border-slate-200 font-space">
+      <div className="h-full flex flex-col justify-between p-5 rounded-2xl bg-white/70 border border-slate-200/90 font-space shadow-2xs backdrop-blur-md">
         <div className="flex items-center justify-between text-xs text-rose-900 font-bold">
           <span>LIBUV EVENT LOOP CONCURRENCY WHEEL</span>
           <span className="text-[10px] bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">PRIORITY QUEUE</span>
@@ -566,7 +596,7 @@ function LiveMemoryArchitectureLens({ modId }: { modId: string }) {
   }
 
   return (
-    <div className="h-full flex flex-col justify-between p-5 rounded-2xl bg-slate-50 border border-slate-200 font-space">
+    <div className="h-full flex flex-col justify-between p-5 rounded-2xl bg-white/70 border border-slate-200/90 font-space shadow-2xs backdrop-blur-md">
       <div className="flex items-center justify-between text-xs text-teal-900 font-bold">
         <span>BLINK DOM ENGINE COMPOSITING PIPELINE</span>
         <span className="text-[10px] bg-teal-100 text-teal-800 px-2 py-0.5 rounded font-bold">HARDWARE ACCEL</span>
@@ -597,6 +627,31 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
   const activeModule = V8_MODULE_SYSTEMS[activeIdx] || V8_MODULE_SYSTEMS[0];
   const IconComp = SYSTEM_ICONS[activeModule.id as keyof typeof SYSTEM_ICONS] || Layers;
 
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const rotateX = useSpring(useTransform(mouseY, [-200, 200], [3, -3]), {
+    stiffness: 300,
+    damping: 30
+  });
+  const rotateY = useSpring(useTransform(mouseX, [-200, 200], [-3, 3]), {
+    stiffness: 300,
+    damping: 30
+  });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (["1", "2", "3", "4", "5", "6", "7"].includes(e.key)) {
@@ -617,17 +672,30 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
   }, [activeIdx, onSelectModule]);
 
   return (
-    <div className="w-full h-full flex flex-col justify-between select-none">
-      <div className="w-full minimal-prism rounded-[28px] p-6 lg:p-8 flex flex-col justify-between h-full shadow-lg">
-        <div>
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-slate-200/80 mb-6">
+    <div
+      style={{ perspective: 1200 }}
+      className="w-full h-full flex flex-col justify-between select-none"
+    >
+      <motion.div
+        style={{
+          rotateX,
+          rotateY,
+          transformStyle: "preserve-3d"
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="w-full minimal-prism rounded-[28px] p-6 lg:p-8 flex flex-col justify-between h-full shadow-xl transition-shadow duration-300 relative overflow-hidden"
+      >
+        <div className="relative z-10">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-slate-200/80 mb-5">
             <div className="flex items-center gap-3">
-              <div
+              <motion.div
+                whileHover={{ rotate: 10, scale: 1.05 }}
                 className="w-10 h-10 rounded-2xl flex items-center justify-center font-syne font-bold text-sm shadow-xs"
                 style={{ backgroundColor: activeModule.chipColor, color: activeModule.accent }}
               >
                 <IconComp size={18} />
-              </div>
+              </motion.div>
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-space uppercase tracking-widest text-slate-500 font-bold">
@@ -644,7 +712,9 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
 
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-space text-slate-500 hidden sm:inline">Navigate:</span>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
                 onClick={() => {
                   const prev = (activeIdx - 1 + V8_MODULE_SYSTEMS.length) % V8_MODULE_SYSTEMS.length;
                   onSelectModule(V8_MODULE_SYSTEMS[prev].id);
@@ -653,8 +723,10 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
                 aria-label="Previous"
               >
                 <ChevronLeft size={16} />
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
                 onClick={() => {
                   const next = (activeIdx + 1) % V8_MODULE_SYSTEMS.length;
                   onSelectModule(V8_MODULE_SYSTEMS[next].id);
@@ -663,12 +735,12 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
                 aria-label="Next"
               >
                 <ChevronRight size={16} />
-              </button>
+              </motion.button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center mb-6">
-            <div className="lg:col-span-6 flex flex-col justify-between space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center mb-5">
+            <div className="lg:col-span-6 flex flex-col justify-between space-y-3.5">
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-space font-bold uppercase bg-indigo-50 text-indigo-900 border border-indigo-200">
@@ -679,13 +751,13 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
                   </span>
                 </div>
 
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                   {activeModule.tagline}. Inspect real V8 heap structures, opcode dispatches, and memory allocation transitions.
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs">
-                <span className="text-[10px] font-space uppercase tracking-widest text-slate-500 block mb-2.5 font-bold">
+              <div className="p-4 rounded-2xl bg-white/80 border border-slate-200 shadow-2xs">
+                <span className="text-[10px] font-space uppercase tracking-widest text-slate-500 block mb-2 font-bold">
                   INTERACTIVE STEPPER SANDBOX
                 </span>
                 <LiveInteractiveSandbox modId={activeId} />
@@ -698,8 +770,8 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
           </div>
         </div>
 
-        <div className="pt-4 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2 font-space text-xs text-slate-900 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+        <div className="relative z-10 pt-3.5 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 font-space text-xs text-slate-900 bg-white/90 px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
             <span className="text-[10px] text-slate-500 font-bold">GLYPH SPEC:</span>
             <span className="font-mono text-indigo-700 font-bold">{activeModule.glyph}</span>
           </div>
@@ -710,18 +782,20 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
               <span>keys to jump</span>
             </div>
 
-            <a
+            <motion.a
+              whileHover={{ scale: 1.03, y: -1 }}
+              whileTap={{ scale: 0.96 }}
               href={activeModule.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-black !text-white font-syne font-bold text-xs flex items-center gap-2 transition-all shadow-xs active:translate-y-0.5 cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-black !text-white font-syne font-bold text-xs flex items-center gap-2 transition-all shadow-xs cursor-pointer"
             >
               <span className="!text-white font-bold">Launch {activeModule.shortTitle}</span>
               <ArrowUpRight size={14} className="!text-white" />
-            </a>
+            </motion.a>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
