@@ -13,9 +13,11 @@ import {
   Sparkles,
   Play,
   RotateCcw,
-  Zap,
-  Sliders,
-  Braces
+  Boxes,
+  Compass,
+  CheckCircle2,
+  Clock,
+  Zap
 } from "lucide-react";
 
 export interface V8ModuleMeta {
@@ -29,8 +31,12 @@ export interface V8ModuleMeta {
   url: string;
   accent: string;
   chipColor: string;
-  codeSnippet: string;
-  glyph: string;
+  codeLines: string[];
+  explanationSteps: {
+    lineIndex: number;
+    title: string;
+    description: string;
+  }[];
 }
 
 export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
@@ -38,99 +44,286 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     id: "variables",
     index: "01",
     name: "Variables, Stack & Heap",
-    shortTitle: "VARIABLES",
+    shortTitle: "Variables & Memory",
     category: "Memory",
-    subsystem: "V8 Scavenger GC",
-    tagline: "Stack frames, 31-bit Smis, and heap references",
+    subsystem: "V8 Memory Management",
+    tagline: "Understand how numbers live on the stack while objects float on the heap.",
     url: "https://variables-pi.vercel.app/",
     accent: "#f59e0b",
     chipColor: "#fef3c7",
-    codeSnippet: "let count = 42; // Smi: 31-bit integer\nlet user = { id: 100 }; // Heap object pointer",
-    glyph: "Smi: (val << 1) | 0 · Heap 0x7A40"
+    codeLines: [
+      "let count = 42;",
+      "let user = { id: 100, name: 'Alex' };",
+      "count = count + 1;",
+      "user.id = 101;"
+    ],
+    explanationSteps: [
+      {
+        lineIndex: 0,
+        title: "Primitive on the Stack",
+        description: "Numbers and booleans are stored directly in the fast Call Stack as 31-bit tagged integers (Smis). No heap allocation needed."
+      },
+      {
+        lineIndex: 1,
+        title: "Object on the Heap",
+        description: "Objects are allocated in Heap memory. The stack only holds a lightweight memory pointer (reference) pointing to that heap address."
+      },
+      {
+        lineIndex: 2,
+        title: "In-Place Primitive Mutation",
+        description: "Updating 'count' updates the stack value directly in-place. Instant O(1) CPU register operation."
+      },
+      {
+        lineIndex: 3,
+        title: "Pointer Dereference",
+        description: "Updating 'user.id' follows the pointer from the stack to the heap object and modifies the property inside the heap block."
+      }
+    ]
   },
   {
     id: "control-flow",
     index: "02",
     name: "Control Flow & Logic",
-    shortTitle: "CONTROL",
-    category: "Interpreter",
-    subsystem: "Ignition Dispatcher",
-    tagline: "AST branch jumping and truthy bitmasks",
+    shortTitle: "Control Flow",
+    category: "Logic",
+    subsystem: "Ignition Bytecode Branching",
+    tagline: "Watch how condition checks dynamically route program execution.",
     url: "https://control-flow-ruby.vercel.app",
     accent: "#10b981",
     chipColor: "#d1fae5",
-    codeSnippet: "if (score < 100) {\n  advanceLevel();\n} // Ignition JumpIfFalse",
-    glyph: "JumpIfFalse [r0], [offset]"
+    codeLines: [
+      "const score = 85;",
+      "if (score >= 80) {",
+      "  awardBadge('Mastery');",
+      "} else {",
+      "  retryExam();",
+      "}"
+    ],
+    explanationSteps: [
+      {
+        lineIndex: 0,
+        title: "Initialize Condition Value",
+        description: "The variable 'score' is loaded into the CPU accumulator register for instant evaluation."
+      },
+      {
+        lineIndex: 1,
+        title: "Evaluate Boolean Branch",
+        description: "The engine tests '85 >= 80'. The comparison evaluates to true, directing the execution branch into the if-block."
+      },
+      {
+        lineIndex: 2,
+        title: "Execute Success Branch",
+        description: "The true-branch executes 'awardBadge(\"Mastery\")'. The else-branch is skipped completely via bytecode jump."
+      },
+      {
+        lineIndex: 5,
+        title: "Exit Control Structure",
+        description: "Execution resumes past the conditional structure cleanly without evaluating skipped instructions."
+      }
+    ]
   },
   {
     id: "functions-scope",
     index: "03",
-    name: "Functions & Closures",
-    shortTitle: "SCOPE",
+    name: "Functions & Scope Chains",
+    shortTitle: "Functions & Closures",
     category: "Scope",
-    subsystem: "Context Resolver",
-    tagline: "Lexical environments and heap closure retention",
+    subsystem: "Lexical Scope Environments",
+    tagline: "See how inner functions remember variables from outer functions.",
     url: "https://functions-scope.vercel.app/",
     accent: "#8b5cf6",
     chipColor: "#ede9fe",
-    codeSnippet: "function outer() {\n  const token = '0x99';\n  return () => token;\n}",
-    glyph: "[[Scope]] -> Outer LexicalEnv"
+    codeLines: [
+      "function createCounter() {",
+      "  let total = 0;",
+      "  return function() {",
+      "    total++;",
+      "    return total;",
+      "  };",
+      "}"
+    ],
+    explanationSteps: [
+      {
+        lineIndex: 0,
+        title: "Declare Outer Function",
+        description: "A function definition creates its own lexical environment with its own private variable storage."
+      },
+      {
+        lineIndex: 1,
+        title: "Enclosed Variable",
+        description: "'total' is initialized inside the outer function. Because an inner function references it, it will not be garbage-collected!"
+      },
+      {
+        lineIndex: 2,
+        title: "Return Closure",
+        description: "Returning the inner function forms a 'closure'—bundling the function code with the environment where it was born."
+      },
+      {
+        lineIndex: 3,
+        title: "Retained Scope in Action",
+        description: "Every call to the returned function safely reads and mutates 'total' across time, even after createCounter() has returned!"
+      }
+    ]
   },
   {
     id: "arrays-iteration",
     index: "04",
-    name: "Arrays & Fast Elements",
-    shortTitle: "ARRAYS",
-    category: "Elements",
-    subsystem: "Elements Table",
-    tagline: "Packed Smi elements and amortized expansion",
+    name: "Arrays & Iteration",
+    shortTitle: "Fast Arrays",
+    category: "Data",
+    subsystem: "V8 Packed Smi Elements",
+    tagline: "Explore sequential array indexing, continuous memory, and map/filter.",
     url: "https://arrays-iteration.vercel.app/",
     accent: "#0284c7",
     chipColor: "#e0f2fe",
-    codeSnippet: "const arr = [10, 20, 30, 40];\n// PACKED_SMI -> HOLEY on element delete",
-    glyph: "[ PACKED_SMI -> HOLEY_ELEMENTS ]"
+    codeLines: [
+      "const scores = [10, 20, 30];",
+      "const doubled = scores.map(n => n * 2);",
+      "scores.push(40);",
+      "console.log(doubled);"
+    ],
+    explanationSteps: [
+      {
+        lineIndex: 0,
+        title: "Packed Smi Elements",
+        description: "An array of pure integers is stored as contiguous memory (PACKED_SMI_ELEMENTS) for lightning-fast linear access."
+      },
+      {
+        lineIndex: 1,
+        title: "Transformative Iteration",
+        description: "The .map() method iterates through every element, producing a brand-new array [20, 40, 60] while keeping the original intact."
+      },
+      {
+        lineIndex: 2,
+        title: "Amortized Expansion",
+        description: "Calling .push(40) appends to the memory buffer with O(1) amortized speed, automatically resizing when needed."
+      },
+      {
+        lineIndex: 3,
+        title: "Output Transformed Data",
+        description: "The doubled array is printed without side effects to the initial array."
+      }
+    ]
   },
   {
     id: "objects-maps",
     index: "05",
     name: "Objects & Hidden Classes",
-    shortTitle: "OBJECTS",
-    category: "Compiler",
-    subsystem: "TurboFan JIT",
-    tagline: "Shape transitions and inline cache slots",
+    shortTitle: "Objects & Maps",
+    category: "Objects",
+    subsystem: "TurboFan Hidden Classes (Shapes)",
+    tagline: "Discover how JavaScript optimizes property lookup behind the scenes.",
     url: "https://objects-maps.vercel.app/",
     accent: "#ea580c",
     chipColor: "#ffedd5",
-    codeSnippet: "const p = {}; // Map 0\np.x = 10; // Map 1 (Offset 0)\np.y = 20; // Map 2 (Offset 1)",
-    glyph: "Map [Shape 0] -> add(y) -> [Shape 1]"
+    codeLines: [
+      "const point = {};",
+      "point.x = 10; // Shape transition: 0 -> 1",
+      "point.y = 20; // Shape transition: 1 -> 2",
+      "console.log(point.x + point.y);"
+    ],
+    explanationSteps: [
+      {
+        lineIndex: 0,
+        title: "Empty Object (Shape 0)",
+        description: "A new object starts with an initial empty Hidden Class (Map 0) tracking property layout."
+      },
+      {
+        lineIndex: 1,
+        title: "Add Property .x (Shape 1)",
+        description: "Adding .x creates a transition to Shape 1, storing property 'x' at offset 0 in the property backing store."
+      },
+      {
+        lineIndex: 2,
+        title: "Add Property .y (Shape 2)",
+        description: "Adding .y transitions to Shape 2. Objects initialized with the same properties in the same order share the exact same shape!"
+      },
+      {
+        lineIndex: 3,
+        title: "Fast Inline Cache Access",
+        description: "Reading point.x uses cached offset calculations, making object lookups as fast as direct C++ struct member access."
+      }
+    ]
   },
   {
     id: "async-event-loop",
     index: "06",
-    name: "Event Loop & Concurrency",
-    shortTitle: "EVENT LOOP",
-    category: "Runtime",
-    subsystem: "Libuv / TaskQueue",
-    tagline: "Call stack drain and microtask priority queuing",
+    name: "The Event Loop & Concurrency",
+    shortTitle: "The Event Loop",
+    category: "Async",
+    subsystem: "Libuv & Microtask Prioritization",
+    tagline: "Watch how Promises jump ahead of setTimeout in the microtask queue.",
     url: "https://async-event-loop-ten.vercel.app/",
     accent: "#e11d48",
     chipColor: "#ffe4e6",
-    codeSnippet: "Promise.resolve().then(microtask);\nsetTimeout(macrotask, 0);",
-    glyph: "Microtask.drain() -> Render -> Macrotask"
+    codeLines: [
+      "console.log('1: Synchronous');",
+      "setTimeout(() => console.log('2: Macrotask'), 0);",
+      "Promise.resolve().then(() => console.log('3: Microtask'));",
+      "console.log('4: Call stack ends');"
+    ],
+    explanationSteps: [
+      {
+        lineIndex: 0,
+        title: "Synchronous Execution",
+        description: "Console.log('1') executes immediately on the main Call Stack and prints to output."
+      },
+      {
+        lineIndex: 1,
+        title: "Schedule Macrotask",
+        description: "setTimeout registers a timer callback with the browser API, scheduled for the Macrotask Queue."
+      },
+      {
+        lineIndex: 2,
+        title: "Schedule High-Priority Microtask",
+        description: "Promise.then() enqueues into the Microtask Queue. Microtasks have higher priority than macrotasks!"
+      },
+      {
+        lineIndex: 3,
+        title: "Stack Drains & Microtasks Flush First!",
+        description: "As soon as the call stack finishes, all Microtasks drain ('3: Microtask') BEFORE the Macrotask ('2: Macrotask') ever gets a turn!"
+      }
+    ]
   },
   {
     id: "dom-apis",
     index: "07",
-    name: "DOM Engine & Blink",
-    shortTitle: "DOM BLINK",
-    category: "Host",
-    subsystem: "Blink Tree Sync",
-    tagline: "C++ bindings, layout reflow, and layer paint",
+    name: "DOM & Browser Rendering",
+    shortTitle: "DOM & Browser",
+    category: "Browser",
+    subsystem: "Blink Tree & Compositor",
+    tagline: "See JavaScript update HTML nodes, trigger reflow, and paint the screen.",
     url: "https://dom-apis.vercel.app/",
     accent: "#0d9488",
     chipColor: "#ccfbf1",
-    codeSnippet: "const el = document.getElementById('app');\nel.classList.add('active'); // Layer reflow",
-    glyph: "Blink [LayoutObject] -> Compositor Quad"
+    codeLines: [
+      "const card = document.querySelector('#card');",
+      "card.classList.add('active');",
+      "card.style.transform = 'translateY(-4px)';",
+      "card.textContent = 'Updated!';"
+    ],
+    explanationSteps: [
+      {
+        lineIndex: 0,
+        title: "Query DOM Node",
+        description: "The browser resolves the C++ DOM node reference and provides a JavaScript wrapper object."
+      },
+      {
+        lineIndex: 1,
+        title: "Class List Mutation",
+        description: "Modifying classes marks the node's computed style as dirty, scheduling a style recalculation pass."
+      },
+      {
+        lineIndex: 2,
+        title: "Compositor-Only Transform",
+        description: "Transforms and opacity updates are processed on the GPU compositor thread without forcing expensive full-page layout reflows!"
+      },
+      {
+        lineIndex: 3,
+        title: "Text Update & Paint",
+        description: "The text update finishes the DOM mutation and the browser paints the updated pixels during the next frame."
+      }
+    ]
   }
 ];
 
@@ -140,260 +333,232 @@ interface V8EngineCore3DProps {
 }
 
 export default function V8EngineCore3D({ activeId, onSelectModule }: V8EngineCore3DProps) {
-  const [step, setStep] = useState(0);
-  const [pipelinePhase, setPipelinePhase] = useState<"source" | "bytecode" | "memory">("source");
-  const [scale, setScale] = useState<number>(1);
+  const [stepIndex, setStepIndex] = useState(0);
 
   const activeModule = useMemo(() => {
     return V8_MODULE_SYSTEMS.find((m) => m.id === activeId) || V8_MODULE_SYSTEMS[0];
   }, [activeId]);
 
-  const handleStep = () => {
-    setStep((prev) => (prev + 1) % 4);
+  const currentStep = activeModule.explanationSteps[stepIndex % activeModule.explanationSteps.length];
+
+  const handleNextStep = () => {
+    setStepIndex((prev) => (prev + 1) % activeModule.explanationSteps.length);
   };
 
   const handleReset = () => {
-    setStep(0);
+    setStepIndex(0);
   };
 
-  const isSmi = step % 2 === 0;
-
   return (
-    <div className="w-full skeuo-rack-bezel rounded-[28px] p-4 sm:p-7 relative select-none">
-      <div className="absolute top-4 left-4 skeuo-screw" />
-      <div className="absolute top-4 right-4 skeuo-screw" />
-      <div className="absolute bottom-4 left-4 skeuo-screw" />
-      <div className="absolute bottom-4 right-4 skeuo-screw" />
-
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-5 mb-5 border-b border-white/[0.08] px-2">
-        <div className="flex items-center gap-3">
-          <span className="led-diode-amber" />
-          <span className="font-mono text-xs font-bold tracking-wider text-slate-200 uppercase">
-            V8 RUNTIME BENCH // SYSTEM 0{activeModule.index} &middot; {activeModule.shortTitle}
-          </span>
-          <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-amber-500/10 text-amber-400 border border-amber-500/30 font-semibold">
-            {activeModule.category}
-          </span>
+    <div className="w-full glass-panel rounded-3xl p-6 sm:p-9 shadow-xl relative overflow-hidden transition-all">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-slate-200/80">
+        <div>
+          <div className="flex items-center gap-2.5 mb-1.5">
+            <span
+              className="w-2.5 h-2.5 rounded-full animate-pulse"
+              style={{ backgroundColor: activeModule.accent }}
+            />
+            <span className="text-xs font-bold tracking-wider uppercase text-slate-500 font-mono">
+              Module {activeModule.index} &middot; {activeModule.category}
+            </span>
+          </div>
+          <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            {activeModule.name}
+          </h3>
+          <p className="text-sm text-slate-600 mt-1 max-w-xl">
+            {activeModule.tagline}
+          </p>
         </div>
 
-        <div className="flex items-center gap-2 self-end sm:self-auto">
-          <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 text-[11px] font-mono text-slate-400">
-            <span className="px-1.5 text-[10px] text-slate-500 uppercase">PIPELINE:</span>
-            <button
-              onClick={() => setPipelinePhase("source")}
-              className={`px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
-                pipelinePhase === "source"
-                  ? "bg-amber-400/20 text-amber-300 border border-amber-400/40"
-                  : "hover:text-white"
-              }`}
-            >
-              SOURCE
-            </button>
-            <button
-              onClick={() => setPipelinePhase("bytecode")}
-              className={`px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
-                pipelinePhase === "bytecode"
-                  ? "bg-cyan-400/20 text-cyan-300 border border-cyan-400/40"
-                  : "hover:text-white"
-              }`}
-            >
-              BYTECODE
-            </button>
-            <button
-              onClick={() => setPipelinePhase("memory")}
-              className={`px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
-                pipelinePhase === "memory"
-                  ? "bg-purple-400/20 text-purple-300 border border-purple-400/40"
-                  : "hover:text-white"
-              }`}
-            >
-              MEMORY
-            </button>
-          </div>
+        <div className="flex items-center gap-2.5 self-end sm:self-auto">
+          <button
+            onClick={handleNextStep}
+            className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs flex items-center gap-2 shadow-sm transition-all cursor-pointer hover:shadow hover:-translate-y-0.5 active:translate-y-0"
+          >
+            <Play size={13} className="fill-current text-amber-400" />
+            <span>Next Step ({stepIndex + 1}/{activeModule.explanationSteps.length})</span>
+          </button>
 
-          <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 text-[11px] font-mono text-slate-400">
-            <span className="px-1.5 text-[10px] text-slate-500 uppercase">SCALE:</span>
-            {[1, 2, 4].map((s) => (
-              <button
-                key={s}
-                onClick={() => setScale(s)}
-                className={`px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
-                  scale === s
-                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                    : "hover:text-white"
-                }`}
-              >
-                {s}X
-              </button>
-            ))}
-          </div>
+          <button
+            onClick={handleReset}
+            className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer"
+            title="Reset Step"
+          >
+            <RotateCcw size={15} />
+          </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5">
-        <div className="lg:col-span-6 flex flex-col justify-between v8-terminal-screen rounded-2xl p-5 border border-white/10 shadow-lg min-h-[340px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <div className="lg:col-span-6 flex flex-col justify-between code-editor-surface rounded-2xl p-5 shadow-lg relative overflow-hidden">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10 text-xs font-mono text-slate-400">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 shadow-xs" />
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 shadow-xs" />
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 shadow-xs" />
-                <span className="text-[11px] text-slate-400 font-mono ml-2">runtime.js</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+                <span className="text-slate-300 ml-2">script.js</span>
               </div>
-              <span className="text-[10px] uppercase font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded font-mono">
-                V8 JIT SOURCE
+              <span className="text-[11px] text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
+                Line {currentStep.lineIndex + 1} Active
               </span>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-black/60 border border-white/5 mb-4 font-mono text-xs text-amber-300 leading-relaxed overflow-x-auto relative">
-              <div className="absolute left-1 top-3.5 bottom-3.5 w-1 bg-amber-400/80 rounded-full" />
-              <pre className="pl-3">
-                <code>{activeModule.codeSnippet}</code>
-              </pre>
-            </div>
-
-            <div className="space-y-2 font-mono text-xs">
-              <div className="flex items-center justify-between text-slate-400 text-[11px]">
-                <span className="uppercase tracking-wider">IGNITION DISPATCH STREAM:</span>
-                <span className="text-cyan-400 font-bold">OPCODE REGISTER 0x{((step % 4) + 1) * 8}</span>
-              </div>
-              <div className="p-2.5 rounded-lg bg-black/70 border border-white/10 text-slate-300 flex items-center justify-between">
-                <span className="text-cyan-300 font-bold">&gt; LdaNamedProperty a0, [0x0{step % 4}]</span>
-                <span className="text-[11px] text-slate-500">ACC &larr; r{step % 2}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 pt-1 text-[11px]">
-                <div className="p-2 rounded bg-black/40 border border-white/5 text-center">
-                  <div className="text-[9px] text-slate-500 uppercase">ACC</div>
-                  <div className="text-amber-300 font-bold">42 (0x2A)</div>
-                </div>
-                <div className="p-2 rounded bg-black/40 border border-white/5 text-center">
-                  <div className="text-[9px] text-slate-500 uppercase">r0 (Object)</div>
-                  <div className="text-cyan-300 font-bold">0x7A40</div>
-                </div>
-                <div className="p-2 rounded bg-black/40 border border-white/5 text-center">
-                  <div className="text-[9px] text-slate-500 uppercase">SP</div>
-                  <div className="text-slate-300 font-bold">0x7FFF..</div>
-                </div>
-              </div>
+            <div className="space-y-1 font-mono text-xs sm:text-[13px] leading-relaxed my-3">
+              {activeModule.codeLines.map((line, idx) => {
+                const isActive = idx === currentStep.lineIndex;
+                return (
+                  <div
+                    key={idx}
+                    className={`flex items-center gap-3 px-3 py-1.5 rounded-lg transition-all ${
+                      isActive
+                        ? "bg-amber-400/15 text-amber-200 border-l-3 border-amber-400 font-bold shadow-xs"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    <span className="text-slate-600 select-none text-[11px] w-4 text-right">
+                      {idx + 1}
+                    </span>
+                    <span className="truncate">{line}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          <div className="pt-4 border-t border-white/10 mt-4 flex items-center gap-3">
-            <button
-              onClick={handleStep}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 active:translate-y-0.5 text-slate-950 font-clash font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
-            >
-              <Play size={13} className="fill-current" />
-              <span>Step Engine Execution</span>
-            </button>
-            <button
-              onClick={handleReset}
-              className="py-2.5 px-3.5 rounded-xl bg-white/10 hover:bg-white/15 text-slate-300 font-mono text-xs flex items-center gap-1.5 transition-colors cursor-pointer border border-white/10"
-              title="Reset Execution Step"
-            >
-              <RotateCcw size={13} />
-              <span>Reset</span>
-            </button>
+          <div className="mt-4 pt-3.5 border-t border-white/10 bg-white/5 rounded-xl p-3.5 text-xs">
+            <div className="flex items-center gap-2 text-amber-300 font-bold mb-1">
+              <Sparkles size={14} />
+              <span>{currentStep.title}</span>
+            </div>
+            <p className="text-slate-300 text-[12px] leading-relaxed">
+              {currentStep.description}
+            </p>
           </div>
         </div>
 
-        <div className="lg:col-span-6 flex flex-col justify-between bg-white rounded-2xl p-5 shadow-lg border border-slate-200 min-h-[340px]">
+        <div className="lg:col-span-6 flex flex-col justify-between bg-white rounded-2xl p-6 border border-slate-200 shadow-md">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 block">
-                  V8 RUNTIME ARCHITECTURE
-                </span>
-                <h4 className="font-clash font-bold text-base text-slate-900">
-                  {activeModule.name}
-                </h4>
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider font-mono">
+                <Boxes size={15} className="text-indigo-600" />
+                <span>Live Interactive Architecture</span>
               </div>
-              <span className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                {activeModule.subsystem}
+              <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
+                Interactive State
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div
-                className={`p-3.5 rounded-xl border transition-all ${
-                  isSmi
-                    ? "bg-amber-50/80 border-amber-300 shadow-sm"
-                    : "bg-slate-50 border-slate-200 opacity-60"
-                }`}
-              >
-                <div className="text-[10px] font-mono text-amber-700 uppercase font-bold mb-1">
-                  Stack (RSP Register)
+            {activeModule.id === "variables" && (
+              <div className="space-y-4">
+                <div className="p-4 rounded-xl bg-amber-50/80 border border-amber-200/90 shadow-xs">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-amber-900 font-mono">
+                      CALL STACK (Fast Local Memory)
+                    </span>
+                    <span className="text-[10px] bg-amber-200 text-amber-800 px-2 py-0.5 rounded-full font-bold">
+                      Stack Frame
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                    <div className="bg-white p-2.5 rounded-lg border border-amber-200 shadow-xs">
+                      <div className="text-slate-500 text-[11px]">count</div>
+                      <div className="text-sm font-bold text-amber-600">{stepIndex >= 2 ? "43" : "42"}</div>
+                      <div className="text-[10px] text-slate-400">Primitive (in-place)</div>
+                    </div>
+                    <div className="bg-white p-2.5 rounded-lg border border-amber-200 shadow-xs">
+                      <div className="text-slate-500 text-[11px]">user</div>
+                      <div className="text-sm font-bold text-indigo-600">&rarr; Heap Ref</div>
+                      <div className="text-[10px] text-slate-400">Pointer: 0x7A40</div>
+                    </div>
+                  </div>
                 </div>
-                <div className="font-mono text-sm font-bold text-slate-900">
-                  val: 42 (0x54)
-                </div>
-                <div className="text-[10px] text-slate-500 mt-1 font-mono">
-                  Immediate 31-bit integer
-                </div>
-              </div>
 
-              <div
-                className={`p-3.5 rounded-xl border transition-all ${
-                  !isSmi
-                    ? "bg-cyan-50/80 border-cyan-300 shadow-sm"
-                    : "bg-slate-50 border-slate-200 opacity-60"
-                }`}
-              >
-                <div className="text-[10px] font-mono text-cyan-700 uppercase font-bold mb-1">
-                  V8 Heap Nursery
-                </div>
-                <div className="font-mono text-sm font-bold text-slate-900 truncate">
-                  {!isSmi ? "{ id: 100, v8: true }" : "Unallocated"}
-                </div>
-                <div className="text-[10px] text-slate-500 mt-1 font-mono truncate">
-                  {!isSmi ? "ptr: 0x7A40_B00" : "Nursery Empty"}
+                <div className="p-4 rounded-xl bg-indigo-50/80 border border-indigo-200/90 shadow-xs">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-indigo-900 font-mono">
+                      HEAP MEMORY (Dynamic Object Storage)
+                    </span>
+                    <span className="text-[10px] bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded-full font-bold">
+                      Heap Block
+                    </span>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg border border-indigo-200 text-xs font-mono">
+                    <div className="text-slate-500 text-[11px] mb-1">Heap Address: 0x7A40</div>
+                    <div className="font-bold text-slate-800">
+                      &#123; id: {stepIndex >= 3 ? "101" : "100"}, name: &apos;Alex&apos; &#125;
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono space-y-1.5 mb-4">
-              <div className="flex items-center justify-between">
-                <span className="text-slate-500">Smi bitmask tag:</span>
-                <span className="font-bold text-amber-600">(val &lt;&lt; 1) | 0</span>
+            {activeModule.id === "async-event-loop" && (
+              <div className="space-y-3.5 font-mono text-xs">
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-bold text-slate-700">1. Call Stack</span>
+                    <span className="text-[10px] text-slate-500">Synchronous</span>
+                  </div>
+                  <div className="bg-white p-2 rounded-lg border border-slate-200 text-slate-800">
+                    {stepIndex === 0 ? "console.log('1: Synchronous')" : stepIndex === 3 ? "console.log('4: Call stack ends')" : "Main Script Execution"}
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-bold text-emerald-800">2. Microtask Queue (High Priority)</span>
+                    <span className="text-[10px] bg-emerald-200 text-emerald-800 px-2 py-0.2 rounded font-bold">Priority #1</span>
+                  </div>
+                  <div className="bg-white p-2 rounded-lg border border-emerald-200 text-emerald-700 font-bold">
+                    Promise.then() &rarr; &apos;3: Microtask&apos;
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-bold text-amber-800">3. Macrotask Queue (Timer Task)</span>
+                    <span className="text-[10px] bg-amber-200 text-amber-800 px-2 py-0.2 rounded font-bold">Priority #2</span>
+                  </div>
+                  <div className="bg-white p-2 rounded-lg border border-amber-200 text-amber-700 font-bold">
+                    setTimeout() &rarr; &apos;2: Macrotask&apos;
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-500">Heap pointer tag:</span>
-                <span className="font-bold text-cyan-600">(address) | 1</span>
+            )}
+
+            {activeModule.id !== "variables" && activeModule.id !== "async-event-loop" && (
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 font-mono text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500 font-medium">Subsystem:</span>
+                  <span className="font-bold text-slate-800">{activeModule.subsystem}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500 font-medium">Topic Category:</span>
+                  <span className="font-bold text-indigo-600">{activeModule.category}</span>
+                </div>
+                <div className="p-3 bg-white rounded-xl border border-slate-200 text-slate-700 leading-relaxed font-sans text-xs">
+                  {currentStep.description}
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-500">Execution Frame:</span>
-                <span className="font-bold text-slate-800">Context[{activeModule.index}]</span>
-              </div>
-            </div>
+            )}
           </div>
 
-          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-500">
-              State: {isSmi ? "Stack Smi (Zero Heap Alloc)" : "Heap Object Allocated"}
+          <div className="pt-5 mt-5 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <span className="text-xs text-slate-500">
+              Interactive playground ready for direct deep dive.
             </span>
 
             <a
               href={activeModule.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 !text-white font-clash font-bold text-xs shadow-sm transition-all"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-sm transition-all hover:shadow hover:-translate-y-0.5"
             >
-              <span className="!text-white">Full Workbench</span>
-              <ArrowUpRight size={13} className="!text-white" />
+              <span>Launch Full Module</span>
+              <ArrowUpRight size={14} />
             </a>
           </div>
-        </div>
-      </div>
-
-      <div className="px-2 pt-2 border-t border-white/[0.08] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono text-slate-400">
-        <div className="flex items-center gap-2">
-          <span className="text-slate-500 uppercase">SCHEMATIC INVARIANT:</span>
-          <span className="text-amber-400 font-bold">{activeModule.glyph}</span>
-        </div>
-        <div className="flex items-center gap-3 text-[11px] text-slate-400">
-          <span>Subsystem: {activeModule.subsystem}</span>
-          <span className="text-slate-600">&middot;</span>
-          <span>Latency: ~0.14ms</span>
         </div>
       </div>
     </div>
