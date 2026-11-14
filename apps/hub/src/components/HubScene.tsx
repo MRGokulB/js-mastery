@@ -12,7 +12,10 @@ import {
   Activity,
   Workflow,
   Code2,
-  RotateCcw
+  Zap,
+  CheckCircle2,
+  Sliders,
+  Play
 } from "lucide-react";
 import V8EngineCore3D, { V8_MODULE_SYSTEMS, V8ModuleMeta } from "./V8EngineCore3D";
 import { OnboardingTour } from "./OnboardingTour";
@@ -27,20 +30,7 @@ const SYSTEM_ICONS = {
   "dom-apis": Layers
 };
 
-const TAG_CHIPS = [
-  { label: "Heap", modId: "variables" },
-  { label: "Smis", modId: "variables" },
-  { label: "Ignition", modId: "control-flow" },
-  { label: "Closures", modId: "functions-scope" },
-  { label: "Packed", modId: "arrays-iteration" },
-  { label: "TurboFan", modId: "objects-maps" },
-  { label: "Shapes", modId: "objects-maps" },
-  { label: "EventLoop", modId: "async-event-loop" },
-  { label: "Microtasks", modId: "async-event-loop" },
-  { label: "DOM", modId: "dom-apis" }
-];
-
-function SpotlightBentoCard({ item, IconComp }: { item: V8ModuleMeta; IconComp: any }) {
+function BentoRefractionCard({ item, IconComp }: { item: V8ModuleMeta; IconComp: any }) {
   const [mousePos, setMousePos] = useState({ x: -999, y: -999 });
   const [isHovered, setIsHovered] = useState(false);
 
@@ -55,30 +45,30 @@ function SpotlightBentoCard({ item, IconComp }: { item: V8ModuleMeta; IconComp: 
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative p-6 rounded-[24px] bg-white border border-black/[0.08] hover:border-black/[0.22] hover:shadow-[0_18px_40px_rgba(0,0,0,0.08)] transition-all flex flex-col justify-between overflow-hidden"
+      className="group relative p-6 rounded-[28px] liquid-glass-card hover:liquid-glass transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer"
     >
       <div
-        className="pointer-events-none absolute -inset-px transition-opacity duration-300 rounded-[24px]"
+        className="pointer-events-none absolute -inset-px transition-opacity duration-300 rounded-[28px]"
         style={{
           opacity: isHovered ? 1 : 0,
-          background: `radial-gradient(350px circle at ${mousePos.x}px ${mousePos.y}px, rgba(245,158,11,0.08), transparent 75%)`
+          background: `radial-gradient(400px circle at ${mousePos.x}px ${mousePos.y}px, rgba(245, 158, 11, 0.12), transparent 75%)`
         }}
       />
 
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-4">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center font-clash font-semibold text-sm transition-transform duration-300 group-hover:scale-105"
-            style={{ backgroundColor: `${item.chipColor}` }}
+            className="w-10 h-10 rounded-2xl flex items-center justify-center font-syne font-bold text-sm shadow-2xs transition-transform duration-300 group-hover:scale-105"
+            style={{ backgroundColor: `${item.chipColor}`, color: `${item.accent}` }}
           >
             <IconComp size={18} />
           </div>
-          <span className="text-[10px] font-mono uppercase text-[#64748b] tracking-wider px-2 py-0.5 rounded-full bg-black/[0.04]">
-            MODULE {item.index}
+          <span className="text-[10px] font-space uppercase text-[#64748b] tracking-wider px-2.5 py-1 rounded-full bg-black/[0.04]">
+            SYSTEM {item.index}
           </span>
         </div>
 
-        <h3 className="font-clash font-semibold text-base text-[#0f172a] mb-1.5 group-hover:text-black transition-colors">
+        <h3 className="font-syne font-bold text-lg text-[#0f172a] mb-1.5 group-hover:text-amber-600 transition-colors">
           {item.name}
         </h3>
 
@@ -86,17 +76,17 @@ function SpotlightBentoCard({ item, IconComp }: { item: V8ModuleMeta; IconComp: 
           {item.tagline}
         </p>
 
-        <div className="py-2 px-3 rounded-lg bg-[#f8f9fa] border border-black/[0.04] text-[11px] font-mono text-[#475569] mb-4 flex items-center justify-between">
+        <div className="py-2 px-3 rounded-xl bg-white/70 border border-black/[0.04] text-[11px] font-space text-[#475569] mb-4 flex items-center justify-between shadow-2xs">
           <span className="truncate">{item.subsystem}</span>
-          <span className="text-[10px] text-[#94a3b8]">{item.category}</span>
+          <span className="text-[10px] text-amber-700 font-semibold">{item.category}</span>
         </div>
       </div>
 
-      <div className="relative z-10 pt-4 border-t border-black/[0.05] flex items-center justify-between text-xs font-semibold text-[#0f172a]">
-        <span>Open Visualizer</span>
+      <div className="relative z-10 pt-4 border-t border-black/[0.05] flex items-center justify-between text-xs font-syne font-semibold text-[#0f172a]">
+        <span>Open Interactive Simulator</span>
         <ArrowUpRight
           size={14}
-          className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+          className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-amber-600"
         />
       </div>
     </a>
@@ -111,31 +101,36 @@ export function HubScene() {
   }, [selectedId]);
 
   return (
-    <div className="min-h-screen bg-[#fafafb] text-[#0f172a] font-cabinet selection:bg-amber-100 selection:text-black relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#fafafc] text-[#0b0f19] font-cabinet selection:bg-amber-100 selection:text-black relative overflow-x-hidden">
       <OnboardingTour />
 
-      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_60%_at_50%_15%,rgba(241,245,249,0.95),transparent_75%)]" />
+      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(254,243,199,0.35),transparent_70%)]" />
 
-      <header className="sticky top-0 z-50 border-b border-black/[0.06] bg-[#fafafb]/90 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-black/[0.05] bg-[#fafafc]/90 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 h-18 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-400 text-black flex items-center justify-center font-clash font-bold text-sm shadow-sm">
+            <div className="w-9 h-9 rounded-xl bg-[#0f172a] text-amber-400 flex items-center justify-center font-syne font-bold text-sm shadow-sm">
               JS
             </div>
             <div>
-              <span className="font-clash font-semibold text-sm tracking-tight text-[#0f172a] block">
+              <span className="font-syne font-bold text-sm tracking-tight text-[#0f172a] block">
                 JAVASCRIPT UNIVERSE
               </span>
-              <span className="text-[11px] text-[#64748b] block font-normal">
+              <span className="text-[11px] text-[#64748b] font-space block font-normal">
                 V8 Engine Architecture &amp; Runtime Visualizers
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="hidden md:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[11px] font-space text-amber-900">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+              <span>V8 // TURBOFAN JIT ONLINE</span>
+            </div>
+
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("open-jsm-tour"))}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/[0.08] bg-white hover:bg-black hover:text-white transition-all text-xs font-medium text-[#0f172a] shadow-xs cursor-pointer"
+              className="neo-pill-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-syne font-semibold text-[#0f172a] cursor-pointer"
             >
               <Sparkles size={13} className="text-amber-500" />
               <span>Tour</span>
@@ -145,7 +140,7 @@ export function HubScene() {
               href="https://github.com/MRGokulB/js-mastery"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-black/[0.08] bg-white hover:bg-black hover:text-white transition-all text-xs font-medium text-[#0f172a] shadow-xs"
+              className="neo-pill-btn inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-syne font-semibold text-[#0f172a]"
               aria-label="GitHub Repository"
             >
               <Code2 size={13} />
@@ -156,229 +151,92 @@ export function HubScene() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-8 sm:pt-10 pb-28 relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10 px-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-black/[0.08] shadow-xs mb-3">
-            <span className="w-2 h-2 rounded-full bg-[#c8f03c]" />
-            <span className="text-[11px] font-mono tracking-widest text-[#0f172a] uppercase font-semibold">
-              V8 ENGINE ARCHITECTURE WORKBENCH &middot; 2026
-            </span>
-          </div>
+        <section className="mb-10">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-black/[0.08] shadow-2xs mb-3">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                <span className="text-[10px] font-space tracking-widest text-[#0f172a] uppercase font-bold">
+                  KINETIC EXECUTION PRISM &middot; 2026
+                </span>
+              </div>
+              <h1 className="font-syne font-extrabold text-[#0f172a] tracking-tight leading-[1.05] text-3xl sm:text-5xl">
+                Deconstruct JavaScript, <br />
+                <span className="font-instrument italic font-normal text-amber-700">
+                  down to the V8 heap.
+                </span>
+              </h1>
+            </div>
 
-          <h1 className="font-clash font-semibold text-[#0f172a] tracking-tight leading-[1.08] text-center text-3xl sm:text-5xl md:text-6xl">
-            Understand JavaScript, <br />
-            <span className="font-instrument italic font-normal text-[#18181b]">
-              down to the V8 heap.
-            </span>
-          </h1>
-
-          <p className="text-xs sm:text-base text-[#475569] max-w-xl mx-auto mt-3 sm:mt-4 font-normal leading-relaxed">
-            Interactive runtime architecture workbench. Inspect live memory stack allocations, Ignition bytecode dispatch, lexical closures, and event loop cycles across 7 dedicated visualizers.
-          </p>
-        </div>
-
-        <section className="relative w-full rounded-[36px] bg-gradient-to-b from-white to-[#f4f6fa] border border-black/[0.08] shadow-[0_24px_64px_rgba(0,0,0,0.06)] overflow-hidden mb-24 p-4 sm:p-6 lg:p-8">
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
-            <span className="font-clash font-bold text-[15vw] sm:text-[13vw] tracking-tighter text-black/[0.038] uppercase leading-none whitespace-nowrap">
-              JAVASCRIPT
-            </span>
-          </div>
-
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-end">
-            <div className="lg:col-span-3 order-2 lg:order-1 flex flex-col justify-end">
-              <div className="p-4 sm:p-5 rounded-[24px] bg-white/95 backdrop-blur-xl border border-black/[0.08] shadow-[0_12px_32px_rgba(0,0,0,0.06)]">
-                <div className="flex items-center justify-between mb-3 px-1">
-                  <span className="text-[11px] font-mono tracking-wider text-[#64748b] uppercase">
-                    CHOOSE A SYSTEM
-                  </span>
-                  <span className="text-[10px] font-mono text-amber-600 font-semibold">
-                    7 MODULES
-                  </span>
-                </div>
-
-                <div className="flex flex-col gap-1.5 max-h-[380px] overflow-y-auto no-scrollbar pr-0.5">
-                  {V8_MODULE_SYSTEMS.map((mod) => {
-                    const isSelected = selectedId === mod.id;
-                    const IconComp = SYSTEM_ICONS[mod.id as keyof typeof SYSTEM_ICONS] || Layers;
-
-                    return (
-                      <button
-                        key={mod.id}
-                        onClick={() => setSelectedId(mod.id)}
-                        className={`w-full text-left p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-between border ${
-                          isSelected
-                            ? "bg-[#0f172a] text-white border-[#0f172a] shadow-xs"
-                            : "bg-[#f8f9fa] text-[#0f172a] border-black/[0.04] hover:bg-white hover:border-black/[0.12]"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div
-                            className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs shrink-0 transition-colors ${
-                              isSelected ? "bg-white text-black" : "text-black"
-                            }`}
-                            style={{ backgroundColor: isSelected ? "#ffffff" : mod.chipColor }}
-                          >
-                            <IconComp size={14} />
-                          </div>
-
-                          <div className="min-w-0 flex-1">
-                            <span className="block text-xs font-semibold font-clash leading-snug">
-                              {mod.name}
-                            </span>
-                            <span
-                              className={`block text-[10px] font-mono ${
-                                isSelected ? "text-slate-300" : "text-[#64748b]"
-                              }`}
-                            >
-                              {mod.category}
-                            </span>
-                          </div>
-                        </div>
-
-                        {isSelected && (
-                          <div className="w-2 h-2 rounded-full bg-amber-400 shrink-0 ml-1.5 shadow-[0_0_8px_#f59e0b]" />
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
+            <div className="p-3.5 rounded-2xl bg-white border border-black/[0.06] shadow-2xs max-w-sm space-y-2">
+              <div className="flex items-center justify-between text-xs font-space">
+                <span className="text-[10px] uppercase font-bold text-[#64748b] tracking-wider">
+                  V8 HEAP ALLOCATION
+                </span>
+                <span className="text-amber-600 font-bold text-[11px]">4.2 MB / 16 MB</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-black/[0.04] overflow-hidden flex">
+                <div className="h-full bg-amber-500 w-[28%]" />
+                <div className="h-full bg-purple-500 w-[18%]" />
+                <div className="h-full bg-sky-500 w-[14%]" />
+              </div>
+              <div className="flex items-center justify-between text-[10px] font-space text-[#64748b]">
+                <span>31-Bit Smi</span>
+                <span>Scavenger Nursery</span>
+                <span>Old Space</span>
               </div>
             </div>
+          </div>
 
-            <div className="lg:col-span-6 order-1 lg:order-2 flex flex-col items-center justify-center">
-              <V8EngineCore3D
-                activeId={selectedId}
-                onSelectModule={(id) => setSelectedId(id)}
-              />
-            </div>
+          <div className="p-2 rounded-2xl bg-white/80 backdrop-blur-xl border border-black/[0.06] shadow-xs flex flex-wrap items-center justify-between gap-1.5">
+            <span className="text-[10px] font-space uppercase tracking-widest text-[#64748b] px-2 font-bold hidden sm:inline">
+              SELECT RUNTIME SYSTEM:
+            </span>
 
-            <div className="lg:col-span-3 order-3 flex flex-col justify-end">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={selectedId}
-                  initial={{ opacity: 0, y: 14, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -10, scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  className="rounded-[24px] bg-white/95 backdrop-blur-xl border border-black/[0.08] p-5 sm:p-6 shadow-[0_16px_40px_rgba(0,0,0,0.06)] flex flex-col gap-4"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-black/[0.06] text-[#0f172a] font-semibold">
-                          SYSTEM {activeModule.index}
-                        </span>
-                        <span className="text-xs text-[#64748b] font-mono">
-                          {activeModule.category}
-                        </span>
-                      </div>
-                      <div
-                        className="w-2.5 h-2.5 rounded-full shadow-[0_0_8px_currentColor]"
-                        style={{ backgroundColor: activeModule.accent, color: activeModule.accent }}
-                      />
-                    </div>
-
-                    <h2 className="font-clash font-bold text-lg text-[#0f172a] leading-tight mb-1">
-                      {activeModule.name}
-                    </h2>
-
-                    <p className="text-xs text-[#475569] leading-relaxed">
-                      {activeModule.tagline}
-                    </p>
-                  </div>
-
-                  <div className="space-y-2 pt-3 border-t border-black/[0.06]">
-                    <div>
-                      <span className="text-[10px] font-mono uppercase text-[#64748b] block mb-0.5">
-                        SUBSYSTEM RUNTIME
-                      </span>
-                      <span className="text-xs font-mono font-semibold text-[#0f172a]">
-                        {activeModule.subsystem}
-                      </span>
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] font-mono uppercase text-[#64748b] block mb-0.5">
-                        MEMORY MECHANIC
-                      </span>
-                      <span className="text-xs font-mono font-medium text-[#0f172a]">
-                        {activeModule.mechanic}
-                      </span>
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] font-mono uppercase text-[#64748b] block mb-1">
-                        SCHEMATIC INVARIANT
-                      </span>
-                      <div className="py-2 px-3 rounded-xl bg-[#0b0c10] text-amber-300 font-mono text-[11px] border border-black/10 overflow-x-auto no-scrollbar">
-                        {activeModule.glyph}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-2.5 pt-2">
-                    <a
-                      href={activeModule.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="keycap-btn-black w-full text-xs px-4 flex items-center justify-between"
-                    >
-                      <span>Launch {activeModule.shortTitle}</span>
-                      <div className="flex items-center gap-1.5">
-                        <ArrowUpRight size={14} />
-                        <span className="text-[10px] opacity-60 font-mono">⏎</span>
-                      </div>
-                    </a>
-
-                    <button
-                      onClick={() => setSelectedId("variables")}
-                      className="keycap-btn-white w-full text-xs px-4 flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-2">
-                        <RotateCcw size={13} />
-                        <span>Reset To Variables</span>
-                      </div>
-                      <span className="text-[10px] opacity-60 font-mono">↺</span>
-                    </button>
-                  </div>
-
-                  <div className="pt-2 border-t border-black/[0.05]">
-                    <span className="text-[10px] font-mono uppercase text-[#94a3b8] block mb-1.5">
-                      INTERACTIVE HOTKEYS
-                    </span>
-                    <div className="flex flex-wrap gap-1">
-                      {TAG_CHIPS.map((chip, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => setSelectedId(chip.modId)}
-                          className={`px-2 py-0.5 rounded-md text-[10px] font-mono transition-all cursor-pointer ${
-                            selectedId === chip.modId
-                              ? "bg-amber-400 text-black font-semibold shadow-xs"
-                              : "bg-[#f1f3f7] text-[#475569] hover:bg-slate-200"
-                          }`}
-                        >
-                          {chip.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
+            <div className="flex flex-wrap gap-1.5">
+              {V8_MODULE_SYSTEMS.map((mod) => {
+                const isSelected = selectedId === mod.id;
+                return (
+                  <button
+                    key={mod.id}
+                    onClick={() => setSelectedId(mod.id)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-syne font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      isSelected
+                        ? "bg-[#0f172a] text-white shadow-2xs"
+                        : "bg-black/[0.02] text-[#475569] hover:bg-black/[0.06] hover:text-[#0f172a]"
+                    }`}
+                  >
+                    <span
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: mod.accent }}
+                    />
+                    <span>0{mod.index} · {mod.shortTitle}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        <section className="pt-16 border-t border-black/[0.06]">
+        <section className="mb-20">
+          <V8EngineCore3D
+            activeId={selectedId}
+            onSelectModule={(id) => setSelectedId(id)}
+          />
+        </section>
+
+        <section className="pt-12 border-t border-black/[0.06]">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-              <span className="text-[11px] font-mono uppercase tracking-widest text-[#64748b] block mb-1">
+              <span className="text-[11px] font-space uppercase tracking-widest text-[#64748b] block mb-1">
                 STANDALONE SIMULATORS
               </span>
-              <h2 className="font-clash font-semibold text-2xl text-[#0f172a]">
-                All 7 V8 Engine Systems
+              <h2 className="font-syne font-bold text-2xl sm:text-3xl text-[#0f172a] tracking-tight">
+                Explore All 7 V8 Engine Modules
               </h2>
             </div>
-            <span className="text-xs font-mono text-[#64748b]">
-              7 MICRO-FRONTENDS DEPLOYED
+            <span className="text-xs font-space text-[#64748b]">
+              7 Interactive Interactive Workbenches
             </span>
           </div>
 
@@ -386,7 +244,7 @@ export function HubScene() {
             {V8_MODULE_SYSTEMS.map((item) => {
               const IconComp = SYSTEM_ICONS[item.id as keyof typeof SYSTEM_ICONS] || Layers;
               return (
-                <SpotlightBentoCard
+                <BentoRefractionCard
                   key={item.id}
                   item={item}
                   IconComp={IconComp}
@@ -397,15 +255,27 @@ export function HubScene() {
         </section>
       </main>
 
-      <footer className="border-t border-black/[0.06] bg-white py-8">
+      <footer className="border-t border-black/[0.06] bg-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#64748b]">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-amber-400" />
-            <span className="font-clash font-semibold text-[#0f172a]">
-              JAVASCRIPT UNIVERSE
-            </span>
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            <span className="font-syne font-semibold text-[#0f172a]">JavaScript Universe</span>
+            <span>&copy; 2026 &middot; Kinetic Execution Prism</span>
           </div>
-          <div>Bespoke Kinetic Architectural Experience &middot; 2026</div>
+          <div className="flex items-center gap-6 font-space text-[11px]">
+            <a href="https://variables-pi.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:text-[#0f172a]">
+              Memory
+            </a>
+            <a href="https://control-flow-ruby.vercel.app" target="_blank" rel="noopener noreferrer" className="hover:text-[#0f172a]">
+              Interpreter
+            </a>
+            <a href="https://async-event-loop-ten.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:text-[#0f172a]">
+              Event Loop
+            </a>
+            <a href="https://github.com/MRGokulB/js-mastery" target="_blank" rel="noopener noreferrer" className="hover:text-[#0f172a]">
+              GitHub
+            </a>
+          </div>
         </div>
       </footer>
     </div>
