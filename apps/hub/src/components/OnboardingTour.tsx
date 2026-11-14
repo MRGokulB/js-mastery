@@ -31,6 +31,7 @@ export function OnboardingTour() {
     window.addEventListener("open-jsm-tour", handleOpen);
 
     try {
+      if (window.location.search.includes("notour")) return;
       const seen = localStorage.getItem("jsm_tour_seen_v3");
       if (!seen) {
         const timer = setTimeout(() => {
