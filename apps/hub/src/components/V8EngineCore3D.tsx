@@ -170,13 +170,17 @@ function createTactileV8CardCanvas(mod: V8ModuleMeta, isSelected: boolean, isHov
 
 interface Props {
   activeId: string;
+  viewMode?: "orbit" | "focus" | "top";
   onSelectModule: (id: string) => void;
 }
 
-export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
+export default function V8EngineCore3D({ activeId, viewMode = "orbit", onSelectModule }: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
   const activeIdRef = useRef<string>(activeId);
   activeIdRef.current = activeId;
+
+  const viewModeRef = useRef<"orbit" | "focus" | "top">(viewMode);
+  viewModeRef.current = viewMode;
 
   const onSelectRef = useRef(onSelectModule);
   onSelectRef.current = onSelectModule;
@@ -206,26 +210,6 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
     renderer.toneMappingExposure = 1.05;
     container.appendChild(renderer.domElement);
 
-    const applyResponsiveCamera = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      const aspect = w / h;
-      camera.aspect = aspect;
-
-      if (aspect < 1.0) {
-        const extraDist = (1.0 - aspect) * 4.8;
-        camera.position.set(0, 4.6 + extraDist * 0.35, 7.8 + extraDist);
-      } else {
-        camera.position.set(0, 4.5, 7.5);
-      }
-      camera.lookAt(0, -0.15, 0);
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-
-    applyResponsiveCamera();
-
     const ambientLight = new THREE.AmbientLight(0xffffff, 2.0);
     scene.add(ambientLight);
 
@@ -241,9 +225,9 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
     fillLight.position.set(-6, 5, -3);
     scene.add(fillLight);
 
-    const rimLight = new THREE.PointLight(0xffffff, 1.0, 16);
-    rimLight.position.set(0, 6, -5);
-    scene.add(rimLight);
+    const activeSpotLight = new THREE.PointLight(0xf59e0b, 2.2, 8);
+    activeSpotLight.position.set(0, 3, 0);
+    scene.add(activeSpotLight);
 
     const coreGroup = new THREE.Group();
     scene.add(coreGroup);
@@ -292,9 +276,20 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
     groundMesh.receiveShadow = true;
     scene.add(groundMesh);
 
+    const busGroup = new THREE.Group();
+    coreGroup.add(busGroup);
+
+    const traceMat = new THREE.MeshStandardMaterial({
+      color: 0xd97706,
+      metalness: 0.9,
+      roughness: 0.2
+    });
+
     const cardMeshes: {
       id: string;
       mesh: THREE.Mesh;
+      baseX: number;
+      baseZ: number;
       baseY: number;
       targetY: number;
       topMat: THREE.MeshPhysicalMaterial;
@@ -305,10 +300,30 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
     const cardGeo = new THREE.BoxGeometry(1.48, 0.24, 1.28);
     const radius = 2.4;
 
+    const pulses: { mesh: THREE.Mesh; progress: number; p1: THREE.Vector3; p2: THREE.Vector3 }[] = [];
+    const pulseGeo = new THREE.SphereGeometry(0.045, 12, 12);
+    const pulseMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+
     V8_MODULE_SYSTEMS.forEach((mod, idx) => {
       const angle = (idx * (2 * Math.PI)) / V8_MODULE_SYSTEMS.length;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
+
+      const len = radius - 0.9;
+      const traceGeo = new THREE.BoxGeometry(len, 0.015, 0.035);
+      const traceMesh = new THREE.Mesh(traceGeo, traceMat);
+      traceMesh.position.set(Math.cos(angle) * (0.9 + len / 2), 0.005, Math.sin(angle) * (0.9 + len / 2));
+      traceMesh.rotation.y = -angle;
+      busGroup.add(traceMesh);
+
+      const pMesh = new THREE.Mesh(pulseGeo, pulseMat);
+      busGroup.add(pMesh);
+      pulses.push({
+        mesh: pMesh,
+        progress: idx / V8_MODULE_SYSTEMS.length,
+        p1: new THREE.Vector3(Math.cos(angle) * 0.9, 0.02, Math.sin(angle) * 0.9),
+        p2: new THREE.Vector3(x, 0.02, z)
+      });
 
       const isSelected = mod.id === activeIdRef.current;
       const canvas = createTactileV8CardCanvas(mod, isSelected, false);
@@ -344,6 +359,8 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
       cardMeshes.push({
         id: mod.id,
         mesh,
+        baseX: x,
+        baseZ: z,
         baseY: 0.12,
         targetY: 0.12,
         topMat,
@@ -387,8 +404,8 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
       mouse.x = rawX;
       mouse.y = rawY;
 
-      parallaxTargetX = rawX * 0.1;
-      parallaxTargetY = rawY * 0.06;
+      parallaxTargetX = rawX * 0.12;
+      parallaxTargetY = rawY * 0.08;
 
       if (isDragging) {
         const dx = e.clientX - prevMouseX;
@@ -424,8 +441,38 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
       const delta = Math.min((currentTime - lastTime) / 1000, 0.1);
       lastTime = currentTime;
 
-      if (!isDragging) {
-        targetRotationY += 0.001;
+      const currentMode = viewModeRef.current;
+      const activeItem = cardMeshes.find((c) => c.id === activeIdRef.current) || cardMeshes[0];
+
+      let camTargetX = 0;
+      let camTargetY = 4.5;
+      let camTargetZ = 7.5;
+      let lookTargetX = 0;
+      let lookTargetY = -0.15;
+      let lookTargetZ = 0;
+
+      if (currentMode === "focus") {
+        camTargetX = activeItem.baseX * 0.45;
+        camTargetY = 3.2;
+        camTargetZ = 5.2;
+        lookTargetX = activeItem.baseX * 0.55;
+        lookTargetZ = activeItem.baseZ * 0.55;
+      } else if (currentMode === "top") {
+        camTargetX = 0;
+        camTargetY = 8.5;
+        camTargetZ = 0.5;
+        lookTargetX = 0;
+        lookTargetY = 0;
+        lookTargetZ = 0;
+      }
+
+      camera.position.x = THREE.MathUtils.damp(camera.position.x, camTargetX, 4, delta);
+      camera.position.y = THREE.MathUtils.damp(camera.position.y, camTargetY, 4, delta);
+      camera.position.z = THREE.MathUtils.damp(camera.position.z, camTargetZ, 4, delta);
+      camera.lookAt(lookTargetX, lookTargetY, lookTargetZ);
+
+      if (!isDragging && currentMode === "orbit") {
+        targetRotationY += 0.0012;
       }
 
       const combinedTargetY = targetRotationY + parallaxTargetX;
@@ -433,6 +480,11 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
 
       coreGroup.rotation.y = THREE.MathUtils.damp(coreGroup.rotation.y, combinedTargetY, 4, delta);
       coreGroup.rotation.x = THREE.MathUtils.damp(coreGroup.rotation.x, combinedTargetX, 4, delta);
+
+      pulses.forEach((pulse) => {
+        pulse.progress = (pulse.progress + delta * 0.5) % 1.0;
+        pulse.mesh.position.lerpVectors(pulse.p1, pulse.p2, pulse.progress);
+      });
 
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(cardMeshes.map((b) => b.mesh));
@@ -451,6 +503,9 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
         updateCardTextures(activeIdRef.current, hoveredId);
       }
 
+      activeSpotLight.position.x = THREE.MathUtils.damp(activeSpotLight.position.x, activeItem.mesh.position.x, 6, delta);
+      activeSpotLight.position.z = THREE.MathUtils.damp(activeSpotLight.position.z, activeItem.mesh.position.z, 6, delta);
+
       cardMeshes.forEach((item) => {
         const isActive = item.id === activeIdRef.current;
         const isHovered = item.id === hoveredId;
@@ -464,11 +519,20 @@ export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
 
     animId = requestAnimationFrame(animate);
 
-    window.addEventListener("resize", applyResponsiveCamera);
+    const onResize = () => {
+      if (!container) return;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    };
+
+    window.addEventListener("resize", onResize);
 
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("resize", applyResponsiveCamera);
+      window.removeEventListener("resize", onResize);
       container.removeEventListener("mousedown", onPointerDown);
       window.removeEventListener("mousemove", onPointerMove);
       window.removeEventListener("mouseup", onPointerUp);
