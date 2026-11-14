@@ -94,12 +94,18 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-[#07090e]/85 backdrop-blur-xl transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 h-18 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center shadow-sm border border-slate-800 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/20 to-transparent pointer-events-none" />
+            <div className="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center shadow-sm border border-slate-700/60 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-tr from-slate-700/20 via-transparent to-transparent pointer-events-none" />
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10">
-                <path d="M12 2.5L20.5 7.5V16.5L12 21.5L3.5 16.5V7.5L12 2.5Z" stroke="#f59e0b" strokeWidth="1.8" strokeLinejoin="round" />
-                <path d="M9 16C9 16.5 9.8 17 10.8 17C11.8 17 12.5 16.5 12.5 15V10" stroke="#fbbf24" strokeWidth="1.8" strokeLinecap="round" />
-                <path d="M14.5 16.2C15.2 16.8 16.2 16.8 17 16.2C17.6 15.7 17.6 14.8 17 14.2C16 13.4 14.5 13 14.5 11.8C14.5 10.6 15.5 9.8 16.8 9.8C17.6 9.8 18.3 10.2 18.8 10.6" stroke="#fbbf24" strokeWidth="1.8" strokeLinecap="round" />
+                <path d="M12 2.5L20.2 7.25V16.75L12 21.5L3.8 16.75V7.25Z" stroke="#cbd5e1" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 2.5V7.5" stroke="#64748b" strokeWidth="1.3" strokeLinecap="round" />
+                <path d="M12 16.5V21.5" stroke="#64748b" strokeWidth="1.3" strokeLinecap="round" />
+                <path d="M20.2 7.25L16.5 9.5" stroke="#64748b" strokeWidth="1.3" strokeLinecap="round" />
+                <path d="M20.2 16.75L16.5 14.5" stroke="#64748b" strokeWidth="1.3" strokeLinecap="round" />
+                <path d="M3.8 16.75L7.5 14.5" stroke="#64748b" strokeWidth="1.3" strokeLinecap="round" />
+                <path d="M3.8 7.25L7.5 9.5" stroke="#64748b" strokeWidth="1.3" strokeLinecap="round" />
+                <rect x="7.5" y="7.5" width="9" height="9" rx="2.4" fill="#0b0f19" stroke="#64748b" strokeWidth="1.2" />
+                <text x="12" y="14.3" textAnchor="middle" fill="#ffffff" fontSize="6.4" fontWeight="900" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="-0.3px">JS</text>
               </svg>
             </div>
             <div>
