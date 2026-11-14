@@ -163,7 +163,7 @@ function createTactileV8CardCanvas(mod: V8ModuleMeta, isSelected: boolean, isHov
 
   ctx.fillStyle = "rgba(15, 23, 42, 0.4)";
   ctx.font = "bold 32px monospace";
-  ctx.fillText("V8 · RUNTIME SPEC 2026", 70, 910);
+  ctx.fillText("V8 · RUNTIME QUANTUM SPEC", 70, 910);
 
   return canvas;
 }
@@ -225,104 +225,122 @@ export default function V8EngineCore3D({ activeId, viewMode = "orbit", onSelectM
     fillLight.position.set(-6, 5, -3);
     scene.add(fillLight);
 
-    const activeSpotLight = new THREE.PointLight(0xf59e0b, 2.2, 8);
+    const activeSpotLight = new THREE.PointLight(0xf59e0b, 2.4, 9);
     activeSpotLight.position.set(0, 3, 0);
     scene.add(activeSpotLight);
 
-    const coreGroup = new THREE.Group();
-    scene.add(coreGroup);
+    const spaceGroup = new THREE.Group();
+    scene.add(spaceGroup);
 
-    const baseGeo = new THREE.CylinderGeometry(3.6, 3.8, 0.22, 48);
-    const baseMat = new THREE.MeshPhysicalMaterial({
-      color: 0xf1f3f7,
-      metalness: 0.08,
-      roughness: 0.45,
-      clearcoat: 0.35,
-      clearcoatRoughness: 0.2
+    const floorGeo = new THREE.PlaneGeometry(16, 16);
+    const floorMat = new THREE.MeshPhysicalMaterial({
+      color: 0xf5f7fb,
+      metalness: 0.05,
+      roughness: 0.6,
+      clearcoat: 0.2
     });
-    const baseMesh = new THREE.Mesh(baseGeo, baseMat);
-    baseMesh.position.y = -0.11;
-    baseMesh.receiveShadow = true;
-    coreGroup.add(baseMesh);
-
-    const centerGeo = new THREE.CylinderGeometry(0.85, 0.9, 0.32, 32);
-    const centerMat = new THREE.MeshPhysicalMaterial({
-      color: 0xe4e4e7,
-      metalness: 0.85,
-      roughness: 0.25,
-      clearcoat: 0.4
-    });
-    const centerMesh = new THREE.Mesh(centerGeo, centerMat);
-    centerMesh.position.y = 0.16;
-    centerMesh.castShadow = true;
-    centerMesh.receiveShadow = true;
-    coreGroup.add(centerMesh);
-
-    const capGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.08, 32);
-    const capMat = new THREE.MeshStandardMaterial({
-      color: 0x0f172a,
-      metalness: 0.3,
-      roughness: 0.3
-    });
-    const capMesh = new THREE.Mesh(capGeo, capMat);
-    capMesh.position.y = 0.36;
-    coreGroup.add(capMesh);
+    const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+    floorMesh.rotation.x = -Math.PI / 2;
+    floorMesh.position.y = -1.6;
+    floorMesh.receiveShadow = true;
+    spaceGroup.add(floorMesh);
 
     const shadowGeo = new THREE.PlaneGeometry(14, 14);
-    const shadowMat = new THREE.ShadowMaterial({ opacity: 0.18 });
-    const groundMesh = new THREE.Mesh(shadowGeo, shadowMat);
-    groundMesh.rotation.x = -Math.PI / 2;
-    groundMesh.position.y = -0.23;
-    groundMesh.receiveShadow = true;
-    scene.add(groundMesh);
+    const shadowMat = new THREE.ShadowMaterial({ opacity: 0.16 });
+    const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
+    shadowMesh.rotation.x = -Math.PI / 2;
+    shadowMesh.position.y = -1.58;
+    shadowMesh.receiveShadow = true;
+    spaceGroup.add(shadowMesh);
 
-    const busGroup = new THREE.Group();
-    coreGroup.add(busGroup);
+    const reactorGroup = new THREE.Group();
+    spaceGroup.add(reactorGroup);
+    reactorGroup.position.set(0, -0.1, 0);
 
-    const traceMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
+    const coreGeo = new THREE.SphereGeometry(0.55, 32, 32);
+    const coreMat = new THREE.MeshPhysicalMaterial({
+      color: 0xfbbf24,
+      emissive: 0xd97706,
+      emissiveIntensity: 0.65,
+      metalness: 0.8,
+      roughness: 0.2,
+      clearcoat: 0.9
+    });
+    const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+    reactorGroup.add(coreMesh);
+
+    const ringMat1 = new THREE.MeshStandardMaterial({
+      color: 0x334155,
       metalness: 0.9,
       roughness: 0.2
     });
+    const ringMat2 = new THREE.MeshStandardMaterial({
+      color: 0xd97706,
+      metalness: 0.95,
+      roughness: 0.15
+    });
 
-    const cardMeshes: {
+    const ring1Geo = new THREE.TorusGeometry(1.05, 0.035, 16, 64);
+    const ring1 = new THREE.Mesh(ring1Geo, ringMat1);
+    reactorGroup.add(ring1);
+
+    const ring2Geo = new THREE.TorusGeometry(1.35, 0.03, 16, 64);
+    const ring2 = new THREE.Mesh(ring2Geo, ringMat2);
+    reactorGroup.add(ring2);
+
+    const ring3Geo = new THREE.TorusGeometry(1.65, 0.025, 16, 64);
+    const ring3 = new THREE.Mesh(ring3Geo, ringMat1);
+    reactorGroup.add(ring3);
+
+    const tetherGroup = new THREE.Group();
+    spaceGroup.add(tetherGroup);
+
+    const monolithMeshes: {
       id: string;
       mesh: THREE.Mesh;
       baseX: number;
-      baseZ: number;
       baseY: number;
+      baseZ: number;
       targetY: number;
       topMat: THREE.MeshPhysicalMaterial;
       mod: V8ModuleMeta;
       texture: THREE.CanvasTexture;
+      phase: number;
     }[] = [];
-
-    const cardGeo = new THREE.BoxGeometry(1.48, 0.24, 1.28);
-    const radius = 2.4;
 
     const pulses: { mesh: THREE.Mesh; progress: number; p1: THREE.Vector3; p2: THREE.Vector3 }[] = [];
     const pulseGeo = new THREE.SphereGeometry(0.045, 12, 12);
     const pulseMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
 
+    const monoGeo = new THREE.BoxGeometry(1.42, 0.24, 1.25);
+    const radiusX = 3.2;
+    const radiusZ = 2.1;
+
     V8_MODULE_SYSTEMS.forEach((mod, idx) => {
       const angle = (idx * (2 * Math.PI)) / V8_MODULE_SYSTEMS.length;
-      const x = Math.cos(angle) * radius;
-      const z = Math.sin(angle) * radius;
+      const x = Math.sin(angle) * radiusX;
+      const z = Math.cos(angle) * radiusZ;
+      const y = Math.sin(angle * 2) * 0.35;
 
-      const len = radius - 0.9;
-      const traceGeo = new THREE.BoxGeometry(len, 0.015, 0.035);
-      const traceMesh = new THREE.Mesh(traceGeo, traceMat);
-      traceMesh.position.set(Math.cos(angle) * (0.9 + len / 2), 0.005, Math.sin(angle) * (0.9 + len / 2));
-      traceMesh.rotation.y = -angle;
-      busGroup.add(traceMesh);
+      const lineGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, -0.1, 0),
+        new THREE.Vector3(x, y, z)
+      ]);
+      const lineMat = new THREE.LineBasicMaterial({
+        color: 0xd97706,
+        transparent: true,
+        opacity: 0.35
+      });
+      const line = new THREE.Line(lineGeo, lineMat);
+      tetherGroup.add(line);
 
       const pMesh = new THREE.Mesh(pulseGeo, pulseMat);
-      busGroup.add(pMesh);
+      tetherGroup.add(pMesh);
       pulses.push({
         mesh: pMesh,
         progress: idx / V8_MODULE_SYSTEMS.length,
-        p1: new THREE.Vector3(Math.cos(angle) * 0.9, 0.02, Math.sin(angle) * 0.9),
-        p2: new THREE.Vector3(x, 0.02, z)
+        p1: new THREE.Vector3(0, -0.1, 0),
+        p2: new THREE.Vector3(x, y, z)
       });
 
       const isSelected = mod.id === activeIdRef.current;
@@ -348,29 +366,30 @@ export default function V8EngineCore3D({ activeId, viewMode = "orbit", onSelectM
       });
 
       const materials = [sideMat, sideMat, topMat, sideMat, sideMat, sideMat];
-      const mesh = new THREE.Mesh(cardGeo, materials);
-      mesh.position.set(x, 0.12, z);
+      const mesh = new THREE.Mesh(monoGeo, materials);
+      mesh.position.set(x, y, z);
       mesh.rotation.y = 0;
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       mesh.userData = { id: mod.id };
-      coreGroup.add(mesh);
+      spaceGroup.add(mesh);
 
-      cardMeshes.push({
+      monolithMeshes.push({
         id: mod.id,
         mesh,
         baseX: x,
+        baseY: y,
         baseZ: z,
-        baseY: 0.12,
-        targetY: 0.12,
+        targetY: y,
         topMat,
         mod,
-        texture
+        texture,
+        phase: idx * 0.9
       });
     });
 
     const updateCardTextures = (activeModId: string, hoveredModId: string | null) => {
-      cardMeshes.forEach((item) => {
+      monolithMeshes.forEach((item) => {
         const isSel = item.id === activeModId;
         const isHov = item.id === hoveredModId;
         const canvas = createTactileV8CardCanvas(item.mod, isSel, isHov);
@@ -385,8 +404,8 @@ export default function V8EngineCore3D({ activeId, viewMode = "orbit", onSelectM
     let isDragging = false;
     let prevMouseX = 0;
     let prevMouseY = 0;
-    let targetRotationY = -0.22;
-    let targetRotationX = 0.38;
+    let targetRotationY = -0.25;
+    let targetRotationX = 0.35;
 
     let parallaxTargetX = 0;
     let parallaxTargetY = 0;
@@ -404,8 +423,8 @@ export default function V8EngineCore3D({ activeId, viewMode = "orbit", onSelectM
       mouse.x = rawX;
       mouse.y = rawY;
 
-      parallaxTargetX = rawX * 0.12;
-      parallaxTargetY = rawY * 0.08;
+      parallaxTargetX = rawX * 0.14;
+      parallaxTargetY = rawY * 0.09;
 
       if (isDragging) {
         const dx = e.clientX - prevMouseX;
@@ -442,24 +461,24 @@ export default function V8EngineCore3D({ activeId, viewMode = "orbit", onSelectM
       lastTime = currentTime;
 
       const currentMode = viewModeRef.current;
-      const activeItem = cardMeshes.find((c) => c.id === activeIdRef.current) || cardMeshes[0];
+      const activeItem = monolithMeshes.find((c) => c.id === activeIdRef.current) || monolithMeshes[0];
 
       let camTargetX = 0;
-      let camTargetY = 4.5;
-      let camTargetZ = 7.5;
+      let camTargetY = 4.6;
+      let camTargetZ = 7.6;
       let lookTargetX = 0;
-      let lookTargetY = -0.15;
+      let lookTargetY = 0;
       let lookTargetZ = 0;
 
       if (currentMode === "focus") {
-        camTargetX = activeItem.baseX * 0.45;
+        camTargetX = activeItem.baseX * 0.5;
         camTargetY = 3.2;
         camTargetZ = 5.2;
-        lookTargetX = activeItem.baseX * 0.55;
-        lookTargetZ = activeItem.baseZ * 0.55;
+        lookTargetX = activeItem.baseX * 0.6;
+        lookTargetZ = activeItem.baseZ * 0.6;
       } else if (currentMode === "top") {
         camTargetX = 0;
-        camTargetY = 8.5;
+        camTargetY = 8.6;
         camTargetZ = 0.5;
         lookTargetX = 0;
         lookTargetY = 0;
@@ -471,23 +490,30 @@ export default function V8EngineCore3D({ activeId, viewMode = "orbit", onSelectM
       camera.position.z = THREE.MathUtils.damp(camera.position.z, camTargetZ, 4, delta);
       camera.lookAt(lookTargetX, lookTargetY, lookTargetZ);
 
+      ring1.rotation.x += delta * 0.8;
+      ring1.rotation.y += delta * 0.4;
+      ring2.rotation.y -= delta * 0.6;
+      ring2.rotation.z += delta * 0.3;
+      ring3.rotation.x += delta * 0.3;
+      ring3.rotation.z -= delta * 0.5;
+
+      pulses.forEach((pulse) => {
+        pulse.progress = (pulse.progress + delta * 0.55) % 1.0;
+        pulse.mesh.position.lerpVectors(pulse.p1, pulse.p2, pulse.progress);
+      });
+
       if (!isDragging && currentMode === "orbit") {
-        targetRotationY += 0.0012;
+        targetRotationY += 0.0014;
       }
 
       const combinedTargetY = targetRotationY + parallaxTargetX;
       const combinedTargetX = targetRotationX - parallaxTargetY;
 
-      coreGroup.rotation.y = THREE.MathUtils.damp(coreGroup.rotation.y, combinedTargetY, 4, delta);
-      coreGroup.rotation.x = THREE.MathUtils.damp(coreGroup.rotation.x, combinedTargetX, 4, delta);
-
-      pulses.forEach((pulse) => {
-        pulse.progress = (pulse.progress + delta * 0.5) % 1.0;
-        pulse.mesh.position.lerpVectors(pulse.p1, pulse.p2, pulse.progress);
-      });
+      spaceGroup.rotation.y = THREE.MathUtils.damp(spaceGroup.rotation.y, combinedTargetY, 4, delta);
+      spaceGroup.rotation.x = THREE.MathUtils.damp(spaceGroup.rotation.x, combinedTargetX, 4, delta);
 
       raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(cardMeshes.map((b) => b.mesh));
+      const intersects = raycaster.intersectObjects(monolithMeshes.map((b) => b.mesh));
 
       let newlyHovered: string | null = null;
       if (intersects.length > 0) {
@@ -506,11 +532,12 @@ export default function V8EngineCore3D({ activeId, viewMode = "orbit", onSelectM
       activeSpotLight.position.x = THREE.MathUtils.damp(activeSpotLight.position.x, activeItem.mesh.position.x, 6, delta);
       activeSpotLight.position.z = THREE.MathUtils.damp(activeSpotLight.position.z, activeItem.mesh.position.z, 6, delta);
 
-      cardMeshes.forEach((item) => {
+      monolithMeshes.forEach((item) => {
         const isActive = item.id === activeIdRef.current;
         const isHovered = item.id === hoveredId;
 
-        item.targetY = isActive ? item.baseY + 0.38 : isHovered ? item.baseY + 0.18 : item.baseY;
+        const floatOffset = Math.sin(currentTime * 0.0018 + item.phase) * 0.08;
+        item.targetY = item.baseY + floatOffset + (isActive ? 0.38 : isHovered ? 0.18 : 0);
         item.mesh.position.y = THREE.MathUtils.damp(item.mesh.position.y, item.targetY, 9, delta);
       });
 
@@ -538,7 +565,7 @@ export default function V8EngineCore3D({ activeId, viewMode = "orbit", onSelectM
       window.removeEventListener("mouseup", onPointerUp);
       container.removeEventListener("click", onClick);
 
-      cardMeshes.forEach((item) => {
+      monolithMeshes.forEach((item) => {
         item.texture.dispose();
       });
 

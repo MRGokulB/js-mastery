@@ -148,7 +148,7 @@ export function HubScene() {
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-8 sm:pt-10 pb-28 relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10 px-2">
           <span className="inline-block text-[11px] font-mono tracking-widest text-[#64748b] uppercase mb-2 sm:mb-3">
-            V8 RUNTIME CORE &middot; 2026
+            V8 RUNTIME QUANTUM LOOM &middot; 2026
           </span>
 
           <h1 className="font-clash font-semibold text-[#0f172a] tracking-tight leading-[1.08] text-center text-3xl sm:text-5xl md:text-6xl">
@@ -159,7 +159,7 @@ export function HubScene() {
           </h1>
 
           <p className="text-xs sm:text-base text-[#475569] max-w-lg mx-auto mt-3 sm:mt-4 font-normal leading-relaxed">
-            Orbit the tactile 3D topic cards. Examine execution contexts, stack allocations, prototype hidden classes, and event loop cycles across 7 dedicated visualizers.
+            Orbit the floating spatial monoliths. Examine execution contexts, stack allocations, prototype hidden classes, and event loop cycles across 7 dedicated visualizers.
           </p>
         </div>
 
@@ -167,7 +167,7 @@ export function HubScene() {
           <div className="relative z-20 flex flex-wrap items-center justify-between gap-3 w-full">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-black/[0.06] text-[11px] font-mono text-[#475569] shadow-xs">
               <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-              <span>V8 RUNTIME CORE &middot; 3D STAGE</span>
+              <span>V8 QUANTUM LOOM &middot; 3D SPATIAL CHAMBER</span>
             </div>
 
             <div className="flex items-center gap-1.5 p-1 rounded-full bg-white/90 backdrop-blur-md border border-black/[0.06] shadow-xs text-xs font-mono">
@@ -178,7 +178,7 @@ export function HubScene() {
                 }`}
               >
                 <Rotate3d size={12} />
-                <span>Orbit</span>
+                <span>Spatial Arc</span>
               </button>
               <button
                 onClick={() => setViewMode("focus")}
@@ -187,7 +187,7 @@ export function HubScene() {
                 }`}
               >
                 <Crosshair size={12} />
-                <span>Focus</span>
+                <span>Macro Focus</span>
               </button>
               <button
                 onClick={() => setViewMode("top")}
@@ -196,7 +196,7 @@ export function HubScene() {
                 }`}
               >
                 <Grid3X3 size={12} />
-                <span>Top</span>
+                <span>Quantum Core</span>
               </button>
             </div>
           </div>
@@ -243,7 +243,7 @@ export function HubScene() {
               </div>
 
               <span className="text-[10px] sm:text-[11px] text-[#64748b] font-mono tracking-wide px-1">
-                ::: Drag stage to orbit &middot; Click any card to inspect
+                ::: Drag stage to orbit &middot; Click any monolith to inspect
               </span>
             </div>
 
