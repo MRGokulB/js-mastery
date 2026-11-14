@@ -1,7 +1,25 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import * as THREE from "three";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Layers,
+  Workflow,
+  Code2,
+  Cpu,
+  Terminal,
+  Activity,
+  Play,
+  RotateCcw,
+  Sparkles,
+  Zap,
+  CheckCircle2,
+  ArrowRight,
+  Database,
+  Eye,
+  GitBranch,
+  Timer
+} from "lucide-react";
 
 export interface V8ModuleMeta {
   id: string;
@@ -29,7 +47,7 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     tagline: "Stack frames, 31-bit Smis, and heap references",
     url: "https://variables-pi.vercel.app/",
     accent: "#d97706",
-    chipColor: "#fef08a",
+    chipColor: "#fef3c7",
     mechanic: "Contiguous Stack / Dynamic Heap Pointer",
     glyph: "Smi: (val << 1) | 0 · Heap 0x"
   },
@@ -43,7 +61,7 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     tagline: "AST branch jumping and truthy bitmasks",
     url: "https://control-flow-ruby.vercel.app",
     accent: "#059669",
-    chipColor: "#bbf7d0",
+    chipColor: "#dcfce7",
     mechanic: "Conditional Branch Jump Offset Registers",
     glyph: "JumpIfFalse [r0], [offset]"
   },
@@ -57,7 +75,7 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     tagline: "Lexical environments and heap closure retention",
     url: "https://functions-scope.vercel.app/",
     accent: "#7c3aed",
-    chipColor: "#e9d5ff",
+    chipColor: "#f3e8ff",
     mechanic: "Context Stack Linked Lexical Environment",
     glyph: "[[Scope]] -> Outer LexicalEnv"
   },
@@ -71,7 +89,7 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     tagline: "Packed Smi elements and amortized expansion",
     url: "https://arrays-iteration.vercel.app/",
     accent: "#0284c7",
-    chipColor: "#bfdbfe",
+    chipColor: "#e0f2fe",
     mechanic: "Fast Contiguous Indexed Int32 Array Buffer",
     glyph: "[ PACKED_SMI -> HOLEY_ELEMENTS ]"
   },
@@ -85,7 +103,7 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     tagline: "V8 Shapes, inline caches and prototype lookups",
     url: "https://objects-maps.vercel.app/",
     accent: "#c026d3",
-    chipColor: "#fbcfe8",
+    chipColor: "#fce7f3",
     mechanic: "Shape Transition Tree & Property Offset Table",
     glyph: "Map0 -> Map1(+x) -> Map2(+y)"
   },
@@ -99,7 +117,7 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     tagline: "Microtask drain priority and macrotask timers",
     url: "https://async-event-loop.vercel.app",
     accent: "#e11d48",
-    chipColor: "#fecdd3",
+    chipColor: "#ffe4e6",
     mechanic: "Dual Priority Queue Scheduler (P0 / P1)",
     glyph: "Stack -> Microtasks -> Timers"
   },
@@ -113,473 +131,527 @@ export const V8_MODULE_SYSTEMS: V8ModuleMeta[] = [
     tagline: "Critical rendering path and GPU layer geometry",
     url: "https://dom-apis.vercel.app",
     accent: "#0891b2",
-    chipColor: "#a5f3fc",
+    chipColor: "#cffafe",
     mechanic: "Render Tree & Paint Layer Tree Compositor",
     glyph: "DOM + CSSOM -> Paint -> GPU"
   }
 ];
 
-function createTactileV8CardCanvas(mod: V8ModuleMeta, isSelected: boolean, isHovered: boolean): HTMLCanvasElement {
-  const canvas = document.createElement("canvas");
-  canvas.width = 1024;
-  canvas.height = 1024;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return canvas;
+function VariablesInteractiveWidget() {
+  const [val, setVal] = useState(42);
+  const [heapAllocated, setHeapAllocated] = useState(false);
 
-  ctx.fillStyle = mod.chipColor;
-  ctx.fillRect(0, 0, 1024, 1024);
+  return (
+    <div className="w-full flex flex-col gap-3 font-mono text-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="p-3.5 rounded-2xl bg-white border border-black/[0.08] shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md">
+                CALL STACK (RSP)
+              </span>
+              <span className="text-[10px] text-[#94a3b8]">0x7FFE_4A80</span>
+            </div>
+            <div className="space-y-1.5 pt-1">
+              <div className="p-2 rounded-xl bg-[#f8f9fc] border border-black/[0.04] flex items-center justify-between">
+                <span className="text-[#64748b]">let count:</span>
+                <span className="font-bold text-[#0f172a]">{val}</span>
+                <span className="text-[10px] text-amber-600 bg-amber-100/60 px-1.5 py-0.5 rounded">
+                  31-bit Smi
+                </span>
+              </div>
 
-  ctx.lineWidth = isSelected ? 24 : 12;
-  ctx.strokeStyle = isSelected ? "#0f172a" : isHovered ? "rgba(15, 23, 42, 0.45)" : "rgba(15, 23, 42, 0.18)";
-  ctx.strokeRect(18, 18, 988, 988);
+              <div className="p-2 rounded-xl bg-[#f8f9fc] border border-black/[0.04] flex items-center justify-between">
+                <span className="text-[#64748b]">let userPtr:</span>
+                <span className="font-semibold text-sky-600">
+                  {heapAllocated ? "0x7A40_B120" : "null"}
+                </span>
+                <span className="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                  Pointer
+                </span>
+              </div>
+            </div>
+          </div>
 
-  ctx.fillStyle = "#0f172a";
-  ctx.font = "bold 60px sans-serif";
-  ctx.fillText(mod.index, 70, 130);
+          <div className="flex items-center gap-2 mt-3 pt-2.5 border-t border-black/[0.05]">
+            <button
+              onClick={() => setVal((v) => (v < 99 ? v + 1 : 1))}
+              className="px-2.5 py-1 rounded-lg bg-amber-500 text-white font-semibold text-[11px] hover:bg-amber-600 transition-colors cursor-pointer"
+            >
+              + Mutate Smi
+            </button>
+            <button
+              onClick={() => setHeapAllocated((h) => !h)}
+              className="px-2.5 py-1 rounded-lg bg-[#0f172a] text-white font-semibold text-[11px] hover:bg-black transition-colors cursor-pointer"
+            >
+              {heapAllocated ? "Free Heap" : "Alloc Heap"}
+            </button>
+          </div>
+        </div>
 
-  ctx.fillStyle = "rgba(15, 23, 42, 0.65)";
-  ctx.font = "bold 32px monospace";
-  ctx.fillText(mod.category.toUpperCase(), 70, 195);
+        <div className="p-3.5 rounded-2xl bg-white border border-black/[0.08] shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md">
+                DYNAMIC V8 HEAP
+              </span>
+              <span className="text-[10px] text-[#94a3b8]">Semi-Space 0</span>
+            </div>
 
-  ctx.fillStyle = isSelected ? "#0f172a" : "rgba(15, 23, 42, 0.25)";
-  ctx.fillRect(860, 70, 72, 36);
-  ctx.fillStyle = "#d97706";
-  ctx.fillRect(868, 78, 56, 20);
+            <div className="p-2.5 rounded-xl bg-[#f8f9fc] border border-black/[0.04] space-y-1">
+              <div className="text-[11px] text-[#64748b]">Address: 0x7A40_B120</div>
+              <div className="font-bold text-[#0f172a] text-[12px]">
+                {heapAllocated ? "{ id: 101, name: 'V8' }" : "0x0000 (Unallocated)"}
+              </div>
+              <div className="text-[10px] text-emerald-600 pt-1 flex items-center gap-1">
+                <CheckCircle2 size={11} />
+                <span>Managed by Scavenger Nursery</span>
+              </div>
+            </div>
+          </div>
 
-  ctx.fillStyle = "#0f172a";
-  ctx.font = "bold 108px sans-serif";
-  ctx.fillText(mod.shortTitle, 70, 500);
+          <div className="text-[10px] text-[#64748b] bg-[#f8f9fc] p-2 rounded-xl mt-3">
+            In V8, small integers (Smis) are stored inline with a 1-bit zero tag. Objects live in the managed garbage-collected heap.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-  ctx.fillStyle = "rgba(15, 23, 42, 0.75)";
-  ctx.font = "bold 38px monospace";
-  ctx.fillText(mod.glyph, 70, 595);
+function ControlFlowInteractiveWidget() {
+  const [activeStep, setActiveStep] = useState(0);
 
-  ctx.fillStyle = "rgba(15, 23, 42, 0.55)";
-  ctx.font = "500 40px monospace";
-  ctx.fillText(mod.subsystem, 70, 705);
+  const instructions = [
+    { op: "LdaNamedProperty", reg: "a0, [0]", note: "Load object property into accumulator" },
+    { op: "Star", reg: "r0", note: "Save accumulator into register r0" },
+    { op: "TestLessThan", reg: "r0, [100]", note: "Evaluate condition flag in CPU flags" },
+    { op: "JumpIfFalse", reg: "[0x18]", note: "Branch directly to else block" }
+  ];
 
-  ctx.fillStyle = "rgba(15, 23, 42, 0.12)";
-  ctx.fillRect(70, 830, 884, 4);
+  return (
+    <div className="w-full flex flex-col gap-3 font-mono text-xs">
+      <div className="p-3.5 rounded-2xl bg-white border border-black/[0.08] shadow-xs">
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+            IGNITION BYTECODE PIPELINE
+          </span>
+          <button
+            onClick={() => setActiveStep((s) => (s + 1) % instructions.length)}
+            className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-semibold text-[11px] hover:bg-emerald-700 transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <Play size={10} />
+            <span>Step Opcode</span>
+          </button>
+        </div>
 
-  ctx.fillStyle = "rgba(15, 23, 42, 0.4)";
-  ctx.font = "bold 32px monospace";
-  ctx.fillText("V8 · RUNTIME QUANTUM SPEC", 70, 910);
+        <div className="space-y-1.5">
+          {instructions.map((inst, idx) => {
+            const isCurrent = activeStep === idx;
+            return (
+              <div
+                key={idx}
+                className={`p-2 rounded-xl transition-all flex items-center justify-between border ${
+                  isCurrent
+                    ? "bg-emerald-50/80 border-emerald-300 shadow-xs"
+                    : "bg-[#f8f9fc] border-black/[0.03] opacity-75"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full ${isCurrent ? "bg-emerald-500 animate-pulse" : "bg-slate-300"}`} />
+                  <span className="font-bold text-[#0f172a]">{inst.op}</span>
+                  <span className="text-emerald-700">{inst.reg}</span>
+                </div>
+                <span className="text-[10px] text-[#64748b] hidden sm:inline">{inst.note}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-  return canvas;
+function ScopeInteractiveWidget() {
+  const [activeScope, setActiveScope] = useState<"global" | "closure" | "inner">("closure");
+
+  return (
+    <div className="w-full flex flex-col gap-3 font-mono text-xs">
+      <div className="p-3.5 rounded-2xl bg-white border border-black/[0.08] shadow-xs">
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md">
+            LEXICAL ENVIRONMENT SCOPE CHAIN
+          </span>
+          <span className="text-[10px] text-[#64748b]">Heap Context Pointer</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div
+            onClick={() => setActiveScope("global")}
+            className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+              activeScope === "global" ? "bg-purple-100/60 border-purple-400 shadow-xs" : "bg-[#f8f9fc] border-black/[0.04]"
+            }`}
+          >
+            <div className="text-[10px] font-bold text-purple-900 mb-1">01. GLOBAL SCOPE</div>
+            <div className="text-[11px] text-[#475569]">const API_URL</div>
+            <div className="text-[9px] text-[#94a3b8] mt-1">Window / GlobalThis</div>
+          </div>
+
+          <div
+            onClick={() => setActiveScope("closure")}
+            className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+              activeScope === "closure" ? "bg-purple-100/60 border-purple-400 shadow-xs" : "bg-[#f8f9fc] border-black/[0.04]"
+            }`}
+          >
+            <div className="text-[10px] font-bold text-purple-900 mb-1">02. CLOSURE CONTEXT</div>
+            <div className="text-[11px] text-purple-700 font-bold">let secretToken</div>
+            <div className="text-[9px] text-emerald-600 mt-1">Retained in Heap</div>
+          </div>
+
+          <div
+            onClick={() => setActiveScope("inner")}
+            className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+              activeScope === "inner" ? "bg-purple-100/60 border-purple-400 shadow-xs" : "bg-[#f8f9fc] border-black/[0.04]"
+            }`}
+          >
+            <div className="text-[10px] font-bold text-purple-900 mb-1">03. INNER FUNCTION</div>
+            <div className="text-[11px] text-[#475569]">return () =&gt; secretToken</div>
+            <div className="text-[9px] text-purple-600 mt-1">[[Scope]] Bound</div>
+          </div>
+        </div>
+
+        <div className="text-[10px] text-[#64748b] bg-[#f8f9fc] p-2.5 rounded-xl mt-2.5 flex items-center justify-between">
+          <span>Active Inspection: {activeScope.toUpperCase()}</span>
+          <span className="text-purple-600 font-semibold">Heap closure retention active</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ArraysInteractiveWidget() {
+  const [elementsKind, setElementsKind] = useState<"PACKED_SMI" | "PACKED_ELEMENTS" | "HOLEY_ELEMENTS">("PACKED_SMI");
+
+  return (
+    <div className="w-full flex flex-col gap-3 font-mono text-xs">
+      <div className="p-3.5 rounded-2xl bg-white border border-black/[0.08] shadow-xs">
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md">
+            V8 FAST ELEMENTS TRANSITION
+          </span>
+          <span className="text-[10px] font-bold text-sky-700">{elementsKind}</span>
+        </div>
+
+        <div className="p-3 rounded-xl bg-[#f8f9fc] border border-black/[0.04] mb-3 flex items-center justify-around">
+          <div className="text-center">
+            <span className="block text-[10px] text-[#94a3b8]">Index 0</span>
+            <span className="font-bold text-sm text-[#0f172a]">42</span>
+          </div>
+          <div className="text-center">
+            <span className="block text-[10px] text-[#94a3b8]">Index 1</span>
+            <span className="font-bold text-sm text-[#0f172a]">
+              {elementsKind === "HOLEY_ELEMENTS" ? "<hole>" : elementsKind === "PACKED_ELEMENTS" ? "'hello'" : "88"}
+            </span>
+          </div>
+          <div className="text-center">
+            <span className="block text-[10px] text-[#94a3b8]">Index 2</span>
+            <span className="font-bold text-sm text-[#0f172a]">100</span>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setElementsKind("PACKED_SMI")}
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
+              elementsKind === "PACKED_SMI" ? "bg-sky-600 text-white shadow-xs" : "bg-slate-100 text-[#475569]"
+            }`}
+          >
+            PACKED_SMI (Fastest)
+          </button>
+          <button
+            onClick={() => setElementsKind("PACKED_ELEMENTS")}
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
+              elementsKind === "PACKED_ELEMENTS" ? "bg-sky-600 text-white shadow-xs" : "bg-slate-100 text-[#475569]"
+            }`}
+          >
+            Insert String (De-optimize)
+          </button>
+          <button
+            onClick={() => setElementsKind("HOLEY_ELEMENTS")}
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
+              elementsKind === "HOLEY_ELEMENTS" ? "bg-rose-600 text-white shadow-xs" : "bg-slate-100 text-[#475569]"
+            }`}
+          >
+            Delete Index 1 (Holey)
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ObjectsInteractiveWidget() {
+  const [shapeStep, setShapeStep] = useState(2);
+
+  return (
+    <div className="w-full flex flex-col gap-3 font-mono text-xs">
+      <div className="p-3.5 rounded-2xl bg-white border border-black/[0.08] shadow-xs">
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-fuchsia-700 bg-fuchsia-50 px-2 py-0.5 rounded-md">
+            TURBOFAN SHAPE TRANSITION TREE
+          </span>
+          <span className="text-[10px] text-fuchsia-600 font-semibold">Inline Cache: MONOMORPHIC</span>
+        </div>
+
+        <div className="space-y-2">
+          <div className="p-2.5 rounded-xl bg-[#f8f9fc] border border-black/[0.04] flex items-center justify-between">
+            <span className="text-[#64748b]">Shape0 (empty):</span>
+            <span className="font-mono text-fuchsia-700">Map 0x3A00</span>
+            <span className="text-[10px] text-slate-400">Offset: 0</span>
+          </div>
+
+          <div
+            className={`p-2.5 rounded-xl border transition-all flex items-center justify-between ${
+              shapeStep >= 1 ? "bg-fuchsia-50/70 border-fuchsia-300" : "bg-[#f8f9fc] border-black/[0.04] opacity-50"
+            }`}
+          >
+            <span className="text-[#0f172a] font-semibold">+ prop .x = 10:</span>
+            <span className="font-mono text-fuchsia-700">Map 0x3A08</span>
+            <span className="text-[10px] text-emerald-600 font-bold">Field 0 (Offset 16)</span>
+          </div>
+
+          <div
+            className={`p-2.5 rounded-xl border transition-all flex items-center justify-between ${
+              shapeStep >= 2 ? "bg-fuchsia-50/70 border-fuchsia-300" : "bg-[#f8f9fc] border-black/[0.04] opacity-50"
+            }`}
+          >
+            <span className="text-[#0f172a] font-semibold">+ prop .y = 20:</span>
+            <span className="font-mono text-fuchsia-700">Map 0x3A10</span>
+            <span className="text-[10px] text-emerald-600 font-bold">Field 1 (Offset 24)</span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-black/[0.05]">
+          <span className="text-[10px] text-[#64748b]">Same construction order guarantees shared shapes</span>
+          <button
+            onClick={() => setShapeStep((s) => (s < 2 ? s + 1 : 0))}
+            className="px-2.5 py-1 rounded-lg bg-fuchsia-600 text-white font-semibold text-[11px] hover:bg-fuchsia-700 transition-colors cursor-pointer"
+          >
+            Transition Step
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AsyncInteractiveWidget() {
+  const [pipelinePhase, setPipelinePhase] = useState<"SYNC" | "MICRO" | "MACRO">("MICRO");
+
+  return (
+    <div className="w-full flex flex-col gap-3 font-mono text-xs">
+      <div className="p-3.5 rounded-2xl bg-white border border-black/[0.08] shadow-xs">
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md">
+            EVENT LOOP TASK SCHEDULER
+          </span>
+          <span className="text-[10px] text-rose-600 font-semibold">Priority Drain: Microtasks First</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div
+            onClick={() => setPipelinePhase("SYNC")}
+            className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+              pipelinePhase === "SYNC" ? "bg-rose-100/70 border-rose-400 shadow-xs" : "bg-[#f8f9fc] border-black/[0.04]"
+            }`}
+          >
+            <span className="text-[10px] font-bold text-rose-900 block">1. CALL STACK</span>
+            <span className="text-[11px] text-[#475569] block mt-0.5">console.log("Start")</span>
+            <span className="text-[9px] text-[#94a3b8] mt-1 block">Synchronous</span>
+          </div>
+
+          <div
+            onClick={() => setPipelinePhase("MICRO")}
+            className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+              pipelinePhase === "MICRO" ? "bg-rose-100/70 border-rose-400 shadow-xs" : "bg-[#f8f9fc] border-black/[0.04]"
+            }`}
+          >
+            <span className="text-[10px] font-bold text-rose-900 block">2. MICROTASKS (P0)</span>
+            <span className="text-[11px] text-rose-700 font-bold block mt-0.5">Promise.then()</span>
+            <span className="text-[9px] text-emerald-600 mt-1 block">Drains completely</span>
+          </div>
+
+          <div
+            onClick={() => setPipelinePhase("MACRO")}
+            className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+              pipelinePhase === "MACRO" ? "bg-rose-100/70 border-rose-400 shadow-xs" : "bg-[#f8f9fc] border-black/[0.04]"
+            }`}
+          >
+            <span className="text-[10px] font-bold text-rose-900 block">3. MACROTASKS (P1)</span>
+            <span className="text-[11px] text-[#475569] block mt-0.5">setTimeout(fn, 0)</span>
+            <span className="text-[9px] text-[#94a3b8] mt-1 block">One per tick</span>
+          </div>
+        </div>
+
+        <div className="text-[10px] text-[#64748b] bg-[#f8f9fc] p-2 rounded-xl mt-2.5 flex items-center justify-between">
+          <span>Active Execution Phase: {pipelinePhase}</span>
+          <button
+            onClick={() =>
+              setPipelinePhase((p) => (p === "SYNC" ? "MICRO" : p === "MICRO" ? "MACRO" : "SYNC"))
+            }
+            className="px-2 py-0.5 rounded bg-rose-600 text-white font-semibold text-[10px] hover:bg-rose-700 cursor-pointer"
+          >
+            Next Tick &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DomInteractiveWidget() {
+  const [stage, setStage] = useState(3);
+
+  const pipeline = [
+    { title: "DOM & CSSOM", desc: "HTML parsed to DOM nodes; CSS rules compiled to style trees" },
+    { title: "Render Tree", desc: "Combines DOM + CSSOM; ignores display:none elements" },
+    { title: "Layout Geometry", desc: "Calculates exact pixel coordinates, width, and height" },
+    { title: "Paint & Composite", desc: "Rasterizes display lists onto separate GPU layer textures" }
+  ];
+
+  return (
+    <div className="w-full flex flex-col gap-3 font-mono text-xs">
+      <div className="p-3.5 rounded-2xl bg-white border border-black/[0.08] shadow-xs">
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded-md">
+            BLINK RENDERING PIPELINE
+          </span>
+          <button
+            onClick={() => setStage((s) => (s < 3 ? s + 1 : 0))}
+            className="px-2.5 py-1 rounded-lg bg-cyan-600 text-white font-semibold text-[11px] hover:bg-cyan-700 transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <span>Next Stage</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {pipeline.map((item, idx) => {
+            const isDone = stage >= idx;
+            return (
+              <div
+                key={idx}
+                className={`p-2 rounded-xl border transition-all ${
+                  isDone ? "bg-cyan-50/80 border-cyan-300" : "bg-[#f8f9fc] border-black/[0.04] opacity-50"
+                }`}
+              >
+                <div className="text-[10px] font-bold text-cyan-900 mb-0.5">0{idx + 1}. {item.title}</div>
+                <div className="text-[9px] text-[#64748b] leading-tight">{item.desc}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 interface Props {
   activeId: string;
-  viewMode?: "orbit" | "focus" | "top";
   onSelectModule: (id: string) => void;
 }
 
-export default function V8EngineCore3D({ activeId, viewMode = "orbit", onSelectModule }: Props) {
-  const mountRef = useRef<HTMLDivElement>(null);
-  const activeIdRef = useRef<string>(activeId);
-  activeIdRef.current = activeId;
-
-  const viewModeRef = useRef<"orbit" | "focus" | "top">(viewMode);
-  viewModeRef.current = viewMode;
-
-  const onSelectRef = useRef(onSelectModule);
-  onSelectRef.current = onSelectModule;
-
-  useEffect(() => {
-    const container = mountRef.current;
-    if (!container) return;
-
-    const width = container.clientWidth;
-    const height = container.clientHeight;
-
-    const scene = new THREE.Scene();
-    scene.background = null;
-
-    const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
-
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-      powerPreference: "high-performance"
-    });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
-    container.appendChild(renderer.domElement);
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 2.0);
-    scene.add(ambientLight);
-
-    const keyLight = new THREE.DirectionalLight(0xfffbf2, 2.6);
-    keyLight.position.set(5, 9, 6);
-    keyLight.castShadow = true;
-    keyLight.shadow.mapSize.width = 1024;
-    keyLight.shadow.mapSize.height = 1024;
-    keyLight.shadow.bias = -0.0005;
-    scene.add(keyLight);
-
-    const fillLight = new THREE.DirectionalLight(0xe8f0fe, 1.3);
-    fillLight.position.set(-6, 5, -3);
-    scene.add(fillLight);
-
-    const activeSpotLight = new THREE.PointLight(0xf59e0b, 2.4, 9);
-    activeSpotLight.position.set(0, 3, 0);
-    scene.add(activeSpotLight);
-
-    const spaceGroup = new THREE.Group();
-    scene.add(spaceGroup);
-
-    const floorGeo = new THREE.PlaneGeometry(16, 16);
-    const floorMat = new THREE.MeshPhysicalMaterial({
-      color: 0xf5f7fb,
-      metalness: 0.05,
-      roughness: 0.6,
-      clearcoat: 0.2
-    });
-    const floorMesh = new THREE.Mesh(floorGeo, floorMat);
-    floorMesh.rotation.x = -Math.PI / 2;
-    floorMesh.position.y = -1.6;
-    floorMesh.receiveShadow = true;
-    spaceGroup.add(floorMesh);
-
-    const shadowGeo = new THREE.PlaneGeometry(14, 14);
-    const shadowMat = new THREE.ShadowMaterial({ opacity: 0.16 });
-    const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
-    shadowMesh.rotation.x = -Math.PI / 2;
-    shadowMesh.position.y = -1.58;
-    shadowMesh.receiveShadow = true;
-    spaceGroup.add(shadowMesh);
-
-    const reactorGroup = new THREE.Group();
-    spaceGroup.add(reactorGroup);
-    reactorGroup.position.set(0, -0.1, 0);
-
-    const coreGeo = new THREE.SphereGeometry(0.55, 32, 32);
-    const coreMat = new THREE.MeshPhysicalMaterial({
-      color: 0xfbbf24,
-      emissive: 0xd97706,
-      emissiveIntensity: 0.65,
-      metalness: 0.8,
-      roughness: 0.2,
-      clearcoat: 0.9
-    });
-    const coreMesh = new THREE.Mesh(coreGeo, coreMat);
-    reactorGroup.add(coreMesh);
-
-    const ringMat1 = new THREE.MeshStandardMaterial({
-      color: 0x334155,
-      metalness: 0.9,
-      roughness: 0.2
-    });
-    const ringMat2 = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      metalness: 0.95,
-      roughness: 0.15
-    });
-
-    const ring1Geo = new THREE.TorusGeometry(1.05, 0.035, 16, 64);
-    const ring1 = new THREE.Mesh(ring1Geo, ringMat1);
-    reactorGroup.add(ring1);
-
-    const ring2Geo = new THREE.TorusGeometry(1.35, 0.03, 16, 64);
-    const ring2 = new THREE.Mesh(ring2Geo, ringMat2);
-    reactorGroup.add(ring2);
-
-    const ring3Geo = new THREE.TorusGeometry(1.65, 0.025, 16, 64);
-    const ring3 = new THREE.Mesh(ring3Geo, ringMat1);
-    reactorGroup.add(ring3);
-
-    const tetherGroup = new THREE.Group();
-    spaceGroup.add(tetherGroup);
-
-    const monolithMeshes: {
-      id: string;
-      mesh: THREE.Mesh;
-      baseX: number;
-      baseY: number;
-      baseZ: number;
-      targetY: number;
-      topMat: THREE.MeshPhysicalMaterial;
-      mod: V8ModuleMeta;
-      texture: THREE.CanvasTexture;
-      phase: number;
-    }[] = [];
-
-    const pulses: { mesh: THREE.Mesh; progress: number; p1: THREE.Vector3; p2: THREE.Vector3 }[] = [];
-    const pulseGeo = new THREE.SphereGeometry(0.045, 12, 12);
-    const pulseMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
-
-    const monoGeo = new THREE.BoxGeometry(1.42, 0.24, 1.25);
-    const radiusX = 3.2;
-    const radiusZ = 2.1;
-
-    V8_MODULE_SYSTEMS.forEach((mod, idx) => {
-      const angle = (idx * (2 * Math.PI)) / V8_MODULE_SYSTEMS.length;
-      const x = Math.sin(angle) * radiusX;
-      const z = Math.cos(angle) * radiusZ;
-      const y = Math.sin(angle * 2) * 0.35;
-
-      const lineGeo = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(0, -0.1, 0),
-        new THREE.Vector3(x, y, z)
-      ]);
-      const lineMat = new THREE.LineBasicMaterial({
-        color: 0xd97706,
-        transparent: true,
-        opacity: 0.35
-      });
-      const line = new THREE.Line(lineGeo, lineMat);
-      tetherGroup.add(line);
-
-      const pMesh = new THREE.Mesh(pulseGeo, pulseMat);
-      tetherGroup.add(pMesh);
-      pulses.push({
-        mesh: pMesh,
-        progress: idx / V8_MODULE_SYSTEMS.length,
-        p1: new THREE.Vector3(0, -0.1, 0),
-        p2: new THREE.Vector3(x, y, z)
-      });
-
-      const isSelected = mod.id === activeIdRef.current;
-      const canvas = createTactileV8CardCanvas(mod, isSelected, false);
-      const texture = new THREE.CanvasTexture(canvas);
-      texture.anisotropy = 16;
-      texture.generateMipmaps = true;
-      texture.minFilter = THREE.LinearMipmapLinearFilter;
-
-      const sideMat = new THREE.MeshPhysicalMaterial({
-        color: new THREE.Color(mod.chipColor).multiplyScalar(0.92),
-        metalness: 0.12,
-        roughness: 0.35,
-        clearcoat: 0.5
-      });
-
-      const topMat = new THREE.MeshPhysicalMaterial({
-        map: texture,
-        metalness: 0.12,
-        roughness: 0.32,
-        clearcoat: 0.7,
-        clearcoatRoughness: 0.18
-      });
-
-      const materials = [sideMat, sideMat, topMat, sideMat, sideMat, sideMat];
-      const mesh = new THREE.Mesh(monoGeo, materials);
-      mesh.position.set(x, y, z);
-      mesh.rotation.y = 0;
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      mesh.userData = { id: mod.id };
-      spaceGroup.add(mesh);
-
-      monolithMeshes.push({
-        id: mod.id,
-        mesh,
-        baseX: x,
-        baseY: y,
-        baseZ: z,
-        targetY: y,
-        topMat,
-        mod,
-        texture,
-        phase: idx * 0.9
-      });
-    });
-
-    const updateCardTextures = (activeModId: string, hoveredModId: string | null) => {
-      monolithMeshes.forEach((item) => {
-        const isSel = item.id === activeModId;
-        const isHov = item.id === hoveredModId;
-        const canvas = createTactileV8CardCanvas(item.mod, isSel, isHov);
-        item.texture.image = canvas;
-        item.texture.needsUpdate = true;
-      });
-    };
-
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2(-999, -999);
-    let hoveredId: string | null = null;
-    let isDragging = false;
-    let prevMouseX = 0;
-    let prevMouseY = 0;
-    let targetRotationY = -0.25;
-    let targetRotationX = 0.35;
-
-    let parallaxTargetX = 0;
-    let parallaxTargetY = 0;
-
-    const onPointerDown = (e: MouseEvent) => {
-      isDragging = true;
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
-    };
-
-    const onPointerMove = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
-      const rawX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      const rawY = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-      mouse.x = rawX;
-      mouse.y = rawY;
-
-      parallaxTargetX = rawX * 0.14;
-      parallaxTargetY = rawY * 0.09;
-
-      if (isDragging) {
-        const dx = e.clientX - prevMouseX;
-        const dy = e.clientY - prevMouseY;
-        targetRotationY += dx * 0.006;
-        targetRotationX = Math.max(0.12, Math.min(0.65, targetRotationX + dy * 0.005));
-        prevMouseX = e.clientX;
-        prevMouseY = e.clientY;
-      }
-    };
-
-    const onPointerUp = () => {
-      isDragging = false;
-    };
-
-    const onClick = () => {
-      if (hoveredId) {
-        onSelectRef.current(hoveredId);
-        updateCardTextures(hoveredId, hoveredId);
-      }
-    };
-
-    container.addEventListener("mousedown", onPointerDown);
-    window.addEventListener("mousemove", onPointerMove);
-    window.addEventListener("mouseup", onPointerUp);
-    container.addEventListener("click", onClick);
-
-    let animId: number;
-    let lastTime = performance.now();
-
-    const animate = (currentTime: number) => {
-      animId = requestAnimationFrame(animate);
-      const delta = Math.min((currentTime - lastTime) / 1000, 0.1);
-      lastTime = currentTime;
-
-      const currentMode = viewModeRef.current;
-      const activeItem = monolithMeshes.find((c) => c.id === activeIdRef.current) || monolithMeshes[0];
-
-      let camTargetX = 0;
-      let camTargetY = 4.6;
-      let camTargetZ = 7.6;
-      let lookTargetX = 0;
-      let lookTargetY = 0;
-      let lookTargetZ = 0;
-
-      if (currentMode === "focus") {
-        camTargetX = activeItem.baseX * 0.5;
-        camTargetY = 3.2;
-        camTargetZ = 5.2;
-        lookTargetX = activeItem.baseX * 0.6;
-        lookTargetZ = activeItem.baseZ * 0.6;
-      } else if (currentMode === "top") {
-        camTargetX = 0;
-        camTargetY = 8.6;
-        camTargetZ = 0.5;
-        lookTargetX = 0;
-        lookTargetY = 0;
-        lookTargetZ = 0;
-      }
-
-      camera.position.x = THREE.MathUtils.damp(camera.position.x, camTargetX, 4, delta);
-      camera.position.y = THREE.MathUtils.damp(camera.position.y, camTargetY, 4, delta);
-      camera.position.z = THREE.MathUtils.damp(camera.position.z, camTargetZ, 4, delta);
-      camera.lookAt(lookTargetX, lookTargetY, lookTargetZ);
-
-      ring1.rotation.x += delta * 0.8;
-      ring1.rotation.y += delta * 0.4;
-      ring2.rotation.y -= delta * 0.6;
-      ring2.rotation.z += delta * 0.3;
-      ring3.rotation.x += delta * 0.3;
-      ring3.rotation.z -= delta * 0.5;
-
-      pulses.forEach((pulse) => {
-        pulse.progress = (pulse.progress + delta * 0.55) % 1.0;
-        pulse.mesh.position.lerpVectors(pulse.p1, pulse.p2, pulse.progress);
-      });
-
-      if (!isDragging && currentMode === "orbit") {
-        targetRotationY += 0.0014;
-      }
-
-      const combinedTargetY = targetRotationY + parallaxTargetX;
-      const combinedTargetX = targetRotationX - parallaxTargetY;
-
-      spaceGroup.rotation.y = THREE.MathUtils.damp(spaceGroup.rotation.y, combinedTargetY, 4, delta);
-      spaceGroup.rotation.x = THREE.MathUtils.damp(spaceGroup.rotation.x, combinedTargetX, 4, delta);
-
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(monolithMeshes.map((b) => b.mesh));
-
-      let newlyHovered: string | null = null;
-      if (intersects.length > 0) {
-        newlyHovered = intersects[0].object.userData.id;
-        container.style.cursor = "pointer";
-      } else {
-        newlyHovered = null;
-        container.style.cursor = isDragging ? "grabbing" : "grab";
-      }
-
-      if (newlyHovered !== hoveredId) {
-        hoveredId = newlyHovered;
-        updateCardTextures(activeIdRef.current, hoveredId);
-      }
-
-      activeSpotLight.position.x = THREE.MathUtils.damp(activeSpotLight.position.x, activeItem.mesh.position.x, 6, delta);
-      activeSpotLight.position.z = THREE.MathUtils.damp(activeSpotLight.position.z, activeItem.mesh.position.z, 6, delta);
-
-      monolithMeshes.forEach((item) => {
-        const isActive = item.id === activeIdRef.current;
-        const isHovered = item.id === hoveredId;
-
-        const floatOffset = Math.sin(currentTime * 0.0018 + item.phase) * 0.08;
-        item.targetY = item.baseY + floatOffset + (isActive ? 0.38 : isHovered ? 0.18 : 0);
-        item.mesh.position.y = THREE.MathUtils.damp(item.mesh.position.y, item.targetY, 9, delta);
-      });
-
-      renderer.render(scene, camera);
-    };
-
-    animId = requestAnimationFrame(animate);
-
-    const onResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", onResize);
-      container.removeEventListener("mousedown", onPointerDown);
-      window.removeEventListener("mousemove", onPointerMove);
-      window.removeEventListener("mouseup", onPointerUp);
-      container.removeEventListener("click", onClick);
-
-      monolithMeshes.forEach((item) => {
-        item.texture.dispose();
-      });
-
-      scene.clear();
-      renderer.dispose();
-      if (renderer.domElement.parentNode === container) {
-        container.removeChild(renderer.domElement);
-      }
-    };
-  }, []);
+export default function V8EngineCore3D({ activeId, onSelectModule }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  const activeModule = V8_MODULE_SYSTEMS.find((m) => m.id === activeId) || V8_MODULE_SYSTEMS[0];
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setTilt({ x: -(y * 8), y: x * 10 });
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ x: 0, y: 0 });
+  };
 
   return (
-    <div className="relative w-full h-full min-h-[520px] sm:min-h-[600px] lg:min-h-[680px] select-none flex items-center justify-center">
-      <div ref={mountRef} className="w-full h-full absolute inset-0" />
+    <div
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative w-full min-h-[520px] sm:min-h-[580px] flex flex-col justify-between p-4 sm:p-6 rounded-[28px] bg-white/95 backdrop-blur-xl border border-black/[0.08] shadow-[0_20px_48px_rgba(0,0,0,0.06)] transition-transform duration-300 ease-out select-none"
+      style={{
+        transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+        transformStyle: "preserve-3d"
+      }}
+    >
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-black/[0.06]">
+        <div className="flex items-center gap-2">
+          <span
+            className="w-2.5 h-2.5 rounded-full animate-pulse shadow-sm"
+            style={{ backgroundColor: activeModule.accent }}
+          />
+          <span className="text-[11px] font-mono tracking-widest text-[#0f172a] uppercase font-bold">
+            V8 RUNTIME WORKBENCH // SYSTEM {activeModule.index}
+          </span>
+        </div>
+
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f8f9fc] border border-black/[0.06] text-[10px] font-mono text-[#64748b]">
+          <Sparkles size={11} className="text-amber-500" />
+          <span>Interactive Execution Sandbox</span>
+        </div>
+      </div>
+
+      <div className="relative z-10 py-4 flex-1 flex flex-col justify-center">
+        <div className="mb-3">
+          <div className="flex items-center gap-2 mb-1">
+            <span
+              className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold"
+              style={{ backgroundColor: activeModule.chipColor, color: activeModule.accent }}
+            >
+              {activeModule.category}
+            </span>
+            <span className="text-xs font-mono text-[#64748b]">{activeModule.subsystem}</span>
+          </div>
+          <h2 className="font-clash font-bold text-2xl text-[#0f172a]">
+            {activeModule.name}
+          </h2>
+          <p className="text-xs text-[#475569] mt-0.5">
+            {activeModule.tagline}
+          </p>
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeModule.id}
+            initial={{ opacity: 0, y: 10, scale: 0.99 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.99 }}
+            transition={{ duration: 0.2 }}
+            className="w-full"
+          >
+            {activeModule.id === "variables" && <VariablesInteractiveWidget />}
+            {activeModule.id === "control-flow" && <ControlFlowInteractiveWidget />}
+            {activeModule.id === "functions-scope" && <ScopeInteractiveWidget />}
+            {activeModule.id === "arrays-iteration" && <ArraysInteractiveWidget />}
+            {activeModule.id === "objects-maps" && <ObjectsInteractiveWidget />}
+            {activeModule.id === "async-event-loop" && <AsyncInteractiveWidget />}
+            {activeModule.id === "dom-apis" && <DomInteractiveWidget />}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <div className="relative z-10 pt-3 border-t border-black/[0.06] flex flex-wrap items-center justify-between gap-3 text-[11px] font-mono text-[#64748b]">
+        <div className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span>TurboFan JIT Optimizing Compiler Ready</span>
+        </div>
+        <span>Hover &amp; interact with the simulation above</span>
+      </div>
     </div>
   );
 }
