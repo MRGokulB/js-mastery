@@ -93,8 +93,13 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 h-18 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 to-amber-300 text-slate-950 flex items-center justify-center font-extrabold text-sm shadow-sm border border-amber-200">
-              JS
+            <div className="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center shadow-sm border border-slate-800 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/20 to-transparent pointer-events-none" />
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10">
+                <path d="M12 2.5L20.5 7.5V16.5L12 21.5L3.5 16.5V7.5L12 2.5Z" stroke="#f59e0b" strokeWidth="1.8" strokeLinejoin="round" />
+                <path d="M9 16C9 16.5 9.8 17 10.8 17C11.8 17 12.5 16.5 12.5 15V10" stroke="#fbbf24" strokeWidth="1.8" strokeLinecap="round" />
+                <path d="M14.5 16.2C15.2 16.8 16.2 16.8 17 16.2C17.6 15.7 17.6 14.8 17 14.2C16 13.4 14.5 13 14.5 11.8C14.5 10.6 15.5 9.8 16.8 9.8C17.6 9.8 18.3 10.2 18.8 10.6" stroke="#fbbf24" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
             </div>
             <div>
               <span className="font-extrabold text-base tracking-tight text-slate-900 block leading-tight">
