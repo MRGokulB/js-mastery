@@ -94,18 +94,18 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-[#07090e]/85 backdrop-blur-xl transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 h-18 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center shadow-sm border border-slate-700/60 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-tr from-slate-700/20 via-transparent to-transparent pointer-events-none" />
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10">
-                <path d="M12 2.5L20.2 7.25V16.75L12 21.5L3.8 16.75V7.25Z" stroke="#cbd5e1" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 2.5V7.5" stroke="#64748b" strokeWidth="1.3" strokeLinecap="round" />
-                <path d="M12 16.5V21.5" stroke="#64748b" strokeWidth="1.3" strokeLinecap="round" />
-                <path d="M20.2 7.25L16.5 9.5" stroke="#64748b" strokeWidth="1.3" strokeLinecap="round" />
-                <path d="M20.2 16.75L16.5 14.5" stroke="#64748b" strokeWidth="1.3" strokeLinecap="round" />
-                <path d="M3.8 16.75L7.5 14.5" stroke="#64748b" strokeWidth="1.3" strokeLinecap="round" />
-                <path d="M3.8 7.25L7.5 9.5" stroke="#64748b" strokeWidth="1.3" strokeLinecap="round" />
-                <rect x="7.5" y="7.5" width="9" height="9" rx="2.4" fill="#0b0f19" stroke="#64748b" strokeWidth="1.2" />
-                <text x="12" y="14.3" textAnchor="middle" fill="#ffffff" fontSize="6.4" fontWeight="900" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="-0.3px">JS</text>
+            <div className="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center shadow-sm border border-slate-700/60 relative overflow-hidden group hover:border-amber-500/50 transition-colors">
+              <svg width="24" height="24" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10">
+                <defs>
+                  <linearGradient id="hubNavLogoGold" x1="120" y1="120" x2="390" y2="390" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#FEF08A"/>
+                    <stop offset="35%" stopColor="#F59E0B"/>
+                    <stop offset="100%" stopColor="#D97706"/>
+                  </linearGradient>
+                </defs>
+                <path d="M216 150 V315 C216 358 190 382 146 382 C120 382 98 372 84 358 L108 318 C118 326 130 334 146 334 C164 334 172 322 172 304 V150 H216 Z" fill="url(#hubNavLogoGold)"/>
+                <path d="M394 212 C394 168 360 144 306 144 C256 144 222 168 218 206 L260 214 C264 192 282 182 306 182 C330 182 350 192 350 208 C350 222 340 230 312 238 L284 246 C242 258 220 280 220 316 C220 358 256 384 310 384 C364 384 400 358 404 318 L360 310 C356 334 336 346 310 346 C284 346 264 336 264 318 C264 304 274 296 300 288 L328 280 C372 268 394 246 394 212 Z" fill="url(#hubNavLogoGold)"/>
+                <circle cx="396" cy="146" r="22" fill="#FEF08A"/>
               </svg>
             </div>
             <div>

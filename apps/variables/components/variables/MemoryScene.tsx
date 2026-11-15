@@ -41,10 +41,10 @@ export function MemoryScene() {
   }, []);
 
   return (
-    <div ref={containerRef} className="h-screen w-full flex items-center justify-center relative bg-[#050505] px-6 perspective-[1000px]">
+    <div ref={containerRef} className="h-screen w-full flex items-center justify-center relative bg-[#fafbfc] dark:bg-[#050505] px-6 perspective-[1000px] transition-colors duration-200">
       
       <div className="absolute top-20 left-1/2 -translate-x-1/2 text-center">
-        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Stack vs Heap</h2>
+        <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">Stack vs Heap</h2>
       </div>
 
       <div className="memory-layout opacity-0 w-full max-w-6xl flex flex-col md:flex-row gap-8 items-stretch mt-12">

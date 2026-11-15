@@ -513,8 +513,20 @@ export default function PatternsScene() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white p-4 md:p-8 flex flex-col font-sans">
-      <div className="flex flex-wrap gap-2 mb-8 justify-center">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-slate-900 dark:text-white font-sans">
+      <div className="max-w-3xl mb-12">
+        <span className="text-xs font-mono font-bold tracking-widest text-amber-500/90 uppercase block mb-3">
+          08 &bull; Modern Syntax Patterns
+        </span>
+        <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          Modern Variable Patterns
+        </h2>
+        <p className="mt-3 text-slate-600 dark:text-slate-400 text-base sm:text-lg leading-relaxed">
+          Explore destructuring assignments, template literals, and defensive nullish checking patterns that streamline everyday JavaScript development.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-8 justify-start">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -522,20 +534,21 @@ export default function PatternsScene() {
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 ${isActive ? 'bg-amber-500/10 border-amber-500 text-amber-400 border' : 'bg-neutral-900 border-neutral-800 text-neutral-400 border hover:bg-neutral-800'}`}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer border ${
+                isActive
+                  ? 'bg-amber-500 text-slate-950 font-bold border-amber-400 shadow-sm'
+                  : 'bg-white dark:bg-[#0c0e14]/90 border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
             >
-              <Icon size={18} />
-              <span className="font-semibold">{tab.label}</span>
-              {isActive && (
-                <motion.div layoutId="indicator" className="h-1 w-8 bg-amber-500 absolute -bottom-2 rounded-full hidden" />
-              )}
+              <Icon size={16} />
+              <span>{tab.label}</span>
             </button>
           )
         })}
       </div>
 
-      <div className="flex-1 grid lg:grid-cols-12 gap-6 bg-neutral-950/50 rounded-3xl border border-neutral-800 overflow-hidden shadow-2xl">
-        <div className="lg:col-span-5 p-6 md:p-10 border-b lg:border-b-0 lg:border-r border-neutral-800 flex flex-col justify-center gap-8 relative overflow-hidden bg-neutral-900/50">
+      <div className="grid lg:grid-cols-12 gap-6 bg-white dark:bg-[#0c0e14]/90 rounded-3xl border border-slate-200/90 dark:border-white/[0.08] overflow-hidden shadow-xl">
+        <div className="lg:col-span-5 p-6 md:p-10 border-b lg:border-b-0 lg:border-r border-slate-200/80 dark:border-white/[0.08] flex flex-col justify-between gap-6 relative overflow-hidden bg-slate-50 dark:bg-transparent">
            <div className="absolute top-0 left-0 w-full h-1 bg-neutral-800">
              <motion.div 
                className="h-full bg-amber-500" 

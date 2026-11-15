@@ -1,131 +1,110 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Layers, Database, Lock, Unlock, Hash, Type } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowDown, Code2, Compass, Sparkles, Cpu } from "lucide-react";
 
 export function HeroScene() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  
-  useEffect(() => {
-    let ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "+=1500",
-          scrub: 1,
-          pin: true,
-          anticipatePin: 1
-        }
-      });
-
-      // Step 1: Fade out main title
-      tl.to(".main-title", { opacity: 0, y: -50, duration: 1 })
-        .to(".subtitle", { opacity: 0, y: -20, duration: 1 }, "<");
-
-      // Step 2: Bring in the 'var, let, const' boxes
-      tl.fromTo(".var-box", { opacity: 0, x: -100, scale: 0.8 }, { opacity: 1, x: 0, scale: 1, duration: 1 })
-        .fromTo(".let-box", { opacity: 0, y: 100, scale: 0.8 }, { opacity: 1, y: 0, scale: 1, duration: 1 }, "<")
-        .fromTo(".const-box", { opacity: 0, x: 100, scale: 0.8 }, { opacity: 1, x: 0, scale: 1, duration: 1 }, "<");
-
-      // Step 3: Fade out boxes, fade in Primitive vs Reference explanation
-      tl.to(".var-box, .let-box, .const-box", { opacity: 0, scale: 1.2, duration: 1 })
-        .fromTo(".data-types", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 1 });
-
-    }, containerRef);
-    return () => ctx.revert();
-  }, []);
+  const scrollToChapter = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
-    <div ref={containerRef} className="h-screen w-full flex items-center justify-center relative bg-[#050505] px-6 perspective-[1000px]">
-      
-      {/* INITIAL TITLE */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center main-title pointer-events-none">
-        <div className="w-20 h-20 mb-8 rounded-3xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shadow-[0_0_50px_rgba(245,158,11,0.2)]">
-          <Database className="w-10 h-10 text-amber-500" />
-        </div>
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-white to-orange-300 mb-6">
-          Variables & Data Types
-        </h1>
-        <p className="subtitle text-white/60 text-lg md:text-xl max-w-2xl font-light">
-          Scroll to explore the foundational building blocks of JavaScript. From variable declarations to primitive types and memory references.
-        </p>
+    <div className="w-full relative min-h-[90vh] flex flex-col items-center justify-center pt-24 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30 dark:opacity-20">
+        <div className="w-[640px] h-[640px] rounded-full bg-gradient-to-tr from-amber-500/15 via-orange-500/10 to-transparent blur-3xl animate-pulse" />
+        <div className="w-[480px] h-[480px] rounded-full bg-gradient-to-bl from-cyan-500/10 via-blue-500/5 to-transparent blur-3xl ml-40 -mt-20" />
       </div>
 
-      {/* VAR, LET, CONST BOXES */}
-      <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-center gap-8 px-4 opacity-0 pointer-events-none var-box-container">
-        
-        {/* VAR */}
-        <div className="var-box w-full md:w-1/3 max-w-[300px] h-[320px] bg-red-500/10 border border-red-500/30 rounded-3xl p-8 flex flex-col backdrop-blur-xl opacity-0">
-          <div className="flex justify-between items-start mb-6">
-            <span className="font-mono text-2xl font-bold text-red-400">var</span>
-            <Unlock className="w-6 h-6 text-red-400/50" />
+      <div className="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="mb-8 flex items-center justify-center relative"
+        >
+          <div className="absolute -inset-3 rounded-3xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 blur-xl pointer-events-none" />
+          <div className="w-20 h-20 rounded-2xl bg-slate-950 flex items-center justify-center shadow-2xl border border-slate-700/80 relative overflow-hidden group hover:border-amber-500/50 transition-colors">
+            <svg width="46" height="46" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10 group-hover:scale-105 transition-transform duration-300">
+              <defs>
+                <linearGradient id="heroLogoGold" x1="120" y1="120" x2="390" y2="390" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#FEF08A"/>
+                  <stop offset="35%" stopColor="#F59E0B"/>
+                  <stop offset="100%" stopColor="#D97706"/>
+                </linearGradient>
+              </defs>
+              <path d="M216 150 V315 C216 358 190 382 146 382 C120 382 98 372 84 358 L108 318 C118 326 130 334 146 334 C164 334 172 322 172 304 V150 H216 Z" fill="url(#heroLogoGold)"/>
+              <path d="M394 212 C394 168 360 144 306 144 C256 144 222 168 218 206 L260 214 C264 192 282 182 306 182 C330 182 350 192 350 208 C350 222 340 230 312 238 L284 246 C242 258 220 280 220 316 C220 358 256 384 310 384 C364 384 400 358 404 318 L360 310 C356 334 336 346 310 346 C284 346 264 336 264 318 C264 304 274 296 300 288 L328 280 C372 268 394 246 394 212 Z" fill="url(#heroLogoGold)"/>
+              <circle cx="396" cy="146" r="22" fill="#FEF08A"/>
+            </svg>
           </div>
-          <p className="text-white/70 mb-4 text-sm leading-relaxed">
-            The chaotic legacy keyword. Function-scoped, hoisted to the top, and allows redeclaration.
-          </p>
-          <div className="mt-auto bg-black/40 rounded-xl p-4 font-mono text-xs text-red-200/80">
-            var x = 1;<br/>
-            var x = 2; // Valid!
-          </div>
-        </div>
+        </motion.div>
 
-        {/* LET */}
-        <div className="let-box w-full md:w-1/3 max-w-[300px] h-[350px] bg-amber-500/10 border border-amber-500/30 rounded-3xl p-8 flex flex-col backdrop-blur-xl opacity-0 relative z-10 shadow-[0_0_50px_rgba(245,158,11,0.15)]">
-          <div className="flex justify-between items-start mb-6">
-            <span className="font-mono text-2xl font-bold text-amber-400">let</span>
-            <Layers className="w-6 h-6 text-amber-400/50" />
-          </div>
-          <p className="text-white/70 mb-4 text-sm leading-relaxed">
-            The modern standard for mutability. Block-scoped, protects against redeclaration, but allows reassignment.
-          </p>
-          <div className="mt-auto bg-black/40 rounded-xl p-4 font-mono text-xs text-amber-200/80">
-            let y = 1;<br/>
-            y = 2; // Valid!<br/>
-            let y = 3; // Error!
-          </div>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="flex items-center gap-2 mb-6"
+        >
+          <span className="text-xs font-mono font-bold tracking-widest text-amber-500/90 uppercase">
+            01 &bull; Runtime Architecture
+          </span>
+        </motion.div>
 
-        {/* CONST */}
-        <div className="const-box w-full md:w-1/3 max-w-[300px] h-[320px] bg-green-500/10 border border-green-500/30 rounded-3xl p-8 flex flex-col backdrop-blur-xl opacity-0">
-          <div className="flex justify-between items-start mb-6">
-            <span className="font-mono text-2xl font-bold text-green-400">const</span>
-            <Lock className="w-6 h-6 text-green-400/50" />
-          </div>
-          <p className="text-white/70 mb-4 text-sm leading-relaxed">
-            The guardian of assignment. Block-scoped. The variable binding cannot be reassigned, but the underlying object can be mutated.
-          </p>
-          <div className="mt-auto bg-black/40 rounded-xl p-4 font-mono text-xs text-green-200/80">
-            const z = 1;<br/>
-            z = 2; // Error!
-          </div>
-        </div>
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 leading-[1.08]"
+        >
+          Variables, Memory &amp;
+          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 dark:from-amber-300 dark:via-orange-400 dark:to-amber-500">
+            Runtime Architecture
+          </span>
+        </motion.h1>
 
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mb-12 leading-relaxed font-light"
+        >
+          Demystify JavaScript data structures from first principles. Watch the V8 engine allocate 64-bit registers in the Call Stack, dereference heap pointers, enforce the Temporal Dead Zone, and sweep orphaned memory.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="flex flex-wrap items-center justify-center gap-4"
+        >
+          <button
+            onClick={() => scrollToChapter("scene-analogies")}
+            className="flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/25 transition-all cursor-pointer hover:scale-[1.02]"
+          >
+            <Code2 className="w-4 h-4" />
+            Begin Architectural Journey
+          </button>
+
+          <button
+            onClick={() => scrollToChapter("scene-memory")}
+            className="flex items-center gap-2 px-5 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.04] hover:bg-slate-50 dark:hover:bg-white/[0.08] text-slate-700 dark:text-slate-200 font-semibold text-sm transition-all cursor-pointer shadow-xs hover:scale-[1.02]"
+          >
+            <Cpu className="w-4 h-4 text-amber-500" />
+            Jump to Stack vs Heap Studio
+          </button>
+        </motion.div>
       </div>
 
-      {/* DATA TYPES INTRO */}
-      <div className="data-types absolute inset-0 flex flex-col items-center justify-center text-center opacity-0 pointer-events-none px-4">
-        <h2 className="text-4xl md:text-5xl font-bold text-white mb-12">Two Worlds of Data</h2>
-        
-        <div className="flex flex-col md:flex-row gap-8 w-full max-w-4xl">
-          <div className="flex-1 bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-md">
-            <Hash className="w-10 h-10 text-orange-400 mb-6 mx-auto" />
-            <h3 className="text-2xl font-bold text-white mb-4">Primitives</h3>
-            <p className="text-white/60 mb-6 text-sm">Strings, Numbers, Booleans, Null, Undefined, Symbol, BigInt.</p>
-            <div className="px-4 py-2 bg-orange-500/10 text-orange-400 rounded-full font-mono text-sm inline-block">Passed by Value</div>
-          </div>
-
-          <div className="flex-1 bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-md">
-            <Type className="w-10 h-10 text-blue-400 mb-6 mx-auto" />
-            <h3 className="text-2xl font-bold text-white mb-4">References</h3>
-            <p className="text-white/60 mb-6 text-sm">Objects, Arrays, Functions. (Technically all Objects under the hood).</p>
-            <div className="px-4 py-2 bg-blue-500/10 text-blue-400 rounded-full font-mono text-sm inline-block">Passed by Reference</div>
-          </div>
-        </div>
-      </div>
-
+      <motion.button
+        animate={{ y: [0, 8, 0] }}
+        transition={{ repeat: Infinity, duration: 2 }}
+        onClick={() => scrollToChapter("scene-analogies")}
+        className="mt-16 text-slate-400 hover:text-amber-500 transition-colors p-2 cursor-pointer"
+        aria-label="Scroll to Analogies chapter"
+      >
+        <ArrowDown className="w-5 h-5" />
+      </motion.button>
     </div>
   );
 }

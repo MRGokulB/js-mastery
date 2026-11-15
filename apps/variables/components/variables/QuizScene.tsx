@@ -114,18 +114,30 @@ export default function QuizScene() {
   const currentQuestion = questions[currentQuestionIndex]
 
   return (
-    <div className="w-full min-h-screen bg-[#050505] text-white flex items-center justify-center p-4">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-slate-900 dark:text-white font-sans flex flex-col items-center">
+      <div className="max-w-3xl w-full mb-10 text-center">
+        <span className="text-xs font-mono font-bold tracking-widest text-amber-500/90 uppercase block mb-3">
+          10 &bull; Architectural Assessment
+        </span>
+        <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          Variables &amp; Memory Quiz
+        </h2>
+        <p className="mt-3 text-slate-600 dark:text-slate-400 text-base sm:text-lg leading-relaxed">
+          Test your mental models against 10 classic JavaScript scenarios and V8 edge cases.
+        </p>
+      </div>
+
       <div className="w-full max-w-3xl">
         {!isQuizComplete ? (
           <>
             <div className="mb-8">
-              <div className="flex justify-between items-center mb-2 text-sm font-medium text-white/60">
-                <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-                <span>Score: {score}</span>
+              <div className="flex justify-between items-center mb-2 text-xs font-mono text-slate-500 dark:text-slate-400">
+                <span>QUESTION {currentQuestionIndex + 1} OF {questions.length}</span>
+                <span className="text-amber-500 font-bold">SCORE: {score}</span>
               </div>
-              <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-slate-200 dark:bg-white/[0.06] rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full bg-orange-500 rounded-full"
+                  className="h-full bg-amber-500 rounded-full"
                   initial={{ width: 0 }}
                   animate={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
                   transition={{ duration: 0.3 }}
@@ -140,9 +152,9 @@ export default function QuizScene() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
-                className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8"
+                className="bg-white dark:bg-[#0c0e14]/90 border border-slate-200/90 dark:border-white/[0.08] rounded-3xl p-6 sm:p-10 shadow-xl"
               >
-                <h2 className="text-xl md:text-2xl font-semibold mb-6">
+                <h2 className="text-xl md:text-2xl font-bold mb-6 text-slate-900 dark:text-white">
                   {currentQuestion.question}
                 </h2>
 
@@ -158,32 +170,32 @@ export default function QuizScene() {
                         key={index}
                         onClick={() => handleOptionSelect(index)}
                         disabled={isAnswered}
-                        className={`w-full text-left p-4 rounded-xl flex items-center justify-between transition-all duration-200 border
+                        className={`w-full text-left p-4 rounded-2xl flex items-center justify-between transition-all duration-200 border cursor-pointer
                           ${
                             showCorrect
-                              ? 'bg-green-500/20 border-green-500/50 text-green-300'
+                              ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
                               : showWrong
-                              ? 'bg-red-500/20 border-red-500/50 text-red-300'
+                              ? 'bg-rose-500/10 border-rose-500/40 text-rose-600 dark:text-rose-400'
                               : isAnswered
-                              ? 'bg-white/5 border-white/10 text-white/40 cursor-not-allowed'
-                              : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                              ? 'bg-slate-100 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.05] text-slate-400 dark:text-slate-500 cursor-not-allowed'
+                              : 'bg-slate-50 dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.08] text-slate-800 dark:text-slate-200 hover:border-amber-500/50 hover:bg-slate-100 dark:hover:bg-white/[0.06]'
                           }
                         `}
                       >
                         <span className="flex items-center gap-4">
-                          <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium
+                          <span className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-mono font-bold
                             ${
-                              showCorrect ? 'bg-green-500/20 text-green-400' :
-                              showWrong ? 'bg-red-500/20 text-red-400' :
-                              'bg-white/10 text-white/60'
+                              showCorrect ? 'bg-emerald-500/20 text-emerald-500' :
+                              showWrong ? 'bg-rose-500/20 text-rose-500' :
+                              'bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-slate-300'
                             }
                           `}>
                             {String.fromCharCode(65 + index)}
                           </span>
-                          <span className="text-base">{option}</span>
+                          <span className="text-sm font-medium">{option}</span>
                         </span>
-                        {showCorrect && <Check className="w-5 h-5 text-green-400" />}
-                        {showWrong && <X className="w-5 h-5 text-red-400" />}
+                        {showCorrect && <Check className="w-5 h-5 text-emerald-500" />}
+                        {showWrong && <X className="w-5 h-5 text-rose-500" />}
                       </button>
                     )
                   })}
@@ -194,15 +206,15 @@ export default function QuizScene() {
                     <motion.div
                       initial={{ opacity: 0, y: 10, height: 0 }}
                       animate={{ opacity: 1, y: 0, height: 'auto' }}
-                      className="mt-6 pt-6 border-t border-white/10 overflow-hidden"
+                      className="mt-6 pt-6 border-t border-slate-200 dark:border-white/10 overflow-hidden"
                     >
-                      <h3 className="text-sm font-medium text-white/60 mb-2">Explanation</h3>
-                      <p className="text-white/80 leading-relaxed text-sm md:text-base">
+                      <h3 className="text-xs font-mono font-bold text-amber-500 uppercase tracking-wider mb-2">Explanation</h3>
+                      <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-sm">
                         {currentQuestion.explanation}
                       </p>
                       <button
                         onClick={handleNextQuestion}
-                        className="mt-6 w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-xl transition-colors"
+                        className="mt-6 w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold font-mono text-xs rounded-2xl transition-all shadow-sm cursor-pointer"
                       >
                         {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'View Results'}
                       </button>
@@ -214,42 +226,34 @@ export default function QuizScene() {
           </>
         ) : (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 text-center"
+            className="bg-white dark:bg-[#0c0e14]/90 border border-slate-200/90 dark:border-white/[0.08] rounded-3xl p-8 sm:p-12 text-center shadow-xl"
           >
-            <div className="w-20 h-20 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Award className="w-10 h-10 text-orange-500" />
+            <div className="w-16 h-16 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 text-amber-500">
+              <Award className="w-8 h-8" />
             </div>
-            <h2 className="text-3xl font-bold mb-2">Quiz Complete!</h2>
-            <p className="text-white/60 mb-8">
-              You scored {score} out of {questions.length}
+            <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 text-slate-900 dark:text-white">Quiz Complete!</h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-8 text-sm">
+              You scored {score} out of {questions.length} on Module 01 concepts.
             </p>
 
             <div className="grid grid-cols-2 gap-4 mb-8">
-              <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4">
-                <div className="text-3xl font-bold text-green-400 mb-1">{score}</div>
-                <div className="text-sm text-green-500/80">Correct</div>
+              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4">
+                <div className="text-3xl font-extrabold text-emerald-500 mb-1 font-mono">{score}</div>
+                <div className="text-xs font-mono text-emerald-600 dark:text-emerald-400">Correct</div>
               </div>
-              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
-                <div className="text-3xl font-bold text-red-400 mb-1">{questions.length - score}</div>
-                <div className="text-sm text-red-500/80">Incorrect</div>
+              <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-4">
+                <div className="text-3xl font-extrabold text-rose-500 mb-1 font-mono">{questions.length - score}</div>
+                <div className="text-xs font-mono text-rose-600 dark:text-rose-400">Review Recommended</div>
               </div>
             </div>
 
-            {score >= 8 ? (
-              <p className="text-green-400 mb-8 font-medium">Excellent work! You have a solid understanding of JavaScript variables and types.</p>
-            ) : score >= 5 ? (
-              <p className="text-orange-400 mb-8 font-medium">Good effort! Review the explanations to solidify your knowledge.</p>
-            ) : (
-              <p className="text-white/60 mb-8 font-medium">Keep practicing! These concepts take time to master.</p>
-            )}
-
             <button
               onClick={handleRestartQuiz}
-              className="flex items-center justify-center gap-2 w-full py-4 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold font-mono text-xs transition-all shadow-sm cursor-pointer"
             >
-              <RefreshCcw className="w-5 h-5" />
+              <RefreshCcw className="w-4 h-4" />
               Retake Quiz
             </button>
           </motion.div>

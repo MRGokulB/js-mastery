@@ -1,230 +1,145 @@
-'use client'
+"use client";
 
-import { useEffect, useRef } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { motion } from 'framer-motion'
-import { Lock, Dice1, FileText, ToggleLeft, Box, HelpCircle, Snowflake, Hash, AlertTriangle, Search } from 'lucide-react'
-
-gsap.registerPlugin(ScrollTrigger)
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Box, Lock, Unlock, Layers, FileText, Home, Copy, BookOpen, ArrowRight } from "lucide-react";
 
 export default function AnalogyScene() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  
-  const text1Ref = useRef<HTMLDivElement>(null)
-  const text2Ref = useRef<HTMLDivElement>(null)
-  const text3Ref = useRef<HTMLDivElement>(null)
-  const text4Ref = useRef<HTMLDivElement>(null)
-  
-  const beat1Ref = useRef<HTMLDivElement>(null)
-  const beat2Ref = useRef<HTMLDivElement>(null)
-  const beat3Ref = useRef<HTMLDivElement>(null)
-  const beat4Ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top top',
-          end: '+=2500',
-          scrub: 1,
-          pin: true,
-          anticipatePin: 1
-        }
-      })
-
-      gsap.set([text2Ref.current, text3Ref.current, text4Ref.current], { autoAlpha: 0, y: 20 })
-      gsap.set([beat2Ref.current, beat3Ref.current, beat4Ref.current], { autoAlpha: 0, scale: 0.9 })
-      gsap.set(beat1Ref.current, { autoAlpha: 1, scale: 1 })
-
-      tl.to(text1Ref.current, { autoAlpha: 0, y: -20, duration: 1 })
-        .to(beat1Ref.current, { autoAlpha: 0, scale: 0.9, duration: 1 }, '<')
-        .to(text2Ref.current, { autoAlpha: 1, y: 0, duration: 1 })
-        .to(beat2Ref.current, { autoAlpha: 1, scale: 1, duration: 1 }, '<')
-        
-      tl.to(text2Ref.current, { autoAlpha: 0, y: -20, duration: 1 }, '+=1')
-        .to(beat2Ref.current, { autoAlpha: 0, scale: 0.9, duration: 1 }, '<')
-        .to(text3Ref.current, { autoAlpha: 1, y: 0, duration: 1 })
-        .to(beat3Ref.current, { autoAlpha: 1, scale: 1, duration: 1 }, '<')
-
-      tl.to(text3Ref.current, { autoAlpha: 0, y: -20, duration: 1 }, '+=1')
-        .to(beat3Ref.current, { autoAlpha: 0, scale: 0.9, duration: 1 }, '<')
-        .to(text4Ref.current, { autoAlpha: 1, y: 0, duration: 1 })
-        .to(beat4Ref.current, { autoAlpha: 1, scale: 1, duration: 1 }, '<')
-        
-      tl.to({}, { duration: 1 })
-      
-    }, containerRef)
-
-    const timer = setTimeout(() => {
-      ScrollTrigger.refresh()
-    }, 500)
-
-    return () => {
-      ctx.revert()
-      clearTimeout(timer)
-    }
-  }, [])
+  const [lockerValue, setLockerValue] = useState<number>(100);
+  const [photoCopyVal, setPhotoCopyVal] = useState<string>("Alice");
+  const [houseName, setHouseName] = useState<string>("Alice");
 
   return (
-    <div ref={containerRef} className="h-screen w-full bg-transparent text-white flex flex-col items-center justify-center p-8 overflow-hidden">
-      <div className="flex-1 w-full max-w-6xl relative flex flex-col items-center justify-center mt-12">
-        
-        <div className="w-full h-[60vh] relative flex items-center justify-center perspective-[1000px]">
-          
-          <div ref={beat1Ref} className="absolute inset-0 flex items-center justify-center">
-            <motion.div 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="relative w-64 h-64 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl flex flex-col items-center justify-center shadow-2xl shadow-orange-500/10"
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-28 sm:py-36">
+      <div className="max-w-3xl mb-20">
+        <span className="text-xs font-mono font-bold tracking-widest text-amber-500/90 uppercase block mb-3">
+          01 &bull; Physical Mental Models
+        </span>
+        <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
+          Mental Models That Never Fail
+        </h2>
+        <p className="mt-4 text-slate-600 dark:text-slate-400 text-base sm:text-lg leading-relaxed font-light max-w-2xl">
+          Before inspecting V8 bytecode addresses, ground your intuition in three physical principles. These mental models explain 95% of all JavaScript memory behaviors.
+        </p>
+      </div>
+
+      <div className="space-y-24 sm:space-y-32">
+        {/* Model 01 */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="lg:col-span-6">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-500/80 block mb-2">
+              Principle 01 &bull; Identifier vs Slot
+            </span>
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mb-3 tracking-tight">
+              The Labeled Storage Locker
+            </h3>
+            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed mb-4 font-light">
+              A variable is not the data itself. It is a human-readable identifier attached to a physical 64-bit slot in computer memory. Mutating a variable replaces the paper inside the locker without altering the locker&apos;s nameplate.
+            </p>
+            <div className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+              Silicon Reality: Variable name &rarr; Register offset lookup &rarr; L1 Cache read.
+            </div>
+          </div>
+
+          <div className="lg:col-span-6 flex flex-col items-center justify-center p-8 sm:p-10 rounded-3xl bg-slate-50/70 dark:bg-white/[0.015] border border-slate-200/60 dark:border-white/[0.04]">
+            <div className="w-56 p-5 rounded-2xl bg-amber-500/10 border-2 border-amber-500/30 flex flex-col items-center justify-center relative mb-5 shadow-inner">
+              <span className="absolute -top-3 px-2.5 py-0.5 bg-amber-500 text-slate-950 font-mono text-[10px] font-black rounded-md">
+                let score = {lockerValue}
+              </span>
+              <Box className="w-8 h-8 text-amber-500 mb-2" />
+              <span className="text-3xl font-mono font-bold text-slate-900 dark:text-white">{lockerValue}</span>
+              <span className="text-[10px] font-mono text-slate-400 mt-1">Stack Register: 0x7FFE00</span>
+            </div>
+            <button
+              onClick={() => setLockerValue((prev) => (prev === 100 ? 250 : 100))}
+              className="text-xs font-mono px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition-all cursor-pointer shadow-xs hover:scale-[1.02]"
             >
-              <div className="absolute -top-4 px-4 py-1 bg-orange-500/20 border border-orange-500/40 rounded-full text-orange-400 font-mono text-sm tracking-wider">
-                myName
-              </div>
-              <span className="text-3xl font-mono text-white/90">"Alice"</span>
-            </motion.div>
+              Swap Paper Inside Locker &rarr; ({lockerValue === 100 ? "score = 250" : "score = 100"})
+            </button>
           </div>
-
-          <div ref={beat2Ref} className="absolute inset-0 flex flex-col items-center justify-center gap-12">
-            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
-              <div className="w-32 h-32 md:w-48 md:h-48 bg-[#2a241e] border border-[#5c4d3c] rounded-xl flex flex-col items-center justify-center rotate-[-4deg] relative shadow-lg">
-                <div className="absolute top-2 left-2 px-2 py-1 bg-red-500/20 text-red-400 text-xs font-bold uppercase rounded border border-red-500/30 transform -rotate-12">Legacy</div>
-                <div className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[#a6927a] font-mono text-sm mb-4">var</div>
-                <span className="text-xl font-mono text-[#8c7b66]">oldValue</span>
-              </div>
-              
-              <div className="w-32 h-32 md:w-48 md:h-48 bg-white/5 backdrop-blur-md border border-blue-500/30 rounded-xl flex flex-col items-center justify-center relative shadow-lg shadow-blue-500/10">
-                <div className="px-3 py-1 bg-blue-500/20 border border-blue-500/40 rounded-full text-blue-400 font-mono text-sm mb-4">let</div>
-                <motion.div 
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className="flex flex-col items-center"
-                >
-                  <span className="text-xl font-mono text-white">newValue</span>
-                </motion.div>
-              </div>
-
-              <div className="w-32 h-32 md:w-48 md:h-48 bg-white/5 backdrop-blur-md border border-amber-500/40 rounded-xl flex flex-col items-center justify-center relative shadow-lg shadow-amber-500/10">
-                <Lock className="absolute -top-3 -right-3 w-8 h-8 text-amber-500 bg-[#050505] rounded-full p-1 border border-amber-500/40" />
-                <div className="px-3 py-1 bg-amber-500/20 border border-amber-500/40 rounded-full text-amber-400 font-mono text-sm mb-4">const</div>
-                <span className="text-xl font-mono text-white">fixedValue</span>
-              </div>
-            </div>
-            
-            <div className="px-6 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl text-center max-w-2xl shadow-xl">
-              <p className="text-sm text-white/80">
-                <strong className="text-amber-400">Rule of thumb:</strong> Always use <code className="text-amber-300 bg-amber-900/30 px-1 rounded">const</code>. Only use <code className="text-blue-300 bg-blue-900/30 px-1 rounded">let</code> when you NEED to reassign. Never use <code className="text-red-300 bg-red-900/30 px-1 rounded">var</code>.
-              </p>
-            </div>
-          </div>
-
-          <div ref={beat3Ref} className="absolute inset-0 flex flex-col items-center justify-center gap-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl">
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center gap-3">
-                <Dice1 className="w-8 h-8 text-blue-400" />
-                <div className="text-xs text-white/50 font-mono">Number</div>
-                <div className="font-mono text-blue-300">42</div>
-              </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center gap-3">
-                <FileText className="w-8 h-8 text-pink-400" />
-                <div className="text-xs text-white/50 font-mono">String</div>
-                <div className="font-mono text-pink-300">"hello"</div>
-              </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center gap-3">
-                <ToggleLeft className="w-8 h-8 text-green-400" />
-                <div className="text-xs text-white/50 font-mono">Boolean</div>
-                <div className="font-mono text-green-300">true</div>
-              </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center gap-3">
-                <Box className="w-8 h-8 text-gray-500" />
-                <div className="text-xs text-white/50 font-mono">Null</div>
-                <div className="font-mono text-gray-400 text-xs">empty</div>
-              </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center gap-3 opacity-60 blur-[1px]">
-                <HelpCircle className="w-8 h-8 text-purple-400" />
-                <div className="text-xs text-white/50 font-mono">Undefined</div>
-                <div className="font-mono text-purple-300">?</div>
-              </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center gap-3">
-                <Snowflake className="w-8 h-8 text-cyan-400" />
-                <div className="text-xs text-white/50 font-mono">Symbol</div>
-                <div className="font-mono text-cyan-300 text-xs">Symbol()</div>
-              </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center gap-3 col-span-2">
-                <Hash className="w-8 h-8 text-orange-400" />
-                <div className="text-xs text-white/50 font-mono">BigInt</div>
-                <div className="font-mono text-orange-300">9007199254740991n</div>
-              </div>
-            </div>
-          </div>
-
-          <div ref={beat4Ref} className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="relative w-full max-w-4xl bg-white/5 border border-white/10 rounded-2xl p-8 overflow-hidden">
-              <motion.div 
-                animate={{ x: ['-10%', '110%'] }}
-                transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
-                className="absolute top-0 bottom-0 w-1 bg-amber-400/80 shadow-[0_0_20px_4px_rgba(251,191,36,0.6)] z-10"
-              />
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 md:gap-4 relative z-0">
-                <div className="flex flex-col items-center gap-4">
-                  <div className="h-12 flex items-center"><span className="font-mono text-xl">42</span></div>
-                  <div className="w-full h-px bg-white/10" />
-                  <div className="h-8 flex items-center"><span className="font-mono text-amber-400">"number"</span></div>
-                </div>
-                <div className="flex flex-col items-center gap-4">
-                  <div className="h-12 flex items-center"><span className="font-mono text-xl">"hello"</span></div>
-                  <div className="w-full h-px bg-white/10" />
-                  <div className="h-8 flex items-center"><span className="font-mono text-amber-400">"string"</span></div>
-                </div>
-                <div className="flex flex-col items-center gap-4">
-                  <div className="h-12 flex items-center"><span className="font-mono text-xl">true</span></div>
-                  <div className="w-full h-px bg-white/10" />
-                  <div className="h-8 flex items-center"><span className="font-mono text-amber-400">"boolean"</span></div>
-                </div>
-                <div className="flex flex-col items-center gap-4 relative group">
-                  <div className="h-12 flex items-center"><span className="font-mono text-xl">null</span></div>
-                  <div className="w-full h-px bg-white/10" />
-                  <div className="h-8 flex items-center"><span className="font-mono text-red-400">"object"</span></div>
-                  <div className="absolute -top-8 -right-4 bg-red-500/20 border border-red-500/40 text-red-300 text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                    <AlertTriangle className="w-3 h-3" /> Bug!
-                  </div>
-                </div>
-                <div className="flex flex-col items-center gap-4">
-                  <div className="h-12 flex items-center"><span className="font-mono text-xl text-white/50">undefined</span></div>
-                  <div className="w-full h-px bg-white/10" />
-                  <div className="h-8 flex items-center"><span className="font-mono text-amber-400 text-sm">"undefined"</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
         </div>
 
-        <div className="h-[20vh] w-full max-w-3xl grid [grid-template-areas:'stack'] text-center">
-          <div ref={text1Ref} className="[grid-area:stack] flex items-center justify-center">
-            <p className="text-xl md:text-2xl font-light text-white/90 leading-relaxed">
-              A variable is like a labeled box. The label is the name, and inside is the value. You can look at the label to find what you stored.
+        {/* Model 02 */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="lg:col-span-6 lg:order-2">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-500/80 block mb-2">
+              Principle 02 &bull; Pass by Value
+            </span>
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mb-3 tracking-tight">
+              Primitives: The Photocopy Machine
+            </h3>
+            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed mb-4 font-light">
+              Strings, Numbers, Booleans, and Symbols have fixed bit lengths and live directly on the Call Stack. Assigning a primitive creates an independent duplicate sheet. Scribbling on Sheet B leaves Sheet A 100% untouched.
             </p>
+            <div className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+              Silicon Reality: Bitwise 64-bit value copy into CPU register. Zero heap footprint.
+            </div>
           </div>
-          <div ref={text2Ref} className="[grid-area:stack] flex items-center justify-center opacity-0">
-            <p className="text-xl md:text-2xl font-light text-white/90 leading-relaxed">
-              JavaScript gives you three ways to create variables. <code className="text-blue-300">let</code> for values that change, <code className="text-amber-300">const</code> for values that stay, and <code className="text-[#8c7b66]">var</code>... well, we'll explain why you should avoid it.
-            </p>
+
+          <div className="lg:col-span-6 lg:order-1 flex flex-col items-center justify-center p-8 sm:p-10 rounded-3xl bg-slate-50/70 dark:bg-white/[0.015] border border-slate-200/60 dark:border-white/[0.04]">
+            <div className="flex items-center gap-4 w-full justify-center mb-5">
+              <div className="p-4 rounded-2xl bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-center flex-1 max-w-[150px]">
+                <FileText className="w-5 h-5 text-amber-500 mx-auto mb-1" />
+                <span className="font-mono text-[10px] text-slate-400 block">Original a</span>
+                <strong className="font-mono text-sm text-slate-900 dark:text-white">&quot;Alice&quot;</strong>
+              </div>
+              <Copy className="w-5 h-5 text-slate-400 shrink-0" />
+              <div className="p-4 rounded-2xl bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-center flex-1 max-w-[150px]">
+                <FileText className="w-5 h-5 text-emerald-500 mx-auto mb-1" />
+                <span className="font-mono text-[10px] text-slate-400 block">Photocopy b</span>
+                <strong className="font-mono text-sm text-slate-900 dark:text-white">&quot;{photoCopyVal}&quot;</strong>
+              </div>
+            </div>
+            <button
+              onClick={() => setPhotoCopyVal((prev) => (prev === "Alice" ? "Bob" : "Alice"))}
+              className="text-xs font-mono px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition-all cursor-pointer shadow-xs hover:scale-[1.02]"
+            >
+              Mutate Copy &apos;b&apos; to &quot;{photoCopyVal === "Alice" ? "Bob" : "Alice"}&quot;
+            </button>
           </div>
-          <div ref={text3Ref} className="[grid-area:stack] flex items-center justify-center opacity-0">
-            <p className="text-xl md:text-2xl font-light text-white/90 leading-relaxed">
-              JavaScript has 7 primitive types. Each stores a single, immutable value. Think of them as different kinds of items you can put in your boxes.
+        </div>
+
+        {/* Model 03 */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="lg:col-span-6">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-500/80 block mb-2">
+              Principle 03 &bull; Pass by Reference
+            </span>
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mb-3 tracking-tight">
+              Objects: The GPS Coordinate Beacon
+            </h3>
+            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed mb-4 font-light">
+              Objects are dynamically sized and live on the V8 Heap. The stack variable stores only the 8-byte pointer address (the GPS coordinate). Copying an object variable duplicates the coordinate, pointing to the exact same physical house.
             </p>
+            <div className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+              Silicon Reality: Two 64-bit pointers sharing memory address 0x4A10.
+            </div>
           </div>
-          <div ref={text4Ref} className="[grid-area:stack] flex items-center justify-center opacity-0">
-            <p className="text-xl md:text-2xl font-light text-white/90 leading-relaxed">
-              The <code className="text-amber-400">typeof</code> operator is your X-ray scanner. It reveals what type lives inside any variable. But watch out — <code className="text-white">typeof null</code> returns "object". That's a 28-year-old bug in JavaScript that can never be fixed!
-            </p>
+
+          <div className="lg:col-span-6 flex flex-col items-center justify-center p-8 sm:p-10 rounded-3xl bg-slate-50/70 dark:bg-white/[0.015] border border-slate-200/60 dark:border-white/[0.04]">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="px-2.5 py-1 rounded-md bg-amber-500/10 border border-amber-500/20 font-mono text-xs text-amber-500 font-bold">
+                user1 &rarr; 0x4A10
+              </span>
+              <span className="px-2.5 py-1 rounded-md bg-amber-500/10 border border-amber-500/20 font-mono text-xs text-amber-500 font-bold">
+                user2 &rarr; 0x4A10
+              </span>
+            </div>
+            <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center gap-3 w-full max-w-[320px] justify-center mb-5">
+              <Home className="w-5 h-5 text-cyan-500 shrink-0" />
+              <span className="font-mono text-xs text-slate-900 dark:text-white">
+                Heap Object: <strong className="text-cyan-400">&#123; name: &quot;{houseName}&quot; &#125;</strong>
+              </span>
+            </div>
+            <button
+              onClick={() => setHouseName((prev) => (prev === "Alice" ? "Jordan" : "Alice"))}
+              className="text-xs font-mono px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold transition-all cursor-pointer shadow-xs hover:scale-[1.02]"
+            >
+              user2.name = &quot;{houseName === "Alice" ? "Jordan" : "Alice"}&quot; (Updates Both!)
+            </button>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

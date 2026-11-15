@@ -115,17 +115,18 @@ export function HubScene() {
 
       <header className="h-16 shrink-0 border-b border-white/10 bg-[#0b0f19]/80 backdrop-blur-xl z-50 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-slate-950 flex items-center justify-center shadow-md border border-slate-700/60 relative overflow-hidden group">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10">
-              <path d="M12 2.5L20.2 7.25V16.75L12 21.5L3.8 16.75V7.25Z" stroke="#e2e8f0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M12 2.5V7.8" stroke="#64748b" strokeWidth="1.2" strokeLinecap="round" />
-              <path d="M12 16.2V21.5" stroke="#64748b" strokeWidth="1.2" strokeLinecap="round" />
-              <path d="M20.2 7.25L16.2 9.6" stroke="#64748b" strokeWidth="1.2" strokeLinecap="round" />
-              <path d="M20.2 16.75L16.2 14.4" stroke="#64748b" strokeWidth="1.2" strokeLinecap="round" />
-              <path d="M3.8 16.75L7.8 14.4" stroke="#64748b" strokeWidth="1.2" strokeLinecap="round" />
-              <path d="M3.8 7.25L7.8 9.6" stroke="#64748b" strokeWidth="1.2" strokeLinecap="round" />
-              <rect x="7.8" y="7.8" width="8.4" height="8.4" rx="2.2" fill="#090d16" stroke="#475569" strokeWidth="1.1" />
-              <text x="12" y="14.1" textAnchor="middle" fill="#ffffff" fontSize="5.8" fontWeight="800" fontFamily="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" letterSpacing="-0.2px">JS</text>
+          <div className="w-8 h-8 rounded-lg bg-slate-950 flex items-center justify-center shadow-md border border-slate-700/60 relative overflow-hidden group hover:border-amber-500/50 transition-colors">
+            <svg width="20" height="20" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative z-10">
+              <defs>
+                <linearGradient id="hubSceneLogoGold" x1="120" y1="120" x2="390" y2="390" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#FEF08A"/>
+                  <stop offset="35%" stopColor="#F59E0B"/>
+                  <stop offset="100%" stopColor="#D97706"/>
+                </linearGradient>
+              </defs>
+              <path d="M216 150 V315 C216 358 190 382 146 382 C120 382 98 372 84 358 L108 318 C118 326 130 334 146 334 C164 334 172 322 172 304 V150 H216 Z" fill="url(#hubSceneLogoGold)"/>
+              <path d="M394 212 C394 168 360 144 306 144 C256 144 222 168 218 206 L260 214 C264 192 282 182 306 182 C330 182 350 192 350 208 C350 222 340 230 312 238 L284 246 C242 258 220 280 220 316 C220 358 256 384 310 384 C364 384 400 358 404 318 L360 310 C356 334 336 346 310 346 C284 346 264 336 264 318 C264 304 274 296 300 288 L328 280 C372 268 394 246 394 212 Z" fill="url(#hubSceneLogoGold)"/>
+              <circle cx="396" cy="146" r="22" fill="#FEF08A"/>
             </svg>
           </div>
           <div>
